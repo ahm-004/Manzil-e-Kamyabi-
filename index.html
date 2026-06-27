@@ -1,0 +1,2613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manzil-e-Kamyabi | Your Journey to Success Starts Here</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+  --navy:    #0B1829;
+  --navy2:   #122240;
+  --navy3:   #1A3158;
+  --gold:    #F5B800;
+  --gold2:   #FFD040;
+  --gold3:   #C99200;
+  --blue:    #1565D8;
+  --blue2:   #2979F5;
+  --sky:     #EBF2FF;
+  --green:   #10B981;
+  --red:     #EF4444;
+  --purple:  #8B5CF6;
+  --white:   #FFFFFF;
+  --off:     #F5F7FA;
+  --border:  #E4E9F2;
+  --text:    #0B1829;
+  --muted:   #64748B;
+  --muted2:  #94A3B8;
+  --r:       12px;
+  --r2:      18px;
+  --shadow:  0 2px 16px rgba(11,24,41,0.08);
+  --shadow2: 0 8px 40px rgba(11,24,41,0.14);
+  --font-d:  'Poppins', sans-serif;
+  --font-b:  'Inter', sans-serif;
+}
+/* ══════════════════════════════════════
+   7 PROFESSIONAL THEMES
+══════════════════════════════════════ */
+
+/* THEME 1: Dark Navy (default dark) */
+body.theme-dark {
+  --white:#0B1829; --off:#0F1E35; --border:#1A3158;
+  --text:#E2EAF8; --muted:#7A93B8; --sky:#0F1E35;
+  background:#070E1A; color:#E2EAF8;
+}
+body.theme-dark .sec-white{background:#070E1A!important;}
+body.theme-dark .sec-off{background:#060E1A!important;}
+body.theme-dark section{background:#070E1A!important;}
+body.theme-dark .navbar{background:rgba(7,14,26,.97)!important;}
+body.theme-dark h1,body.theme-dark h2,body.theme-dark h3,body.theme-dark h4{color:#E2EAF8!important;}
+body.theme-dark p{color:#8BA4C4!important;}
+body.theme-dark .card,body.theme-dark .paper-card,body.theme-dark .sub-card,body.theme-dark .uni-card,body.theme-dark .ra-card{background:#0F1E35!important;border-color:#1A3158!important;}
+body.theme-dark .paper-card h3,body.theme-dark .uni-card h3,body.theme-dark .sub-card h3,body.theme-dark .ra-title{color:#E2EAF8!important;}
+body.theme-dark .tstab{color:#7A93B8!important;}
+body.theme-dark .tstab.active{background:rgba(245,184,0,.15)!important;color:var(--gold)!important;}
+body.theme-dark .rtab{background:#0F1E35!important;border-color:#1A3158!important;color:#7A93B8!important;}
+body.theme-dark .rtab.active{background:var(--navy)!important;color:#fff!important;border-color:var(--navy)!important;}
+body.theme-dark input,body.theme-dark textarea,body.theme-dark select{background:#0F1E35!important;border-color:#1A3158!important;color:#E2EAF8!important;}
+body.theme-dark .cf-field label{color:#7A93B8!important;}
+body.theme-dark .dash-wrapper{background:#0F1E35!important;border-color:#1A3158!important;}
+body.theme-dark .ds-box{background:#122240!important;}
+body.theme-dark .qe-body{background:#0F1E35!important;border-color:#1A3158!important;}
+body.theme-dark .qe-opt{background:#0B1829!important;border-color:#1A3158!important;color:#E2EAF8!important;}
+body.theme-dark .qr-card{background:#0F1E35!important;border-color:#1A3158!important;}
+body.theme-dark .qr-box{background:#122240!important;}
+body.theme-dark .modal{background:#0F1E35!important;}
+body.theme-dark .mcq-card{background:#0F1E35!important;border-color:#1A3158!important;}
+body.theme-dark .mcq-q{color:#E2EAF8!important;}
+body.theme-dark .mcq-opt{background:rgba(255,255,255,.03)!important;border-color:rgba(255,255,255,.08)!important;color:rgba(255,255,255,.7)!important;}
+body.theme-dark .pb-track{background:#1A3158!important;}
+body.theme-dark .prog-section h4{color:#8BA4C4!important;}
+body.theme-dark .pb-label{color:#7A93B8!important;}
+body.theme-dark .ra-filter{border-color:#1A3158!important;color:#7A93B8!important;}
+body.theme-dark .ra-filter.active,body.theme-dark .ra-filter:hover{background:#1A3158!important;color:#E2EAF8!important;}
+
+/* THEME 2: Emerald Green */
+body.theme-emerald {
+  --navy:#0A2018; --navy2:#0F2E22; --navy3:#1A4532;
+  --gold:#10B981; --gold2:#34D399; --gold3:#059669;
+  --blue:#0E9F6E; --blue2:#31C48D;
+  --white:#FFFFFF; --off:#F0FDF4; --border:#A7F3D0;
+  --text:#064E3B; --muted:#065F46; --sky:#ECFDF5;
+  background:#FFFFFF; color:#064E3B;
+}
+body.theme-emerald .navbar{background:rgba(10,32,24,.97)!important;}
+body.theme-emerald .hero{background:linear-gradient(135deg,#064E3B 0%,#065F46 45%,#047857 80%,#059669 100%)!important;}
+body.theme-emerald section[style*="linear-gradient(135deg,#06"]{background:linear-gradient(135deg,#064E3B,#065F46,#047857)!important;}
+body.theme-emerald .eyebrow-blue{background:rgba(16,185,129,.12)!important;color:#059669!important;}
+body.theme-emerald .eyebrow-gold{background:rgba(16,185,129,.12)!important;color:#047857!important;}
+body.theme-emerald .gold-bar{background:linear-gradient(90deg,#10B981,#34D399)!important;}
+body.theme-emerald .btn-gold{background:#10B981!important;color:#fff!important;}
+body.theme-emerald .btn-gold:hover{background:#34D399!important;box-shadow:0 6px 20px rgba(16,185,129,.35)!important;}
+body.theme-emerald .nav-logo{background:linear-gradient(135deg,#10B981,#34D399)!important;color:#fff!important;}
+body.theme-emerald footer{background:#052E16!important;}
+body.theme-emerald .bottom-nav{background:rgba(6,30,20,.95)!important;}
+body.theme-emerald .bn-item.active .bn-label{color:#10B981!important;}
+
+/* THEME 3: Royal Purple */
+body.theme-purple {
+  --navy:#1E1033; --navy2:#2A1547; --navy3:#3B1F63;
+  --gold:#8B5CF6; --gold2:#A78BFA; --gold3:#7C3AED;
+  --blue:#7C3AED; --blue2:#8B5CF6;
+  --white:#FFFFFF; --off:#F5F3FF; --border:#DDD6FE;
+  --text:#2E1065; --muted:#4C1D95; --sky:#EDE9FE;
+  background:#FFFFFF; color:#2E1065;
+}
+body.theme-purple .navbar{background:rgba(30,16,51,.97)!important;}
+body.theme-purple .hero{background:linear-gradient(135deg,#1E1033 0%,#2E1065 45%,#3B1F63 80%,#4C1D95 100%)!important;}
+body.theme-purple .eyebrow-blue{background:rgba(139,92,246,.12)!important;color:#7C3AED!important;}
+body.theme-purple .eyebrow-gold{background:rgba(139,92,246,.12)!important;color:#6D28D9!important;}
+body.theme-purple .gold-bar{background:linear-gradient(90deg,#8B5CF6,#A78BFA)!important;}
+body.theme-purple .btn-gold{background:#8B5CF6!important;color:#fff!important;}
+body.theme-purple .btn-gold:hover{background:#A78BFA!important;box-shadow:0 6px 20px rgba(139,92,246,.4)!important;}
+body.theme-purple .nav-logo{background:linear-gradient(135deg,#8B5CF6,#A78BFA)!important;color:#fff!important;}
+body.theme-purple footer{background:#0D0520!important;}
+body.theme-purple .bottom-nav{background:rgba(15,6,30,.95)!important;}
+body.theme-purple .bn-item.active .bn-label{color:#8B5CF6!important;}
+body.theme-purple .hero-badge{background:rgba(139,92,246,.15)!important;border-color:rgba(139,92,246,.3)!important;color:#A78BFA!important;}
+
+/* THEME 4: Ocean Blue */
+body.theme-ocean {
+  --navy:#0C2340; --navy2:#0F3460; --navy3:#164080;
+  --gold:#3B82F6; --gold2:#60A5FA; --gold3:#2563EB;
+  --blue:#1D4ED8; --blue2:#3B82F6;
+  --white:#FFFFFF; --off:#EFF6FF; --border:#BFDBFE;
+  --text:#1E3A5F; --muted:#1E40AF; --sky:#DBEAFE;
+  background:#FFFFFF; color:#1E3A5F;
+}
+body.theme-ocean .navbar{background:rgba(12,35,64,.97)!important;}
+body.theme-ocean .hero{background:linear-gradient(135deg,#0C2340 0%,#0F3460 45%,#164080 80%,#1D4ED8 100%)!important;}
+body.theme-ocean .eyebrow-blue{background:rgba(59,130,246,.12)!important;color:#1D4ED8!important;}
+body.theme-ocean .eyebrow-gold{background:rgba(59,130,246,.12)!important;color:#1E40AF!important;}
+body.theme-ocean .gold-bar{background:linear-gradient(90deg,#3B82F6,#60A5FA)!important;}
+body.theme-ocean .btn-gold{background:#3B82F6!important;color:#fff!important;}
+body.theme-ocean .btn-gold:hover{background:#60A5FA!important;box-shadow:0 6px 20px rgba(59,130,246,.4)!important;}
+body.theme-ocean .nav-logo{background:linear-gradient(135deg,#3B82F6,#60A5FA)!important;color:#fff!important;}
+body.theme-ocean footer{background:#060F1E!important;}
+body.theme-ocean .bottom-nav{background:rgba(6,12,24,.95)!important;}
+body.theme-ocean .bn-item.active .bn-label{color:#60A5FA!important;}
+body.theme-ocean .hero-badge{background:rgba(59,130,246,.15)!important;border-color:rgba(59,130,246,.3)!important;color:#93C5FD!important;}
+
+/* THEME 5: Crimson Red */
+body.theme-crimson {
+  --navy:#1A0A0A; --navy2:#2D1010; --navy3:#3D1515;
+  --gold:#EF4444; --gold2:#F87171; --gold3:#DC2626;
+  --blue:#DC2626; --blue2:#EF4444;
+  --white:#FFFFFF; --off:#FFF5F5; --border:#FCA5A5;
+  --text:#450A0A; --muted:#7F1D1D; --sky:#FEE2E2;
+  background:#FFFFFF; color:#450A0A;
+}
+body.theme-crimson .navbar{background:rgba(26,10,10,.97)!important;}
+body.theme-crimson .hero{background:linear-gradient(135deg,#1A0A0A 0%,#450A0A 45%,#7F1D1D 80%,#991B1B 100%)!important;}
+body.theme-crimson .eyebrow-blue{background:rgba(239,68,68,.12)!important;color:#DC2626!important;}
+body.theme-crimson .eyebrow-gold{background:rgba(239,68,68,.12)!important;color:#B91C1C!important;}
+body.theme-crimson .gold-bar{background:linear-gradient(90deg,#EF4444,#F87171)!important;}
+body.theme-crimson .btn-gold{background:#EF4444!important;color:#fff!important;}
+body.theme-crimson .btn-gold:hover{background:#F87171!important;box-shadow:0 6px 20px rgba(239,68,68,.4)!important;}
+body.theme-crimson .nav-logo{background:linear-gradient(135deg,#EF4444,#F87171)!important;color:#fff!important;}
+body.theme-crimson footer{background:#0D0404!important;}
+body.theme-crimson .bottom-nav{background:rgba(10,3,3,.95)!important;}
+body.theme-crimson .bn-item.active .bn-label{color:#EF4444!important;}
+body.theme-crimson .hero-badge{background:rgba(239,68,68,.15)!important;border-color:rgba(239,68,68,.3)!important;color:#FCA5A5!important;}
+
+/* THEME 6: Midnight Dark */
+body.theme-midnight {
+  --navy:#030712; --navy2:#060B18; --navy3:#0D1224;
+  --gold:#F59E0B; --gold2:#FCD34D; --gold3:#D97706;
+  --blue:#6366F1; --blue2:#818CF8;
+  --white:#0F1117; --off:#13161F; --border:#1F2535;
+  --text:#E2E8F0; --muted:#94A3B8; --sky:#13161F;
+  background:#030712; color:#E2E8F0;
+}
+body.theme-midnight .sec-white{background:#0F1117!important;}
+body.theme-midnight .sec-off{background:#0A0D15!important;}
+body.theme-midnight section{background:#030712!important;}
+body.theme-midnight .navbar{background:rgba(3,7,18,.98)!important;}
+body.theme-midnight h1,body.theme-midnight h2,body.theme-midnight h3,body.theme-midnight h4{color:#F1F5F9!important;}
+body.theme-midnight p{color:#94A3B8!important;}
+body.theme-midnight .card,body.theme-midnight .paper-card,body.theme-midnight .sub-card,body.theme-midnight .uni-card,body.theme-midnight .ra-card{background:#0F1117!important;border-color:#1F2535!important;}
+body.theme-midnight .tstab{color:#64748B!important;}
+body.theme-midnight .tstab.active{background:rgba(245,158,11,.15)!important;color:#F59E0B!important;}
+body.theme-midnight .rtab{background:#0F1117!important;border-color:#1F2535!important;color:#64748B!important;}
+body.theme-midnight .rtab.active{background:#060B18!important;color:#fff!important;border-color:#060B18!important;}
+body.theme-midnight input,body.theme-midnight textarea,body.theme-midnight select{background:#0F1117!important;border-color:#1F2535!important;color:#E2E8F0!important;}
+body.theme-midnight .dash-wrapper{background:#0F1117!important;border-color:#1F2535!important;}
+body.theme-midnight .ds-box{background:#13161F!important;}
+body.theme-midnight .qe-body{background:#0F1117!important;border-color:#1F2535!important;}
+body.theme-midnight .qr-card{background:#0F1117!important;border-color:#1F2535!important;}
+body.theme-midnight .qr-box{background:#13161F!important;}
+body.theme-midnight .modal{background:#0F1117!important;}
+body.theme-midnight footer{background:#020508!important;}
+body.theme-midnight .bottom-nav{background:rgba(2,5,8,.98)!important;}
+body.theme-midnight .nav-logo{background:linear-gradient(135deg,#F59E0B,#FCD34D)!important;color:#030712!important;}
+body.theme-midnight .btn-gold{background:#F59E0B!important;color:#030712!important;}
+body.theme-midnight .btn-gold:hover{background:#FCD34D!important;box-shadow:0 6px 20px rgba(245,158,11,.35)!important;}
+body.theme-midnight .bn-item.active .bn-label{color:#F59E0B!important;}
+
+/* THEME 7: Saffron Gold (Light) */
+body.theme-saffron {
+  --navy:#1C0A00; --navy2:#2D1500; --navy3:#3D1E00;
+  --gold:#F97316; --gold2:#FB923C; --gold3:#EA580C;
+  --blue:#C2410C; --blue2:#EA580C;
+  --white:#FFFBF5; --off:#FFF7ED; --border:#FED7AA;
+  --text:#431407; --muted:#7C2D12; --sky:#FFF3E8;
+  background:#FFFBF5; color:#431407;
+}
+body.theme-saffron .navbar{background:rgba(28,10,0,.97)!important;}
+body.theme-saffron .hero{background:linear-gradient(135deg,#1C0A00 0%,#431407 45%,#7C2D12 80%,#92400E 100%)!important;}
+body.theme-saffron .eyebrow-blue{background:rgba(249,115,22,.12)!important;color:#C2410C!important;}
+body.theme-saffron .eyebrow-gold{background:rgba(249,115,22,.12)!important;color:#9A3412!important;}
+body.theme-saffron .gold-bar{background:linear-gradient(90deg,#F97316,#FB923C)!important;}
+body.theme-saffron .btn-gold{background:#F97316!important;color:#fff!important;}
+body.theme-saffron .btn-gold:hover{background:#FB923C!important;box-shadow:0 6px 20px rgba(249,115,22,.4)!important;}
+body.theme-saffron .nav-logo{background:linear-gradient(135deg,#F97316,#FB923C)!important;color:#fff!important;}
+body.theme-saffron footer{background:#0D0500!important;}
+body.theme-saffron .bottom-nav{background:rgba(10,4,0,.95)!important;}
+body.theme-saffron .bn-item.active .bn-label{color:#F97316!important;}
+body.theme-saffron .hero-badge{background:rgba(249,115,22,.15)!important;border-color:rgba(249,115,22,.3)!important;color:#FDBA74!important;}
+
+/* ── THEME SWITCHER PANEL ── */
+.theme-panel{position:fixed;top:70px;right:1rem;z-index:2000;background:rgba(11,24,41,.98);border:1px solid rgba(245,184,0,.2);border-radius:16px;padding:1rem;box-shadow:0 16px 48px rgba(0,0,0,.5);display:none;min-width:220px;}
+.theme-panel.open{display:block;}
+.theme-panel h4{font-family:var(--font-d);font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.65rem;}
+.theme-option{display:flex;align-items:center;gap:.6rem;padding:.5rem .65rem;border-radius:10px;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:background .15s;}
+.theme-option:hover{background:rgba(255,255,255,.06);}
+.theme-option.active{background:rgba(245,184,0,.1);border:1px solid rgba(245,184,0,.2);}
+.theme-option span{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.75);}
+.theme-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.2);}
+.theme-option.active .theme-dot{border-color:var(--gold);}
+.theme-option.active span{color:#fff!important;}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-b);color:var(--text);background:var(--white);overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--navy2);border-radius:3px;}
+a{text-decoration:none;color:inherit;}
+img{max-width:100%;}
+
+/* ── UTILITY ── */
+.container{max-width:1180px;margin:0 auto;padding:0 1.5rem;}
+.flex{display:flex;}.flex-center{display:flex;align-items:center;justify-content:center;}
+.gap-1{gap:.5rem;}.gap-2{gap:1rem;}.gap-3{gap:1.5rem;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;}
+.text-center{text-align:center;}
+.hidden{display:none!important;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-family:var(--font-b);font-weight:600;border-radius:var(--r);transition:all .2s;font-size:.875rem;}
+.btn-gold{background:var(--gold);color:var(--navy);padding:.7rem 1.5rem;}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(245,184,0,.35);}
+.btn-navy{background:var(--navy);color:#fff;padding:.7rem 1.5rem;}
+.btn-navy:hover{background:var(--navy2);transform:translateY(-2px);}
+.btn-blue{background:var(--blue);color:#fff;padding:.7rem 1.5rem;}
+.btn-blue:hover{background:var(--blue2);transform:translateY(-2px);}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--muted);padding:.65rem 1.4rem;}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.btn-ghost-white{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;padding:.65rem 1.4rem;}
+.btn-ghost-white:hover{background:rgba(255,255,255,.18);}
+.btn-sm{padding:.45rem 1rem;font-size:.78rem;}
+.btn-lg{padding:.85rem 1.9rem;font-size:.95rem;}
+.btn-full{width:100%;justify-content:center;}
+.btn-wa{background:#25D366;color:#fff;padding:.7rem 1.5rem;}
+.btn-wa:hover{background:#1EBF59;transform:translateY(-2px);}
+.btn-red{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:var(--red);}
+.btn-red:hover{background:rgba(239,68,68,.2);}
+.btn-green{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:var(--green);}
+.btn-green:hover{background:rgba(16,185,129,.2);}
+
+/* ── CARDS ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--shadow);transition:all .25s;}
+.card:hover{box-shadow:var(--shadow2);transform:translateY(-4px);}
+
+/* ── SECTION HEADS ── */
+.sec-head{text-align:center;margin-bottom:2.5rem;}
+.eyebrow{display:inline-block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;padding:.3rem .85rem;border-radius:20px;margin-bottom:.65rem;}
+.eyebrow-blue{background:var(--sky);color:var(--blue);}
+.eyebrow-gold{background:rgba(245,184,0,.12);color:var(--gold3);}
+.eyebrow-white{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);}
+.sec-head h2{font-family:var(--font-d);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--text);margin-bottom:.6rem;line-height:1.2;}
+.sec-head.light h2{color:#fff;}
+.sec-head p{color:var(--muted);font-size:.9rem;max-width:500px;margin:0 auto;line-height:1.7;}
+.sec-head.light p{color:rgba(255,255,255,.55);}
+.gold-bar{width:44px;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;margin:.6rem auto 0;}
+
+/* ══════════════════════════════════════
+   NAVBAR — HORIZONTAL SCROLL
+══════════════════════════════════════ */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:1000;height:64px;background:rgba(11,24,41,.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(245,184,0,.12);display:flex;align-items:center;justify-content:space-between;padding:0 1rem;transition:all .3s;gap:.5rem;}
+.navbar.scrolled{height:58px;box-shadow:0 4px 24px rgba(0,0,0,.35);}
+.nav-brand{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.nav-logo{width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:.95rem;color:var(--navy);flex-shrink:0;}
+.nav-title h1{font-family:var(--font-d);font-size:.85rem;font-weight:800;color:#fff;line-height:1.1;}
+.nav-title span{font-size:.6rem;color:var(--gold);font-weight:500;letter-spacing:.04em;}
+
+/* Scrollable nav-links */
+.nav-links-wrap{flex:1;overflow-x:auto;overflow-y:visible;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 .5rem;position:relative;}
+.nav-links-wrap::-webkit-scrollbar{display:none;}
+.nav-links{display:flex;align-items:center;gap:.1rem;list-style:none;white-space:nowrap;width:max-content;}
+.nav-links>li{position:relative;}
+.nav-links a{color:rgba(255,255,255,.75);font-size:.8rem;font-weight:500;padding:.45rem .7rem;border-radius:8px;transition:all .2s;display:flex;align-items:center;gap:3px;white-space:nowrap;}
+.nav-links a:hover{color:var(--gold);background:rgba(245,184,0,.08);}
+.nav-links a .arr{font-size:.55rem;transition:transform .2s;}
+.nav-links li:hover>a .arr{transform:rotate(180deg);}
+.dropdown{position:absolute;top:calc(100% + 6px);left:0;background:var(--navy2);border:1px solid rgba(245,184,0,.12);border-radius:12px;padding:.4rem;min-width:190px;box-shadow:0 16px 40px rgba(0,0,0,.4);opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .2s;z-index:200;}
+.nav-links li:hover .dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+.dropdown a{display:block;padding:.5rem .8rem;border-radius:8px;font-size:.78rem;color:rgba(255,255,255,.7);}
+.dropdown a:hover{color:var(--gold);background:rgba(245,184,0,.08);}
+.nav-right{display:flex;align-items:center;gap:.4rem;flex-shrink:0;}
+.btn-toggle{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.btn-toggle:hover{background:rgba(245,184,0,.12);color:var(--gold);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:3px;}
+.hamburger span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;transition:all .3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* Mobile menu */
+.mob-menu{display:none;position:fixed;top:64px;left:0;right:0;bottom:0;background:rgba(11,24,41,.99);z-index:999;overflow-y:auto;padding:1rem 1.5rem 2rem;flex-direction:column;}
+.mob-menu.open{display:flex;}
+.mob-menu a{color:rgba(255,255,255,.8);font-size:.9rem;font-weight:500;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.05);transition:color .2s;}
+.mob-menu a:hover{color:var(--gold);}
+.mob-section{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:1rem 0 .3rem;}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero{min-height:100vh;padding-top:100px;background:linear-gradient(135deg,#060E1C 0%,#0B1829 45%,#122240 80%,#1A3158 100%);position:relative;overflow:hidden;display:flex;align-items:center;}
+.hero-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(245,184,0,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(245,184,0,.035) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
+.hero-glow-1{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(21,101,216,.18) 0%,transparent 70%);top:-100px;right:5%;pointer-events:none;}
+.hero-glow-2{position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(245,184,0,.07) 0%,transparent 70%);bottom:-80px;left:10%;pointer-events:none;}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;padding:3.5rem 0;position:relative;z-index:2;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(245,184,0,.1);border:1px solid rgba(245,184,0,.22);color:var(--gold);padding:.35rem .9rem;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.25rem;}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:var(--font-d);font-size:clamp(2rem,4.5vw,3.5rem);font-weight:900;color:#fff;line-height:1.1;margin-bottom:1.1rem;}
+.hero h1 .accent{color:var(--gold);display:block;}
+.hero-desc{font-size:.95rem;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:2rem;max-width:480px;}
+.hero-btns{display:flex;gap:.85rem;flex-wrap:wrap;margin-bottom:2.25rem;}
+.hero-stats{display:flex;gap:2rem;flex-wrap:wrap;}
+.hs-item .num{font-family:var(--font-d);font-size:1.5rem;font-weight:800;color:var(--gold);}
+.hs-item .lbl{font-size:.68rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;}
+
+/* Floating cards */
+.hero-cards{position:relative;height:440px;}
+.hc{position:absolute;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);backdrop-filter:blur(16px);border-radius:16px;padding:1rem 1.2rem;color:#fff;}
+.hc-1{top:0;left:50%;transform:translateX(-50%);width:210px;animation:fc1 4s ease-in-out infinite;}
+.hc-2{top:105px;left:0;width:185px;animation:fc2 5s ease-in-out infinite;}
+.hc-3{top:105px;right:0;width:185px;animation:fc3 4.5s ease-in-out infinite;}
+.hc-4{bottom:55px;left:50%;transform:translateX(-55%);width:210px;animation:fc1 5.5s ease-in-out infinite;}
+.hc-5{bottom:0;left:12%;width:175px;animation:fc2 4.2s ease-in-out infinite;}
+@keyframes fc1{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-12px)}}
+@keyframes fc2{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes fc3{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.hc-icon{font-size:1.4rem;margin-bottom:.35rem;}
+.hc-title{font-size:.78rem;font-weight:700;margin-bottom:.15rem;}
+.hc-sub{font-size:.68rem;color:rgba(255,255,255,.5);}
+.hc-tag{display:inline-block;background:rgba(245,184,0,.18);color:var(--gold);font-size:.62rem;font-weight:700;padding:.12rem .45rem;border-radius:4px;margin-top:.35rem;}
+
+/* ══════════════════════════════════════
+   FEATURE BAR
+══════════════════════════════════════ */
+.feat-bar{background:var(--navy2);border-bottom:1px solid rgba(245,184,0,.1);padding:1.1rem 1.5rem;}
+.feat-bar-inner{display:flex;gap:2.5rem;align-items:center;justify-content:center;flex-wrap:wrap;}
+.fb-item{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.65);font-size:.8rem;font-weight:500;}
+.fb-item .icon{font-size:.95rem;}
+
+/* ══════════════════════════════════════
+   PAST PAPERS
+══════════════════════════════════════ */
+.papers-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;}
+.paper-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .25s;box-shadow:var(--shadow);}
+.paper-card:hover{transform:translateY(-5px);box-shadow:var(--shadow2);border-color:var(--blue);}
+.pc-icon{width:58px;height:58px;border-radius:14px;margin:0 auto .9rem;display:flex;align-items:center;justify-content:center;font-size:1.6rem;}
+.pc-icon.c1{background:linear-gradient(135deg,#1565D8,#2979F5);}
+.pc-icon.c2{background:linear-gradient(135deg,#C99200,#F5B800);}
+.pc-icon.c3{background:linear-gradient(135deg,#DC2626,#EF4444);}
+.pc-icon.c4{background:linear-gradient(135deg,#059669,#10B981);}
+.pc-icon.c5{background:linear-gradient(135deg,#7C3AED,#A855F7);}
+.pc-icon.c6{background:linear-gradient(135deg,#0891B2,#06B6D4);}
+.pc-icon.c7{background:linear-gradient(135deg,#D97706,#F59E0B);}
+.pc-icon.c8{background:linear-gradient(135deg,#0B1829,#1A3158);}
+.pc-icon.c9{background:linear-gradient(135deg,#BE185D,#EC4899);}
+.pc-icon.c10{background:linear-gradient(135deg,#065F46,#10B981);}
+.paper-card h3{font-family:var(--font-d);font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.25rem;}
+.paper-card p{font-size:.7rem;color:var(--muted);margin-bottom:.8rem;}
+.paper-tags{display:flex;gap:.3rem;flex-wrap:wrap;justify-content:center;margin-bottom:.85rem;}
+.ptag{font-size:.62rem;font-weight:600;padding:.12rem .4rem;border-radius:4px;background:var(--sky);color:var(--blue);}
+.paper-btn{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-size:.75rem;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:all .2s;width:100%;}
+.paper-btn:hover{background:var(--blue);}
+
+/* Papers Modal */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--r2);width:100%;max-width:680px;max-height:88vh;overflow-y:auto;padding:2rem;margin:1rem;box-shadow:0 24px 80px rgba(0,0,0,.35);}
+body.dark .modal{background:#0F1E35;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.modal-head h2{font-family:var(--font-d);font-size:1.1rem;font-weight:800;color:var(--text);}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);transition:color .2s;}
+.modal-close:hover{color:var(--red);}
+.paper-year-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+.py-card{border:1px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center;cursor:pointer;transition:all .2s;}
+.py-card:hover{border-color:var(--blue);background:var(--sky);}
+.py-card .yr{font-family:var(--font-d);font-size:1.1rem;font-weight:800;color:var(--navy);}
+body.dark .py-card .yr{color:var(--gold);}
+.py-card .type{font-size:.7rem;color:var(--muted);margin-top:.2rem;}
+.py-card .dl-btns{display:flex;gap:.4rem;margin-top:.65rem;flex-wrap:wrap;justify-content:center;}
+.dl-btn{font-size:.68rem;font-weight:700;padding:.25rem .6rem;border-radius:5px;border:none;cursor:pointer;font-family:var(--font-b);}
+.dl-pdf{background:rgba(239,68,68,.1);color:var(--red);}
+.dl-pdf:hover{background:rgba(239,68,68,.2);}
+.dl-solved{background:rgba(16,185,129,.1);color:var(--green);}
+.dl-solved:hover{background:rgba(16,185,129,.2);}
+
+/* ══════════════════════════════════════
+   ENTRY TEST PREP
+══════════════════════════════════════ */
+.prep-tabs{display:flex;gap:.4rem;background:var(--off);padding:.4rem;border-radius:10px;margin-bottom:1.75rem;overflow-x:auto;}
+body.dark .prep-tabs{background:#0F1E35;}
+.ptab{padding:.6rem 1.1rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s;white-space:nowrap;font-family:var(--font-b);}
+.ptab.active{background:var(--navy);color:#fff;}
+body.dark .ptab.active{background:var(--blue);}
+.prep-pane{display:none;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1rem;}
+.prep-pane.active{display:grid;}
+.sub-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;text-align:center;cursor:pointer;transition:all .25s;}
+.sub-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:var(--shadow);}
+.sub-icon{font-size:1.9rem;margin-bottom:.6rem;}
+.sub-card h3{font-family:var(--font-d);font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.2rem;}
+.sub-card p{font-size:.72rem;color:var(--muted);}
+.mcq-badge{display:inline-block;font-size:.65rem;font-weight:700;background:var(--sky);color:var(--blue);padding:.18rem .45rem;border-radius:4px;margin-top:.5rem;}
+
+/* ══════════════════════════════════════
+   LIVE QUIZ SYSTEM
+══════════════════════════════════════ */
+/* Quiz selector */
+.quiz-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;}
+.qt-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:1.4rem;cursor:pointer;transition:all .25s;}
+.qt-card:hover{background:rgba(255,255,255,.09);border-color:rgba(245,184,0,.3);transform:translateY(-3px);}
+.qt-icon{font-size:1.7rem;margin-bottom:.65rem;}
+.qt-card h3{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:.25rem;}
+.qt-card p{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.55;}
+.qt-meta{display:flex;gap:.5rem;margin-top:.65rem;flex-wrap:wrap;}
+.qt-tag{font-size:.62rem;font-weight:600;padding:.15rem .4rem;border-radius:4px;}
+.qt-tag-gold{background:rgba(245,184,0,.15);color:var(--gold);}
+.qt-tag-blue{background:rgba(21,101,216,.2);color:#60A5FA;}
+.qt-tag-green{background:rgba(16,185,129,.15);color:var(--green);}
+
+/* Quiz Engine */
+#quizEngine{display:none;}
+.qe-header{background:var(--navy2);border-radius:var(--r2) var(--r2) 0 0;padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.qe-title{font-family:var(--font-d);font-size:.9rem;font-weight:700;color:#fff;}
+.qe-timer{background:rgba(245,184,0,.15);border:1px solid rgba(245,184,0,.3);color:var(--gold);font-size:1rem;font-weight:700;font-family:monospace;padding:.3rem .8rem;border-radius:8px;min-width:65px;text-align:center;}
+.qe-timer.urgent{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.3);color:var(--red);animation:tick .5s infinite alternate;}
+@keyframes tick{0%{opacity:1}100%{opacity:.5}}
+.qe-body{background:var(--white);border:1px solid var(--border);border-radius:0 0 var(--r2) var(--r2);padding:1.75rem;}
+body.dark .qe-body{background:#0F1E35;border-color:#1A3158;}
+.qe-progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:1.25rem;}
+body.dark .qe-progress-bar{background:#1A3158;}
+.qe-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:3px;transition:width .4s;}
+.qe-qnum{font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.75rem;}
+.qe-qtext{font-size:1rem;font-weight:600;color:var(--text);line-height:1.55;margin-bottom:1.35rem;}
+.qe-options{display:flex;flex-direction:column;gap:.6rem;}
+.qe-opt{padding:.8rem 1rem;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-size:.88rem;color:var(--text);transition:all .2s;display:flex;align-items:center;gap:.75rem;background:var(--white);}
+body.dark .qe-opt{background:#0B1829;border-color:#1A3158;color:#E2EAF8;}
+.qe-opt:hover{border-color:var(--blue);background:var(--sky);}
+body.dark .qe-opt:hover{background:#0F1E35;}
+.qe-opt.selected{border-color:var(--blue);background:var(--sky);}
+body.dark .qe-opt.selected{background:#0F1E35;}
+.qe-opt.correct{border-color:var(--green);background:#ECFDF5;color:#065F46;}
+.qe-opt.wrong{border-color:var(--red);background:#FEF2F2;color:#991B1B;}
+.qe-opt .ol{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+body.dark .qe-opt .ol{background:#1A3158;}
+.qe-opt.correct .ol{background:#D1FAE5;}
+.qe-opt.wrong .ol{background:#FEE2E2;}
+.qe-foot{display:flex;justify-content:space-between;align-items:center;margin-top:1.35rem;gap:1rem;flex-wrap:wrap;}
+.qe-neg{font-size:.72rem;color:var(--red);display:flex;align-items:center;gap:4px;}
+
+/* Quiz Result */
+#quizResult{display:none;}
+.qr-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:2.5rem;text-align:center;box-shadow:var(--shadow2);}
+body.dark .qr-card{background:#0F1E35;border-color:#1A3158;}
+.qr-circle{width:130px;height:130px;border-radius:50%;margin:0 auto 1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;border:5px solid;}
+.qr-score{font-family:var(--font-d);font-size:2rem;font-weight:900;}
+.qr-total{font-size:.72rem;font-weight:600;}
+.qr-status{font-family:var(--font-d);font-size:1.25rem;font-weight:800;margin-bottom:.4rem;}
+.qr-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem;}
+.qr-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-bottom:1.75rem;}
+.qr-box{background:var(--off);border-radius:var(--r);padding:.9rem .5rem;text-align:center;}
+body.dark .qr-box{background:#122240;}
+.qr-box .qrb-num{font-family:var(--font-d);font-size:1.3rem;font-weight:800;}
+.qr-box .qrb-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.review-list{text-align:left;display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.75rem;}
+.rev-item{padding:1rem;border-radius:var(--r);border:1px solid var(--border);font-size:.82rem;}
+body.dark .rev-item{border-color:#1A3158;}
+.rev-item.correct-bg{border-color:rgba(16,185,129,.25);background:rgba(16,185,129,.04);}
+.rev-item.wrong-bg{border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.04);}
+.rev-q{font-weight:600;color:var(--text);margin-bottom:.35rem;}
+.rev-ans{font-size:.78rem;color:var(--muted);}
+.rev-ans b{color:var(--green);}
+.rev-ans s{color:var(--red);}
+
+/* ══════════════════════════════════════
+   LEADERBOARD
+══════════════════════════════════════ */
+.lb-wrap{max-width:720px;margin:0 auto;}
+.lb-tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;background:rgba(255,255,255,.05);padding:.35rem;border-radius:10px;}
+.lb-tab{flex:1;padding:.5rem;text-align:center;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;color:rgba(255,255,255,.5);transition:all .2s;border:none;background:transparent;font-family:var(--font-b);}
+.lb-tab.active{background:rgba(255,255,255,.1);color:#fff;}
+.lb-head{display:grid;grid-template-columns:46px 1fr 90px 70px;gap:.75rem;padding:.4rem .9rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);}
+.lb-row{display:grid;grid-template-columns:46px 1fr 90px 70px;gap:.75rem;align-items:center;padding:.85rem .9rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:.45rem;transition:all .2s;}
+.lb-row:hover{background:rgba(255,255,255,.07);}
+.lb-rank{font-family:monospace;font-size:.95rem;font-weight:800;text-align:center;color:rgba(255,255,255,.3);}
+.lb-rank.g{color:var(--gold);}
+.lb-rank.s{color:#C0C0C0;}
+.lb-rank.b{color:#CD7F32;}
+.lb-name{font-size:.85rem;font-weight:600;color:#fff;}
+.lb-name .lb-sub{font-size:.7rem;color:rgba(255,255,255,.4);margin-top:1px;font-weight:400;}
+.lb-score-col{text-align:center;}
+.lb-score-num{font-family:monospace;font-size:.88rem;font-weight:700;color:var(--gold);}
+.lb-score-pct{font-size:.65rem;color:rgba(255,255,255,.35);}
+.lb-badge-col{display:flex;justify-content:center;}
+.badge{font-size:.65rem;font-weight:700;padding:.18rem .48rem;border-radius:4px;}
+.b-gold{background:rgba(245,184,0,.15);color:var(--gold);}
+.b-blue{background:rgba(21,101,216,.2);color:#60A5FA;}
+.b-green{background:rgba(16,185,129,.15);color:var(--green);}
+
+/* ══════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════ */
+.dash-wrapper{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow2);}
+body.dark .dash-wrapper{background:#0F1E35;border-color:#1A3158;}
+.dash-top{background:var(--navy);padding:1rem 1.5rem;display:flex;gap:.75rem;overflow-x:auto;}
+.dt-item{padding:.4rem .8rem;border-radius:7px;font-size:.75rem;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;transition:all .2s;white-space:nowrap;border:none;background:transparent;font-family:var(--font-b);}
+.dt-item.active{background:rgba(245,184,0,.15);color:var(--gold);}
+.dash-body{padding:1.5rem;}
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;}
+.ds-box{background:var(--off);border-radius:var(--r);padding:.9rem;text-align:center;}
+body.dark .ds-box{background:#122240;}
+.ds-num{font-family:var(--font-d);font-size:1.4rem;font-weight:800;color:var(--blue);}
+.ds-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.15rem;}
+.prog-section h4{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.85rem;}
+.prog-bar{margin-bottom:.75rem;}
+.pb-label{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:.3rem;}
+.pb-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+body.dark .pb-track{background:#1A3158;}
+.pb-fill{height:100%;border-radius:4px;}
+
+/* ══════════════════════════════════════
+   COMPETITIONS
+══════════════════════════════════════ */
+.comp-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:1.5rem;text-align:center;transition:all .25s;}
+.comp-card:hover{background:rgba(255,255,255,.08);transform:translateY(-3px);}
+.comp-icon{font-size:2.2rem;margin-bottom:.65rem;}
+.comp-card h3{font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
+.comp-card p{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:.85rem;}
+.comp-prize{font-size:.72rem;color:var(--gold);font-weight:600;margin-bottom:.85rem;}
+.status-live{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;font-weight:700;background:rgba(239,68,68,.12);color:#FC8181;padding:.2rem .55rem;border-radius:4px;}
+.status-live::before{content:'';width:5px;height:5px;border-radius:50%;background:#FC8181;animation:blink 1s infinite;}
+.status-upcoming{display:inline-block;font-size:.68rem;font-weight:700;background:rgba(245,184,0,.12);color:var(--gold);padding:.2rem .55rem;border-radius:4px;}
+
+/* ══════════════════════════════════════
+   UNIVERSITY GUIDE
+══════════════════════════════════════ */
+.uni-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.4rem;cursor:pointer;transition:all .25s;position:relative;}
+.uni-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:var(--shadow);}
+.uc-status{position:absolute;top:.9rem;right:.9rem;font-size:.62rem;font-weight:700;padding:.18rem .48rem;border-radius:4px;}
+.uc-open{background:#ECFDF5;color:#065F46;}
+.uc-upcoming{background:#FFFBEB;color:#92400E;}
+.uni-card .u-icon{font-size:1.8rem;margin-bottom:.65rem;}
+.uni-card h3{font-family:var(--font-d);font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:.25rem;}
+.uni-card p{font-size:.75rem;color:var(--muted);line-height:1.55;margin-bottom:.75rem;}
+.uni-info{display:flex;flex-direction:column;gap:.28rem;}
+.ui-row{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.4rem;}
+
+/* ══════════════════════════════════════
+   CREATE QUIZ SERVICE
+══════════════════════════════════════ */
+.service-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start;}
+.service-steps{display:flex;flex-direction:column;gap:.85rem;}
+.sstep{display:flex;gap:.9rem;align-items:flex-start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:.9rem;}
+.ss-num{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:rgba(245,184,0,.12);border:1px solid rgba(245,184,0,.25);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--gold);}
+.sstep h4{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:.15rem;}
+.sstep p{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.5;}
+.price-box{background:linear-gradient(135deg,var(--gold3),var(--gold));border-radius:var(--r);padding:1.4rem;text-align:center;margin-bottom:1.1rem;}
+.price-main{font-family:var(--font-d);font-size:2.8rem;font-weight:900;color:var(--navy);line-height:1;}
+.price-sub{font-size:.82rem;color:rgba(11,24,41,.65);margin-top:.2rem;}
+.ep-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--r);padding:1.1rem;text-align:center;margin-bottom:1.1rem;}
+.ep-num{font-family:monospace;font-size:1.25rem;font-weight:800;color:var(--gold);}
+.ep-box p{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:.25rem;}
+.features-list{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:1.1rem;}
+.features-list h4{font-size:.75rem;font-weight:700;color:#fff;margin-bottom:.65rem;}
+.fl-item{font-size:.75rem;color:rgba(255,255,255,.6);padding:.3rem 0;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid rgba(255,255,255,.04);}
+.fl-item:last-child{border-bottom:none;}
+
+/* ══════════════════════════════════════
+   CONTACT
+══════════════════════════════════════ */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;}
+.ci-wrap{display:flex;flex-direction:column;gap:1.1rem;}
+.ci-item{display:flex;gap:.9rem;align-items:flex-start;}
+.ci-icon{width:42px;height:42px;border-radius:10px;flex-shrink:0;background:var(--sky);display:flex;align-items:center;justify-content:center;font-size:1rem;}
+body.dark .ci-icon{background:#122240;}
+.ci-item h4{font-size:.75rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem;}
+.ci-item a,.ci-item p{font-size:.85rem;color:var(--muted);display:block;}
+.ci-item a:hover{color:var(--blue);}
+.cf-wrap{display:flex;flex-direction:column;gap:.9rem;}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.cf-field{display:flex;flex-direction:column;gap:.35rem;}
+.cf-field label{font-size:.7rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.06em;}
+.cf-field input,.cf-field select,.cf-field textarea{padding:.7rem .95rem;border:1.5px solid var(--border);border-radius:var(--r);font-size:.86rem;font-family:var(--font-b);color:var(--text);background:var(--white);outline:none;transition:border-color .2s;}
+.cf-field input:focus,.cf-field select:focus,.cf-field textarea:focus{border-color:var(--blue);}
+.cf-field input::placeholder,.cf-field textarea::placeholder{color:var(--muted2);}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer{background:#050C18;border-top:1px solid rgba(245,184,0,.08);padding:3.5rem 1.5rem 1.5rem;}
+.footer-grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:2.2fr 1fr 1fr 1.5fr;gap:2.5rem;margin-bottom:2.5rem;}
+.fb h2{font-family:var(--font-d);font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:.2rem;}
+.fb h2 span{color:var(--gold);}
+.fb .tagline{font-size:.68rem;color:var(--gold);font-weight:500;letter-spacing:.04em;margin-bottom:.65rem;}
+.fb p{font-size:.78rem;color:rgba(255,255,255,.38);line-height:1.7;max-width:240px;margin-bottom:.5rem;}
+.fb-admin{font-size:.72rem;color:rgba(255,255,255,.38);}
+.fb-admin b{color:var(--gold);}
+.socials{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.85rem;}
+.soc{width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:rgba(255,255,255,.55);transition:all .2s;}
+.soc:hover{background:rgba(245,184,0,.1);border-color:rgba(245,184,0,.25);color:var(--gold);}
+.fc h4{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:.9rem;}
+.fc a{display:block;font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;transition:color .2s;}
+.fc a:hover{color:#fff;}
+.footer-bottom{max-width:1180px;margin:0 auto;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:rgba(255,255,255,.28);flex-wrap:wrap;gap:.4rem;}
+
+/* ══════════════════════════════════════
+   WA FLOAT + TOAST
+══════════════════════════════════════ */
+.wa-btn{position:fixed;bottom:calc(70px + 1rem);right:1.25rem;z-index:990;width:48px;height:48px;border-radius:50%;background:#25D366;color:#fff;font-size:1.3rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(37,211,102,.4);transition:all .3s;}
+.wa-btn:hover{transform:scale(1.1);box-shadow:0 8px 28px rgba(37,211,102,.5);}
+.toast{position:fixed;bottom:calc(70px + 5rem);right:1.25rem;z-index:9999;background:var(--navy);border:1px solid rgba(245,184,0,.25);color:#fff;padding:.8rem 1.2rem;border-radius:10px;font-size:.82rem;max-width:300px;transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+@media(min-width:768px){
+  .wa-btn{bottom:1.75rem;right:1.75rem;}
+  .toast{bottom:5.5rem;right:1.75rem;}
+}
+
+/* ══════════════════════════════════════
+   NOTIF BAR
+══════════════════════════════════════ */
+
+.nb-badge{background:var(--gold);color:var(--navy);font-size:.6rem;font-weight:800;padding:.1rem .38rem;border-radius:3px;}
+.nb-close{position:absolute;right:1rem;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.38);font-size:.9rem;}
+.nb-link{color:var(--gold);font-weight:600;}
+
+/* ══════════════════════════════════════
+   SECTION WRAPPERS
+══════════════════════════════════════ */
+.sec-white{background:var(--white);padding:4.5rem 1.5rem;}
+.sec-off{background:var(--off);padding:4.5rem 1.5rem;}
+.sec-navy{background:var(--navy);padding:4.5rem 1.5rem;}
+.sec-navy2{background:var(--navy2);padding:4.5rem 1.5rem;}
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+.fade{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease;}
+.fade.in{opacity:1;transform:translateY(0);}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:1024px){
+  .papers-grid{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .service-grid{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  .nav-right .btn-gold{display:none;}
+  .hamburger{display:flex;}
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-cards{display:none;}
+  .grid-2,.grid-3,.contact-grid{grid-template-columns:1fr;}
+  .papers-grid{grid-template-columns:repeat(2,1fr);}
+  .qr-breakdown{grid-template-columns:repeat(2,1fr);}
+  .dash-stats{grid-template-columns:repeat(3,1fr);}
+  .sec-white,.sec-off,.sec-navy,.sec-navy2{padding:3rem 1.25rem;}
+  .footer-grid{grid-template-columns:1fr;gap:1.75rem;}
+  .nav-links-wrap{display:flex;}
+}
+@media(max-width:480px){
+  .papers-grid{grid-template-columns:repeat(2,1fr);}
+  .hero-btns{flex-direction:column;}
+  .cf-row{grid-template-columns:1fr;}
+  .qr-breakdown{grid-template-columns:repeat(2,1fr);}
+}
+
+/* ── RESOURCE TABS ── */
+.res-tabs{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.75rem;}
+.rtab{padding:.6rem 1.35rem;border-radius:30px;border:1px solid rgba(0,0,0,.1);background:#fff;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:all .2s;}
+.rtab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.res-pane{animation:fadeIn .3s ease;}
+.test-subtabs{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.75rem;}
+.tstab{padding:.6rem 1.35rem;border-radius:30px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:rgba(255,255,255,.55);font-size:.8rem;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:all .2s;}
+.tstab.active{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+.test-pane{animation:fadeIn .3s ease;}
+.live-test-card{background:linear-gradient(135deg,#0F1E35,#122240);border:1px solid rgba(239,68,68,.3);border-radius:16px;padding:1.5rem;position:relative;overflow:hidden;}
+.live-test-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#EF4444,var(--gold));}
+@keyframes popIn{from{opacity:0;transform:scale(.85) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.u-logo-wrap{width:80px;height:80px;margin:0 auto .85rem;display:flex;align-items:center;justify-content:center;background:#f8f9fa;border-radius:12px;padding:8px;border:1px solid rgba(0,0,0,.06);}
+.u-logo-img{width:100%;height:100%;object-fit:contain;}
+.u-logo-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;border-radius:10px;}
+.uni-card h3,.uni-card p{text-align:center;}
+.notif-bar{background:linear-gradient(90deg,var(--navy2),var(--navy3));border-bottom:1px solid rgba(245,184,0,.18);padding:.5rem 1.5rem;text-align:center;font-size:.75rem;color:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;gap:.65rem;position:fixed;top:0;left:0;right:0;z-index:1100;}
+.notif-bar ~ nav.navbar{top:36px;}
+.notif-bar[style*="display:none"] ~ nav.navbar{top:0;}
+.hero{min-height:100vh;padding-top:100px;background:linear-gradient(135deg,#060E1C 0%,#0B1829 45%,#122240 80%,#1A3158 100%);position:relative;overflow:hidden;display:flex;align-items:center;}
+.nb-badge{background:var(--gold);color:var(--navy);font-size:.6rem;font-weight:800;padding:.1rem .38rem;border-radius:3px;}
+.nb-close{position:absolute;right:1rem;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.38);font-size:.9rem;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:rgba(6,14,28,.95);backdrop-filter:blur(12px);border-top:1px solid rgba(245,184,0,.12);display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:.5rem .5rem calc(.5rem + env(safe-area-inset-bottom));box-shadow:0 -4px 24px rgba(0,0,0,.3);gap:.2rem;}
+.bottom-nav::-webkit-scrollbar{display:none;}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.4rem .75rem;border-radius:12px;cursor:pointer;transition:all .2s;flex-shrink:0;border:none;background:none;text-decoration:none;min-width:58px;}
+.bn-item .bn-icon{font-size:1.3rem;transition:transform .2s;}
+.bn-item .bn-label{font-size:.58rem;font-weight:600;color:rgba(255,255,255,.35);font-family:var(--font-b);letter-spacing:.03em;transition:color .2s;}
+.bn-item.active .bn-label{color:var(--gold);}
+.bn-item.active .bn-icon{transform:translateY(-2px);}
+.bn-item:hover .bn-label{color:rgba(255,255,255,.7);}
+/* Push content above bottom nav */
+body{padding-bottom:70px;}
+@media(min-width:768px){.bottom-nav{display:none;}body{padding-bottom:0;}}
+
+/* ── RESULTS ANNOUNCEMENT ── */
+.results-section{padding:4rem 1.5rem;}
+.ra-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;}
+.ra-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(11,24,41,.07);transition:all .25s;}
+.ra-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(11,24,41,.12);}
+.ra-card-top{padding:1.25rem 1.35rem 1rem;border-bottom:1px solid var(--border);}
+.ra-type{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.2rem .55rem;border-radius:4px;margin-bottom:.6rem;}
+.ra-type-result{background:rgba(16,185,129,.1);color:#059669;}
+.ra-type-announce{background:rgba(21,101,216,.1);color:var(--blue);}
+.ra-type-exam{background:rgba(245,184,0,.12);color:#C99200;}
+.ra-type-merit{background:rgba(139,92,246,.1);color:#7C3AED;}
+.ra-title{font-family:'Poppins',sans-serif;font-size:.92rem;font-weight:700;color:var(--navy);margin-bottom:.3rem;line-height:1.4;}
+.ra-desc{font-size:.78rem;color:var(--muted);line-height:1.6;}
+.ra-card-bottom{padding:.85rem 1.35rem;display:flex;align-items:center;justify-content:space-between;}
+.ra-date{font-size:.68rem;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
+.ra-link{font-size:.72rem;font-weight:600;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:3px;}
+.ra-link:hover{color:var(--blue2);}
+.ra-empty{text-align:center;padding:3rem;color:var(--muted);font-size:.88rem;grid-column:1/-1;}
+.ra-filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.ra-filter{padding:.4rem .9rem;border-radius:20px;font-size:.75rem;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.ra-filter.active,.ra-filter:hover{background:var(--navy);border-color:var(--navy);color:#fff;}
+</style>
+</head>
+<body>
+
+<!-- NOTIF BAR -->
+<div class="notif-bar" id="nb" style="display:none;">
+  <span class="nb-badge" id="nb-badge">NEW</span>
+  <span id="nb-text"></span>
+  <button class="nb-close" onclick="document.getElementById('nb').style.display='none';document.getElementById('navbar').style.top='0';">✕</button>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <a href="#home" class="nav-brand">
+    <img src="images/logo.png" alt="Manzil-e-Kamyabi" style="height:42px;width:42px;border-radius:9px;object-fit:cover;flex-shrink:0;">
+    <div class="nav-title">
+      <h1>MANZIL-E-KAMYABI</h1>
+      <span>Your Success, Our Mission</span>
+    </div>
+  </a>
+  <div class="nav-links-wrap">
+    <ul class="nav-links">
+      <li><a href="#home">🏠 Home</a></li>
+      <li><a href="#results-board">📢 Updates</a></li>
+      <li>
+        <a href="#resources">📚 Resources <span class="arr">▾</span></a>
+        <div class="dropdown">
+          <a href="#resources" onclick="setTimeout(()=>switchRes('papers',document.querySelector('.rtab')),200)">📄 Past Papers</a>
+          <a href="#resources" onclick="setTimeout(()=>switchRes('uni',document.querySelectorAll('.rtab')[1]),200)">🏛️ Universities</a>
+        </div>
+      </li>
+      <li><a href="#mcqbank">🧠 MCQ Bank</a></li>
+      <li>
+        <a href="#tests">🎯 Tests <span class="arr">▾</span></a>
+        <div class="dropdown">
+          <a href="#tests" onclick="setTimeout(()=>switchTest('mock',document.querySelector('.tstab')),200)">⏱️ Mock Tests</a>
+          <a href="#tests" onclick="setTimeout(()=>switchTest('live',document.querySelectorAll('.tstab')[1]),200)">🔴 Live Tests</a>
+          <a href="#tests" onclick="setTimeout(()=>switchTest('comp',document.querySelectorAll('.tstab')[2]),200)">🏆 Competitions</a>
+        </div>
+      </li>
+      <li><a href="#progress">📊 Progress</a></li>
+      <li><a href="#create-quiz">🛠️ Create Quiz</a></li>
+      <li><a href="#contact">📞 Contact</a></li>
+    </ul>
+  </div>
+  <div class="nav-right">
+    <button class="btn-toggle" onclick="toggleThemePanel()" title="Change Theme">🎨</button>
+    <a href="#quiz" class="btn btn-gold btn-sm">Join Now</a>
+    <button class="hamburger" id="hbg" onclick="toggleMob()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- THEME PANEL -->
+<div class="theme-panel" id="themePanel">
+  <h4>🎨 Choose Theme</h4>
+  <button class="theme-option active" id="topt-default" onclick="applyTheme('default','topt-default')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#0B1829,#F5B800);"></div>
+    <span>Navy Gold (Default)</span>
+  </button>
+  <button class="theme-option" id="topt-dark" onclick="applyTheme('dark','topt-dark')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#070E1A,#F5B800);"></div>
+    <span>Dark Navy</span>
+  </button>
+  <button class="theme-option" id="topt-emerald" onclick="applyTheme('emerald','topt-emerald')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#064E3B,#10B981);"></div>
+    <span>Emerald Green</span>
+  </button>
+  <button class="theme-option" id="topt-purple" onclick="applyTheme('purple','topt-purple')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#2E1065,#8B5CF6);"></div>
+    <span>Royal Purple</span>
+  </button>
+  <button class="theme-option" id="topt-ocean" onclick="applyTheme('ocean','topt-ocean')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#0C2340,#3B82F6);"></div>
+    <span>Ocean Blue</span>
+  </button>
+  <button class="theme-option" id="topt-crimson" onclick="applyTheme('crimson','topt-crimson')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#450A0A,#EF4444);"></div>
+    <span>Crimson Red</span>
+  </button>
+  <button class="theme-option" id="topt-midnight" onclick="applyTheme('midnight','topt-midnight')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#030712,#F59E0B);"></div>
+    <span>Midnight Dark</span>
+  </button>
+  <button class="theme-option" id="topt-saffron" onclick="applyTheme('saffron','topt-saffron')">
+    <div class="theme-dot" style="background:linear-gradient(135deg,#431407,#F97316);"></div>
+    <span>Saffron Gold</span>
+  </button>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <span class="mob-section">Main</span>
+  <a href="#home" onclick="toggleMob()">🏠 Home</a>
+  <a href="#results-board" onclick="toggleMob()">📢 Updates</a>
+  <span class="mob-section">Study</span>
+  <a href="#resources" onclick="toggleMob()">📄 Past Papers</a>
+  <a href="#resources" onclick="setTimeout(()=>switchRes('uni',document.querySelectorAll('.rtab')[1]),200);toggleMob()">🏛️ Universities</a>
+  <a href="#mcqbank" onclick="toggleMob()">🧠 MCQ Bank</a>
+  <span class="mob-section">Tests</span>
+  <a href="#tests" onclick="setTimeout(()=>switchTest('quiz',document.querySelector('.tstab')),200);toggleMob()">🎯 MCQ Practice</a>
+  <a href="#tests" onclick="setTimeout(()=>switchTest('mock',document.querySelectorAll('.tstab')[1]),200);toggleMob()">⏱️ Mock Tests</a>
+  <a href="#tests" onclick="setTimeout(()=>switchTest('live',document.querySelectorAll('.tstab')[2]),200);toggleMob()">🔴 Live Tests</a>
+  <a href="#tests" onclick="setTimeout(()=>switchTest('comp',document.querySelectorAll('.tstab')[3]),200);toggleMob()">🏆 Competitions</a>
+  <span class="mob-section">More</span>
+  <a href="#progress" onclick="toggleMob()">📊 Progress & Rankings</a>
+  <a href="#create-quiz" onclick="toggleMob()">🛠️ Create Quiz — Rs.200</a>
+  <a href="#contact" onclick="toggleMob()">📞 Contact Us</a>
+</div>
+
+<!-- ════════════════ HERO ════════════════ -->
+<section id="home" class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow-1"></div>
+  <div class="hero-glow-2"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge"><span class="dot"></span> Pakistan's #1 Entry Test Platform</div>
+        <h1>Your Journey to<br><span class="accent">SUCCESS Starts Here</span></h1>
+        <p class="hero-desc">Best platform for Entry Test Preparation, Past Papers, MCQs, Mock Tests & University Guidance for QUEST, MUET, MDCAT, IBA and more.</p>
+        <div class="hero-btns">
+          <a href="#tests" class="btn btn-gold btn-lg">Start Mock Test →</a>
+          <a href="#tests" onclick="setTimeout(()=>switchTest('comp',document.querySelector('.tstab:nth-child(4)')),300)" class="btn btn-ghost-white btn-lg">Join Competition</a>
+          <a href="#resources" class="btn btn-ghost-white btn-lg">Past Papers</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hs-item"><div class="num">50K+</div><div class="lbl">Students</div></div>
+          <div class="hs-item"><div class="num">10K+</div><div class="lbl">MCQs</div></div>
+          <div class="hs-item"><div class="num">200+</div><div class="lbl">Papers</div></div>
+          <div class="hs-item"><div class="num">95%</div><div class="lbl">Success Rate</div></div>
+        </div>
+      </div>
+      <div class="hero-cards">
+        <div class="hc hc-1"><div class="hc-icon">⚙️</div><div class="hc-title">Engineering Entry Test</div><div class="hc-sub">QUEST, NED, MUET, Mehran</div><span class="hc-tag">1200+ MCQs</span></div>
+        <div class="hc hc-2"><div class="hc-icon">🏥</div><div class="hc-title">MDCAT 2025</div><div class="hc-sub">Biology, Chemistry, Physics</div><span class="hc-tag">LIVE PREP</span></div>
+        <div class="hc hc-3"><div class="hc-icon">💻</div><div class="hc-title">Computer Science</div><div class="hc-sub">IBA, FAST, PIEAS</div><span class="hc-tag">NEW</span></div>
+        <div class="hc hc-4"><div class="hc-icon">🏆</div><div class="hc-title">Weekly Competition</div><div class="hc-sub">Rank among top students</div><span class="hc-tag">JOIN NOW</span></div>
+        <div class="hc hc-5"><div class="hc-icon">📊</div><div class="hc-title">Instant Results</div><div class="hc-sub">Score: 87/100 — Top 5%</div><span class="hc-tag">INSTANT</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ LIVE TEST POPUP ════ -->
+<div id="liveTestPopup" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+  <div id="liveTestCard" style="background:linear-gradient(135deg,#0F1E35,#122240);border:2px solid var(--gold);border-radius:24px;padding:2.5rem 2rem;max-width:420px;width:90%;margin:1rem;position:relative;animation:popIn .5s cubic-bezier(.175,.885,.32,1.275);text-align:center;">
+    <button onclick="closeLivePopup()" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.5);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;line-height:1;">✕</button>
+    <div style="width:60px;height:60px;background:linear-gradient(135deg,#EF4444,#F97316);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 1rem;">🔴</div>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#EF4444;padding:.3rem .85rem;border-radius:20px;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.85rem;">
+      <span style="width:7px;height:7px;border-radius:50%;background:#EF4444;animation:blink 1s infinite;display:inline-block;"></span> LIVE NOW
+    </div>
+    <h2 id="ltpTitle" style="font-family:var(--font-d);font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.5rem;line-height:1.4;"></h2>
+    <p id="ltpDetail" style="font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:.5rem;"></p>
+    <p id="ltpTime" style="font-size:.78rem;color:var(--gold);margin-bottom:1.5rem;font-weight:600;"></p>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+      <a id="ltpBtn" href="#" class="btn btn-gold" style="padding:.75rem 1.75rem;font-size:.9rem;">Join Test →</a>
+      <button onclick="closeLivePopup()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);padding:.75rem 1.2rem;border-radius:12px;cursor:pointer;font-size:.85rem;font-family:var(--font-b);">Later</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ANNOUNCEMENTS ════ -->
+<section id="announcements" style="display:none;background:#0B1829;padding:3rem 1.5rem;border-bottom:1px solid rgba(245,184,0,.1);">
+  <div class="container">
+    <div class="sec-head fade" style="margin-bottom:1.75rem;">
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,184,0,.1);border:1px solid rgba(245,184,0,.22);color:var(--gold);padding:.3rem .85rem;border-radius:20px;font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.85rem;">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--gold);animation:blink 1.5s infinite;display:inline-block;"></span> Live Updates
+      </div>
+      <h2 style="font-family:var(--font-d);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:#fff;margin-bottom:.5rem;">Announcements <span style="color:var(--gold);">& Notices</span></h2>
+    </div>
+    <div id="ann-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;"></div>
+  </div>
+</section>
+
+<!-- ════ FEAT BAR ════ -->
+<div class="feat-bar"><div class="feat-bar-inner">
+  <div class="fb-item"><span class="icon">📄</span> Past Papers</div>
+  <div class="fb-item"><span class="icon">🧠</span> MCQs & Quizzes</div>
+  <div class="fb-item"><span class="icon">⏱</span> Mock Tests</div>
+  <div class="fb-item"><span class="icon">📈</span> Track Progress</div>
+  <div class="fb-item"><span class="icon">🏆</span> Competitions</div>
+  <div class="fb-item"><span class="icon">🎓</span> University Guide</div>
+</div></div>
+
+<!-- ══════════ SECTION 1: UPDATES ══════════ -->
+<!-- ══════════════ RESULTS & ANNOUNCEMENTS ══════════════ -->
+<section id="results-board" style="background:linear-gradient(135deg,#0B1829,#122240);padding:4rem 1.5rem;">
+  <div class="container">
+    <div class="sec-head fade">
+      <div class="eyebrow eyebrow-blue">Updates</div>
+      <h2>Results & Announcements</h2>
+      <p>Test results, merit lists, exam dates aur important notifications.</p>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="ra-filter-bar fade">
+      <button class="ra-filter active" onclick="filterRA('all',this)">All</button>
+      <button class="ra-filter" onclick="filterRA('result',this)">📊 Results</button>
+      <button class="ra-filter" onclick="filterRA('exam',this)">📝 Exams</button>
+      <button class="ra-filter" onclick="filterRA('merit',this)">🏆 Merit Lists</button>
+      <button class="ra-filter" onclick="filterRA('announce',this)">📢 General</button>
+    </div>
+    <div class="ra-grid fade" id="raGrid">
+      <div class="ra-empty">⏳ Koi announcement abhi nahi. Jaldi aayegi!</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 2: RESOURCES ══════════ -->
+<!-- ══════════ SECTION 1: RESOURCES ══════════ -->
+<section id="resources" class="sec-off" style="padding:4rem 1.5rem;">
+  <div class="container">
+    <div class="sec-head fade">
+      <div class="eyebrow eyebrow-blue">Resources</div>
+      <h2>Study Resources</h2>
+      <p>Past Papers aur University Guide — sab ek jagah.</p>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="res-tabs fade">
+      <button class="rtab active" onclick="switchRes('papers',this)">📄 Past Papers</button>
+      <button class="rtab" onclick="switchRes('uni',this)">🏛️ Universities</button>
+    </div>
+    <div id="res-papers" class="res-pane">
+      <div class="papers-grid fade" id="papersGrid"></div>
+    </div>
+    <div id="res-uni" class="res-pane" style="display:none;">
+      <div class="grid-4 fade" id="uniGrid"></div>
+    </div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="papersModal">
+  <div class="modal"><div class="modal-head"><h2 id="modalTitle">Past Papers</h2><button class="modal-close" onclick="closeModal('papersModal')">✕</button></div><div id="modalBody"></div></div>
+</div>
+
+<div class="modal-overlay" id="papersModal">
+  <div class="modal"><div class="modal-head"><h2 id="modalTitle">Past Papers</h2><button class="modal-close" onclick="closeModal('papersModal')">✕</button></div><div id="modalBody"></div></div>
+</div>
+
+<!-- ══════════ SECTION 3: MCQ BANK ══════════ -->
+<section id="mcqbank" style="background:linear-gradient(135deg,#060E1C,#0B1829,#0F1E35);padding:4rem 1.5rem;">
+  <div class="container">
+
+    <!-- Section Header -->
+    <div class="sec-head light fade">
+      <div class="eyebrow eyebrow-white">MCQ Bank</div>
+      <h2 style="color:#fff;">MCQ Bank & Daily Quiz</h2>
+      <p style="color:rgba(255,255,255,.5);">Subject wise MCQs parhen, quiz den aur ranking mein apni jagah banayein.</p>
+      <div class="gold-bar"></div>
+    </div>
+
+    <!-- Main MCQ Tabs -->
+    <div class="test-subtabs fade" style="margin-bottom:1.5rem;">
+      <button class="tstab active" onclick="switchMCQ('browse',this)">📖 Browse MCQs</button>
+      <button class="tstab" onclick="switchMCQ('ranking',this)">🏆 Ranking</button>
+      <button class="tstab" onclick="switchMCQ('submit',this)">✍️ Submit MCQ</button>
+    </div>
+
+    <!-- BROWSE PANE -->
+    <div id="mcq-browse" class="mcq-pane">
+
+      <!-- Subject not selected -->
+      <div id="mcq-subject-select">
+        <p style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:1rem;">Subject choose karein:</p>
+        <div class="subject-grid fade" id="subjectGrid"></div>
+      </div>
+
+      <!-- MCQ List + Quiz -->
+      <div id="mcq-content" style="display:none;">
+        <div class="mcq-browse-header">
+          <div>
+            <button onclick="backToSubjects()" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:.8rem;margin-bottom:.4rem;display:block;font-family:var(--font-b);">← Subjects</button>
+            <span id="mcq-subject-title" style="font-family:var(--font-d);font-size:1.1rem;font-weight:800;color:#fff;"></span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;">
+            <div class="mcq-page-info">Page <span id="mcqPageCurrent">1</span> of <span id="mcqPageTotal">1</span></div>
+            <div class="mcq-mode-tabs">
+              <button class="mcq-mode-btn active" id="btnBrowseMode" onclick="setMCQMode('browse')">📖 Browse</button>
+              <button class="mcq-mode-btn" id="btnQuizMode" onclick="setMCQMode('quiz')">🎯 Quiz</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Browse Mode -->
+        <div id="mcq-browse-mode">
+          <div class="mcq-list" id="mcqList"></div>
+          <div class="mcq-pagination" id="mcqPagination"></div>
+        </div>
+
+        <!-- Quiz Mode -->
+        <div id="mcq-quiz-mode" style="display:none;">
+          <!-- Quiz in progress -->
+          <div id="quiz-in-progress" style="display:none;">
+            <div class="mcq-quiz-card">
+              <div class="quiz-header">
+                <span class="quiz-qnum" id="quizQnum">Question 1/10</span>
+                <span class="quiz-timer-sm" id="quizTimer">10:00</span>
+              </div>
+              <div class="quiz-progress"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%;"></div></div>
+              <div class="quiz-question" id="quizQuestion"></div>
+              <div class="quiz-opts" id="quizOpts"></div>
+              <div class="mcq-ans-area" id="quizAnsArea">
+                <div class="mcq-ans-label">✅ Correct Answer</div>
+                <div class="mcq-desc" id="quizDesc"></div>
+              </div>
+              <div class="quiz-foot">
+                <button class="btn btn-gold btn-sm" id="quizNextBtn" onclick="quizNext()" style="display:none;">Next →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz start screen -->
+          <div id="quiz-start-screen">
+            <div class="mcq-quiz-card" style="text-align:center;">
+              <div style="font-size:2.5rem;margin-bottom:.75rem;">🎯</div>
+              <h3 style="font-family:var(--font-d);font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:.4rem;" id="quizStartTitle"></h3>
+              <p style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:.35rem;">10 questions • 10 minutes • Page <span id="quizStartPage"></span></p>
+              <div id="quizPrevResult" style="display:none;background:rgba(245,184,0,.08);border:1px solid rgba(245,184,0,.15);border-radius:10px;padding:.75rem;margin:.85rem 0;font-size:.8rem;color:var(--gold);">
+                📊 Last attempt: <span id="quizPrevScore"></span>
+              </div>
+              <div style="margin-bottom:1.25rem;">
+                <label style="font-size:.78rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.4rem;">Apna naam likhein (ranking ke liye):</label>
+                <input type="text" id="quizUserName" placeholder="Jaise: Ali Hassan" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
+              </div>
+              <button class="btn btn-gold btn-lg" onclick="startPageQuiz()">Start Quiz →</button>
+            </div>
+          </div>
+
+          <!-- Quiz result -->
+          <div id="quiz-result-screen" style="display:none;">
+            <div class="quiz-result-card">
+              <div style="font-size:2rem;margin-bottom:.5rem;" id="quizResultEmoji">🎓</div>
+              <div class="qr-big-score" id="quizFinalScore">8/10</div>
+              <div class="qr-subject" id="quizResultSubject"></div>
+              <div style="font-size:.82rem;color:rgba(255,255,255,.55);margin-bottom:1rem;" id="quizResultMsg"></div>
+
+              <!-- History -->
+              <div class="qr-history" id="quizHistoryBox" style="display:none;">
+                <div class="qr-history-title">📊 Your History — <span id="histSubjectName"></span></div>
+                <div id="quizHistoryList"></div>
+              </div>
+
+              <div class="quiz-result-btns">
+                <button class="btn btn-gold" onclick="retryQuiz()">🔄 Try Again</button>
+                <button class="btn btn-navy" onclick="nextPageQuiz()">Next Page →</button>
+                <button class="btn btn-wa" onclick="shareQuizResult()">💬 Share</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANKING PANE -->
+    <div id="mcq-ranking" class="mcq-pane" style="display:none;">
+      <div class="test-subtabs" style="margin-bottom:1.25rem;">
+        <button class="tstab active" onclick="switchMCQRank('daily',this)">Today</button>
+        <button class="tstab" onclick="switchMCQRank('weekly',this)">This Week</button>
+        <button class="tstab" onclick="switchMCQRank('alltime',this)">All Time</button>
+      </div>
+      <div class="mcq-rank-wrap">
+        <div class="rank-row header">
+          <span style="text-align:center;">#</span>
+          <span>Student</span>
+          <span style="text-align:center;">Points</span>
+          <span style="text-align:center;">Badge</span>
+        </div>
+        <div id="mcqRankBody"></div>
+      </div>
+    </div>
+
+    <!-- SUBMIT PANE -->
+    <div id="mcq-submit" class="mcq-pane" style="display:none;">
+      <div class="submit-mcq-form fade">
+        <h3 style="font-family:var(--font-d);font-size:1rem;font-weight:800;color:#fff;margin-bottom:1rem;">✍️ MCQ Submit Karein</h3>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.35);margin-bottom:1.25rem;">Aapka MCQ admin se approve hone ke baad MCQ Bank mein add hoga.</p>
+        <div class="fi" style="margin-bottom:.85rem;">
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Apna Naam *</label>
+          <input type="text" id="subName" placeholder="Jaise: Fatima Malik" class="admin-input" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
+        </div>
+        <div class="fi" style="margin-bottom:.85rem;">
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Subject *</label>
+          <select id="subSubject" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
+            <option value="">-- Subject Choose Karein --</option>
+          </select>
+        </div>
+        <div class="fi" style="margin-bottom:.5rem;">
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Question * <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(Math symbols use kar sakte hain)</span></label>
+          <div class="math-toolbar">
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b2')">x\u00b2</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b3')">x\u00b3</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2074')">x\u2074</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u207b\u00b9')">x\u207b\u00b9</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u221a')">\u221a</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u221b')">\u221b</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03c0')">\u03c0</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00f7')">\u00f7</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00d7')">\u00d7</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b1')">\u00b1</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2260')">\u2260</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2264')">\u2264</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2265')">\u2265</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u221e')">\u221e</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2211')">\u2211</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u222b')">\u222b</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b0')">\u00b0</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03b1')">\u03b1</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03b2')">\u03b2</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03b8')">\u03b8</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03bb')">\u03bb</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u0394')">\u0394</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00bd')">\u00bd</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00bc')">\u00bc</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00be')">\u00be</button>
+          </div>
+          <textarea id="subQuestion" rows="3" placeholder="Question likhein..." onfocus="setMathTarget('subQuestion')" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
+        </div>
+
+        <!-- Shared Math Toolbar for Options -->
+        <div style="margin-bottom:.65rem;background:rgba(245,184,0,.04);border:1px solid rgba(245,184,0,.12);border-radius:10px;padding:.65rem .75rem;">
+          <div style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;">&#9998; Math Calculator — Options ke liye <span id="optToolbarLabel" style="color:var(--gold);font-weight:600;">(neeche wala option click karein)</span></div>
+          <div class="math-toolbar" id="optMathToolbar" style="opacity:.45;pointer-events:none;transition:opacity .2s;">
+            <button class="math-btn" onclick="insertMathToActive('\u00b2')">x\u00b2</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00b3')">x\u00b3</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2074')">x\u2074</button>
+            <button class="math-btn" onclick="insertMathToActive('\u207b\u00b9')">x\u207b\u00b9</button>
+            <button class="math-btn" onclick="insertMathToActive('\u221a')">\u221a</button>
+            <button class="math-btn" onclick="insertMathToActive('\u221b')">\u221b</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03c0')">\u03c0</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00f7')">\u00f7</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00d7')">\u00d7</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00b1')">\u00b1</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2260')">\u2260</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2264')">\u2264</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2265')">\u2265</button>
+            <button class="math-btn" onclick="insertMathToActive('\u221e')">\u221e</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00b0')">\u00b0</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03b1')">\u03b1</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03b2')">\u03b2</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03b8')">\u03b8</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00bd')">\u00bd</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00bc')">\u00bc</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00be')">\u00be</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.85rem;">
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option A *</label><input type="text" id="subA" placeholder="Option A" onfocus="setMathTarget('subA')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option B *</label><input type="text" id="subB" placeholder="Option B" onfocus="setMathTarget('subB')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option C *</label><input type="text" id="subC" placeholder="Option C" onfocus="setMathTarget('subC')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option D *</label><input type="text" id="subD" placeholder="Option D" onfocus="setMathTarget('subD')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+        </div>
+        <div class="fi" style="margin-bottom:.85rem;">
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Correct Answer *</label>
+          <select id="subCorrect" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+        <div class="fi" style="margin-bottom:1.25rem;">
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Description / Explanation <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(optional)</span></label>
+          <textarea id="subDesc" rows="2" placeholder="Explanation likhein (optional)..." style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
+        </div>
+        <button class="btn btn-gold btn-lg" onclick="submitUserMCQ()">Submit MCQ →</button>
+        <div id="subMsg" style="margin-top:.85rem;font-size:.8rem;"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════ SECTION 4: TESTS & CHALLENGES ══════════ -->
+<!-- ══════════ SECTION 2: TESTS & CHALLENGES ══════════ -->
+<section id="tests" style="background:linear-gradient(135deg,#060E1C,#0B1829,#122240);padding:4rem 1.5rem;">
+  <div class="container">
+    <div class="sec-head light fade">
+      <div class="eyebrow eyebrow-white">Tests & Challenges</div>
+      <h2 style="color:#fff;">Tests, Quizzes & Competitions</h2>
+      <p style="color:rgba(255,255,255,.5);">MCQ Practice, Mock Tests, Live Tests aur Competitions — sab ek jagah.</p>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="test-subtabs fade">
+      <button class="tstab active" onclick="switchTest('mock',this)">⏱️ Mock Tests</button>
+      <button class="tstab" onclick="switchTest('live',this)">🔴 Live Tests</button>
+      <button class="tstab" onclick="switchTest('comp',this)">🏆 Competitions</button>
+    </div>
+    <div id="test-mock" class="test-pane">
+      <div id="quizSelector"><div class="quiz-types fade" id="quizTypesGrid"></div></div>
+      <div id="quizEngine" class="fade" style="max-width:700px;margin:0 auto;display:none;">
+        <div class="qe-header"><span class="qe-title" id="qeTitle">Mock Test</span><span class="qe-timer" id="qeTimer">30:00</span></div>
+        <div class="qe-body">
+          <div class="qe-progress-bar"><div class="qe-progress-fill" id="qeProgress"></div></div>
+          <div class="qe-qnum" id="qeQnum">Question 1 of 10</div>
+          <div class="qe-qtext" id="qeQtext"></div>
+          <div class="qe-options" id="qeOptions"></div>
+          <div class="qe-foot"><span class="qe-neg" id="qeNeg"></span><div style="display:flex;gap:.6rem;"><button class="btn btn-outline btn-sm" id="btnMark" onclick="markReview()">⚑ Mark</button><button class="btn btn-navy btn-sm" id="btnNext" onclick="nextQuestion()">Next →</button></div></div>
+        </div>
+      </div>
+      <div id="quizResult" style="max-width:700px;margin:0 auto;display:none;">
+        <div class="qr-card">
+          <div style="font-size:2rem;margin-bottom:.5rem;">🎓</div>
+          <div class="qr-circle" id="qrCircle"><div class="qr-score" id="qrScore"></div><div class="qr-total" id="qrTotal"></div></div>
+          <div class="qr-status" id="qrStatus"></div><div class="qr-sub" id="qrSub"></div>
+          <div class="qr-breakdown">
+            <div class="qr-box"><div class="qrb-num" id="qrCorrect" style="color:var(--green);">0</div><div class="qrb-lbl">Correct</div></div>
+            <div class="qr-box"><div class="qrb-num" id="qrWrong" style="color:var(--red);">0</div><div class="qrb-lbl">Wrong</div></div>
+            <div class="qr-box"><div class="qrb-num" id="qrSkipped" style="color:var(--muted);">0</div><div class="qrb-lbl">Skipped</div></div>
+            <div class="qr-box"><div class="qrb-num" id="qrTime" style="color:var(--blue);">—</div><div class="qrb-lbl">Time</div></div>
+          </div>
+          <div class="review-list" id="reviewList"></div>
+          <div style="display:flex;gap:.85rem;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="restartQuiz()">Try Again</button>
+            <button class="btn btn-navy" onclick="backToSelector()">More Tests</button>
+            <button class="btn btn-wa" onclick="shareWA()">💬 Share Result</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="test-live" class="test-pane" style="display:none;">
+      <div id="liveTestsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:1rem;">
+        <div style="text-align:center;padding:3rem;color:rgba(255,255,255,.3);font-size:.88rem;grid-column:1/-1;">⏳ Abhi koi live test nahi. Admin se notification ka intezaar karein!</div>
+      </div>
+    </div>
+    <div id="test-comp" class="test-pane" style="display:none;">
+      <div id="compList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1rem;">
+        <div style="text-align:center;padding:3rem;color:rgba(255,255,255,.3);font-size:.88rem;grid-column:1/-1;">🏆 Koi competition abhi available nahi. Jaldi announce hoga!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 5: PROGRESS ══════════ -->
+<!-- ══════════ SECTION 3: PROGRESS ══════════ -->
+<section id="progress" style="background:linear-gradient(135deg,#060E1C,#0B1829,#122240);padding:4rem 1.5rem;">
+  <div class="container">
+    <div class="sec-head light fade">
+      <div class="eyebrow eyebrow-white">Progress</div>
+      <h2 style="color:#fff;">Rankings & Dashboard</h2>
+      <p style="color:rgba(255,255,255,.5);">Leaderboard aur apni personal progress — sab ek jagah.</p>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="lb-wrap fade" style="margin-bottom:2.5rem;">
+      <div class="lb-tabs">
+        <button class="lb-tab active" onclick="switchLB('weekly',this)">This Week</button>
+        <button class="lb-tab" onclick="switchLB('monthly',this)">This Month</button>
+        <button class="lb-tab" onclick="switchLB('all',this)">All Time</button>
+      </div>
+      <div class="lb-head"><span>#</span><span>Student</span><span style="text-align:center;">Score</span><span style="text-align:center;">Badge</span></div>
+      <div id="lbBody"></div>
+    </div>
+    <div class="dash-wrapper fade" style="background:#0F1E35;border:1px solid rgba(255,255,255,.08);border-radius:18px;">
+      <div class="dash-top">
+        <button class="dt-item active">Overview</button>
+        <button class="dt-item">Tests</button>
+        <button class="dt-item">Performance</button>
+      </div>
+      <div class="dash-body">
+        <div class="dash-stats">
+          <div class="ds-box"><div class="ds-num">—</div><div class="ds-lbl">Tests Taken</div></div>
+          <div class="ds-box"><div class="ds-num" style="color:var(--gold);">—</div><div class="ds-lbl">Avg Score</div></div>
+          <div class="ds-box"><div class="ds-num" style="color:var(--green);">—</div><div class="ds-lbl">Nat. Rank</div></div>
+        </div>
+        <div class="prog-section">
+          <h4>Subject-wise Progress</h4>
+          <div class="prog-bar"><div class="pb-label"><span>Physics</span><span>—</span></div><div class="pb-track"><div class="pb-fill" style="width:0%;background:linear-gradient(90deg,var(--blue),var(--blue2));"></div></div></div>
+          <div class="prog-bar"><div class="pb-label"><span>Mathematics</span><span>—</span></div><div class="pb-track"><div class="pb-fill" style="width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));"></div></div></div>
+          <div class="prog-bar"><div class="pb-label"><span>Chemistry</span><span>—</span></div><div class="pb-track"><div class="pb-fill" style="width:0%;background:linear-gradient(90deg,var(--green),#34D399);"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:1.75rem;">
+      <a href="#tests" class="btn btn-blue btn-lg" style="color:#fff;">Test dein aur Progress track karein →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 6: CREATE QUIZ ══════════ -->
+<!-- ════ CREATE QUIZ SERVICE ════ -->
+<section id="create-quiz" class="sec-white">
+  <div class="container">
+    <div class="sec-head fade">
+      <div class="eyebrow eyebrow-blue">Service</div>
+      <h2>Create Your Own Quiz</h2>
+      <p>Custom quiz service for academies, teachers, groups & organizations.</p>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="service-grid fade" style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:20px;padding:2.5rem;">
+      <div>
+        <h3 style="font-family:var(--font-d);font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.5rem;">Professional Quiz Creation Service</h3>
+        <p style="font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:1.5rem;line-height:1.75;">Apni academy, class, ya WhatsApp group ke liye professional online quiz banwayein.</p>
+        <div class="service-steps">
+          <div class="sstep"><div class="ss-num">1</div><div><h4>Rs. 200 EasyPaisa par bhejen</h4><p>03073179891</p></div></div>
+          <div class="sstep"><div class="ss-num">2</div><div><h4>WhatsApp par Screenshot bhejen</h4><p>03073179891</p></div></div>
+          <div class="sstep"><div class="ss-num">3</div><div><h4>Quiz Link mil jayega</h4><p>WhatsApp par receive karein</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="price-box"><div class="price-main">Rs. 200</div><div class="price-sub">Per Quiz — Sab Features</div></div>
+        <a href="https://wa.me/923073179891" target="_blank" class="btn btn-wa btn-full btn-lg" style="margin-top:1rem;">💬 WhatsApp par Order Karen</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ SECTION 7: CONTACT ══════════ -->
+<section id="contact" class="sec-white">
+  <div class="container">
+    <div class="sec-head fade">
+      <div class="eyebrow eyebrow-blue">Get in Touch</div>
+      <h2>Contact Us</h2>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="contact-grid fade">
+      <div class="ci-wrap">
+        <div class="ci-item"><div class="ci-icon">👤</div><div><h4>Administrator</h4><p>Ahmed Jamali</p></div></div>
+        <div class="ci-item"><div class="ci-icon">💬</div><div><h4>WhatsApp</h4><a href="https://wa.me/923073179891" target="_blank">03073179891</a></div></div>
+        <div class="ci-item"><div class="ci-icon">📘</div><div><h4>Facebook</h4><a href="#" target="_blank">Manzil-e-Kamyabi Official</a></div></div>
+        <div class="ci-item"><div class="ci-icon">▶️</div><div><h4>YouTube</h4><a href="#" target="_blank">Manzil-e-Kamyabi Channel</a></div></div>
+      </div>
+      <div class="cf-wrap">
+        <div class="cf-row">
+          <div class="cf-field"><label>Name</label><input type="text" placeholder="Full name"></div>
+          <div class="cf-field"><label>WhatsApp</label><input type="tel" placeholder="03XX-XXXXXXX"></div>
+        </div>
+        <div class="cf-field"><label>Message</label><textarea rows="4" placeholder="Apna sawal likhein..."></textarea></div>
+        <button class="btn btn-gold btn-full btn-lg" onclick="sendContact()">Send Message →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="fb">
+      <h2><span>Manzil-e-</span>Kamyabi</h2>
+      <div class="tagline">Your Success, Our Mission</div>
+      <p>Pakistan ka comprehensive platform for entry test prep, past papers, mock tests aur university guidance.</p>
+      <div class="fb-admin">Admin: <b>Ahmed Jamali</b></div>
+      <div class="socials">
+        <a href="#" class="soc" title="Facebook">📘</a>
+        <a href="https://wa.me/923073179891" class="soc" title="WhatsApp" target="_blank">💬</a>
+        <a href="#" class="soc" title="YouTube">▶️</a>
+        <a href="#" class="soc" title="Instagram">📸</a>
+        <a href="#" class="soc" title="Telegram">✈️</a>
+      </div>
+    </div>
+    <div class="fc"><h4>Past Papers</h4><a href="#papers">QUEST Papers</a><a href="#papers">MUET Papers</a><a href="#papers">MDCAT Papers</a><a href="#papers">IBA Sukkur</a><a href="#papers">ECAT Papers</a></div>
+    <div class="fc"><h4>Preparation</h4><a href="#prep">Engineering</a><a href="#prep">MDCAT</a><a href="#prep">Computer Science</a><a href="#quiz">Mock Tests</a><a href="#competition">Competitions</a></div>
+    <div class="fc"><h4>Quick Links</h4><a href="#university">University Guide</a><a href="#create-quiz">Create Quiz — Rs.200</a><a href="#dashboard">Dashboard</a><a href="https://wa.me/923073179891" target="_blank">WhatsApp Support</a><a href="#contact">Contact Us</a></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Manzil-e-Kamyabi. All Rights Reserved. Admin: Ahmed Jamali</span>
+    <span>Made with ❤️ for Pakistani Students</span>
+  </div>
+</footer>
+
+<a href="https://wa.me/923073179891?text=Assalamu+Alaikum!+I+need+help+with+entry+test+preparation." target="_blank" class="wa-btn" title="WhatsApp">💬</a>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// FIREBASE CONFIG — PASTE YOUR OWN
+// ═══════════════════════════════════════
+const FB_CONFIG = {
+  apiKey: "AIzaSyCRhkn4aIUz7tDp3ERmfQ6B4uwz9yuqTZ4",
+  authDomain: "manzil-e-kamyabi-3439b.firebaseapp.com",
+  databaseURL: "https://manzil-e-kamyabi-3439b-default-rtdb.firebaseio.com",
+  projectId: "manzil-e-kamyabi-3439b",
+  storageBucket: "manzil-e-kamyabi-3439b.firebasestorage.app",
+  messagingSenderId: "316807608847",
+  appId: "1:316807608847:web:35acce169c1d00fb30017a"
+};
+let db=null;
+try{ firebase.initializeApp(FB_CONFIG); db=firebase.database(); }catch(e){}
+
+// ═══════════════════════════════════════
+// MCQ BANK
+// ═══════════════════════════════════════
+const MCQ_BANK = {
+  engineering:[
+    {q:"What is the SI unit of electric potential?",opts:["Ampere","Volt","Ohm","Watt"],ans:1,exp:"Volt (V) is the SI unit of electric potential. 1V = 1 J/C"},
+    {q:"Which law states that the total electric flux through a closed surface equals the enclosed charge divided by ε₀?",opts:["Faraday's Law","Gauss's Law","Ampere's Law","Coulomb's Law"],ans:1,exp:"Gauss's Law relates electric flux to enclosed charge."},
+    {q:"What is the value of gravitational acceleration (g) at sea level?",opts:["8.9 m/s²","9.8 m/s²","10.2 m/s²","11.0 m/s²"],ans:1,exp:"g ≈ 9.8 m/s² at sea level on Earth."},
+    {q:"In a series circuit, which quantity remains the same throughout?",opts:["Voltage","Current","Resistance","Power"],ans:1,exp:"In series circuits, current is the same through all components."},
+    {q:"sin²θ + cos²θ = ?",opts:["0","1","2","sin2θ"],ans:1,exp:"This is the fundamental Pythagorean trigonometric identity."},
+    {q:"What is the derivative of sin(x)?",opts:["−sin(x)","-cos(x)","cos(x)","tan(x)"],ans:2,exp:"d/dx[sin(x)] = cos(x)"},
+    {q:"What is the oxidation state of oxygen in H₂O?",opts:["+2","+1","-2","-1"],ans:2,exp:"Oxygen in water has oxidation state of −2."},
+    {q:"Which gas law states PV = nRT?",opts:["Boyle's Law","Charles' Law","Ideal Gas Law","Dalton's Law"],ans:2,exp:"The Ideal Gas Law combines Boyle's and Charles' laws."},
+    {q:"What is the speed of light in vacuum?",opts:["3×10⁶ m/s","3×10⁸ m/s","3×10¹⁰ m/s","3×10⁴ m/s"],ans:1,exp:"Speed of light c = 3×10⁸ m/s in vacuum."},
+    {q:"The derivative of x² is:",opts:["x","2x","x²","2x²"],ans:1,exp:"d/dx[x²] = 2x by power rule."},
+    {q:"Which type of bond involves sharing of electrons?",opts:["Ionic","Covalent","Metallic","Hydrogen"],ans:1,exp:"Covalent bonds involve sharing of electron pairs between atoms."},
+    {q:"What is the formula for kinetic energy?",opts:["mgh","mv","½mv²","Fd"],ans:2,exp:"KE = ½mv² where m is mass and v is velocity."},
+    {q:"In English, choose the correct sentence:",opts:["He go to school","He goes to school","He gone to school","He going to school"],ans:1,exp:"Subject-verb agreement: singular subject 'He' takes 'goes'."},
+    {q:"The antonym of 'benevolent' is:",opts:["kind","generous","malevolent","helpful"],ans:2,exp:"Benevolent = kind/generous; antonym is malevolent = evil/cruel."},
+    {q:"What does IQ stand for?",opts:["Intelligence Quality","Intelligence Quotient","Intelligent Query","Internal Quantity"],ans:1,exp:"IQ stands for Intelligence Quotient, a measure of cognitive ability."},
+  ],
+  mdcat:[
+    {q:"What is the powerhouse of the cell?",opts:["Nucleus","Mitochondria","Ribosome","Golgi Apparatus"],ans:1,exp:"Mitochondria produce ATP through cellular respiration — hence 'powerhouse of the cell'."},
+    {q:"Which blood type is the universal donor?",opts:["A+","B+","O−","AB+"],ans:2,exp:"O− red blood cells have no A, B, or Rh antigens."},
+    {q:"DNA stands for:",opts:["Deoxyribonucleic Acid","Diribonucleic Acid","Deoxyribose Nucleic Acid","Double Nucleic Acid"],ans:0,exp:"DNA = Deoxyribonucleic Acid — the genetic material."},
+    {q:"Normal human body temperature is approximately:",opts:["35.5°C","36.6°C","37.5°C","38.6°C"],ans:1,exp:"Normal temperature is 36.6°C or 98.6°F."},
+    {q:"Which organ produces insulin?",opts:["Liver","Kidney","Pancreas","Spleen"],ans:2,exp:"Beta cells in the islets of Langerhans in the pancreas produce insulin."},
+    {q:"Photosynthesis occurs in which organelle?",opts:["Mitochondria","Ribosome","Chloroplast","Vacuole"],ans:2,exp:"Chloroplasts contain chlorophyll and are the site of photosynthesis."},
+    {q:"The pH of human blood is approximately:",opts:["6.4","7.4","8.4","5.4"],ans:1,exp:"Normal blood pH is 7.35–7.45, approximately 7.4."},
+    {q:"Which vitamin is synthesized by the skin in sunlight?",opts:["Vitamin A","Vitamin B","Vitamin C","Vitamin D"],ans:3,exp:"Vitamin D is synthesized when skin is exposed to UVB radiation."},
+    {q:"How many chromosomes does a normal human cell have?",opts:["23","44","46","48"],ans:2,exp:"Normal human somatic cells have 46 chromosomes (23 pairs)."},
+    {q:"Which acid is found in the stomach?",opts:["Citric Acid","Hydrochloric Acid","Sulfuric Acid","Acetic Acid"],ans:1,exp:"Gastric acid (HCl) in the stomach aids digestion."},
+  ],
+  cs:[
+    {q:"What does CPU stand for?",opts:["Central Processing Unit","Computer Power Unit","Central Program Unit","Core Processing Unit"],ans:0,exp:"CPU = Central Processing Unit — the main processor of a computer."},
+    {q:"Which data structure works on LIFO principle?",opts:["Queue","Stack","Tree","Graph"],ans:1,exp:"Stack uses Last In, First Out (LIFO) — like a stack of plates."},
+    {q:"What is the binary equivalent of decimal 10?",opts:["1001","1010","1100","0110"],ans:1,exp:"10 in binary = 1×8 + 0×4 + 1×2 + 0×1 = 1010"},
+    {q:"HTML stands for:",opts:["Hypertext Markup Language","High Transfer Markup Language","Hyper Text Making Language","Home Transfer Markup Language"],ans:0,exp:"HTML = HyperText Markup Language — the standard markup language for web pages."},
+    {q:"Which sorting algorithm has O(n log n) average complexity?",opts:["Bubble Sort","Selection Sort","Merge Sort","Insertion Sort"],ans:2,exp:"Merge Sort has O(n log n) average and worst case time complexity."},
+    {q:"What does RAM stand for?",opts:["Random Access Memory","Read All Memory","Random Allocation Memory","Read Access Memory"],ans:0,exp:"RAM = Random Access Memory — volatile primary storage."},
+    {q:"Which language is used for styling web pages?",opts:["HTML","JavaScript","CSS","Python"],ans:2,exp:"CSS (Cascading Style Sheets) is used to style and layout web pages."},
+    {q:"What is 2⁸?",opts:["128","256","512","64"],ans:1,exp:"2⁸ = 2×2×2×2×2×2×2×2 = 256"},
+    {q:"What is the output of 5 % 2 in programming?",opts:["2","2.5","1","0"],ans:2,exp:"% is the modulo operator. 5 divided by 2 has remainder 1."},
+    {q:"Which of these is NOT a programming language?",opts:["Python","Java","Linux","C++"],ans:2,exp:"Linux is an operating system kernel, not a programming language."},
+  ]
+};
+
+const QUIZ_TYPES = [
+  {id:'engineering',title:'Engineering Mock Test',icon:'⚙️',desc:'Physics, Math, Chemistry, English, IQ',qs:15,time:20,neg:true,tags:['QUEST','NED','MUET']},
+  {id:'mdcat',title:'MDCAT Mock Test',icon:'🏥',desc:'Biology, Chemistry, Physics, English',qs:10,time:15,neg:false,tags:['PMC','MDCAT']},
+  {id:'cs',title:'CS Entry Test',icon:'💻',desc:'Math, IQ, Computer Basics, English',qs:10,time:12,neg:false,tags:['IBA','FAST']},
+  {id:'engineering',title:'Physics Only Test',icon:'⚡',desc:'Focused physics MCQs for engineers',qs:10,time:12,neg:false,tags:['Topic','Physics']},
+  {id:'mdcat',title:'Biology Test',icon:'🧬',desc:'Cell biology, genetics, physiology',qs:10,time:10,neg:false,tags:['Topic','Bio']},
+  {id:'cs',title:'IQ Speed Test',icon:'🧩',desc:'Logical reasoning under time pressure',qs:8,time:8,neg:true,tags:['IQ','Speed']},
+];
+
+const LEADERBOARD_DATA = {
+  weekly:[
+    {rank:1,name:'Ali Hassan',sub:'Engineering Mock',score:98,total:100,pct:98,badge:'Champion',bc:'b-gold'},
+    {rank:2,name:'Fatima Malik',sub:'MDCAT Prep',score:96,total:100,pct:96,badge:'Top 2%',bc:'b-blue'},
+    {rank:3,name:'Zaid Ahmed',sub:'CS Entry Test',score:94,total:100,pct:94,badge:'Rising',bc:'b-green'},
+    {rank:4,name:'Amna Raza',sub:'MUET Mock',score:92,total:100,pct:92,badge:'Active',bc:'b-blue'},
+    {rank:5,name:'Hamza Siddiqui',sub:'ECAT Full Test',score:91,total:100,pct:91,badge:'Active',bc:'b-green'},
+  ],
+  monthly:[
+    {rank:1,name:'Sara Khan',sub:'Full Mock Test',score:97,total:100,pct:97,badge:'Champion',bc:'b-gold'},
+    {rank:2,name:'Bilal Mehmood',sub:'Engineering Mock',score:95,total:100,pct:95,badge:'Elite',bc:'b-blue'},
+    {rank:3,name:'Hina Baig',sub:'MDCAT Mock',score:93,total:100,pct:93,badge:'Rising',bc:'b-green'},
+    {rank:4,name:'Usman Ali',sub:'CS Test',score:90,total:100,pct:90,badge:'Active',bc:'b-blue'},
+    {rank:5,name:'Rabia Noor',sub:'English Mock',score:89,total:100,pct:89,badge:'Active',bc:'b-green'},
+  ],
+  all:[
+    {rank:1,name:'Ahmed Raza',sub:'All Tests',score:99,total:100,pct:99,badge:'Legend',bc:'b-gold'},
+    {rank:2,name:'Kiran Fatima',sub:'Engineering',score:97,total:100,pct:97,badge:'Master',bc:'b-gold'},
+    {rank:3,name:'Omar Sheikh',sub:'MDCAT',score:96,total:100,pct:96,badge:'Elite',bc:'b-blue'},
+    {rank:4,name:'Nadia Malik',sub:'CS Tests',score:94,total:100,pct:94,badge:'Rising',bc:'b-green'},
+    {rank:5,name:'Faisal Khan',sub:'Mixed Tests',score:93,total:100,pct:93,badge:'Active',bc:'b-green'},
+  ]
+};
+
+const PAPERS_DATA = [
+  {title:'QUEST Past Papers',icon:'⚙️',cls:'c1',desc:'Engineering Entry Test',tags:['PDF','Year-wise','Solved'],years:[2024,2023,2022,2021,2020,2019]},
+  {title:'MUET Jamshoro',icon:'🏛️',cls:'c2',desc:'Engineering Papers',tags:['PDF','MCQ Bank','Solved'],years:[2024,2023,2022,2021,2020]},
+  {title:'MDCAT Papers',icon:'🏥',cls:'c3',desc:'Medical Entry Test',tags:['PDF','Year-wise','Bio'],years:[2024,2023,2022,2021,2020,2019,2018]},
+  {title:'IBA Sukkur',icon:'📊',cls:'c4',desc:'Business & CS Tests',tags:['PDF','Solved','MCQ'],years:[2024,2023,2022,2021]},
+  {title:'NED University',icon:'🔬',cls:'c5',desc:'Engineering Entry Test',tags:['PDF','Year-wise'],years:[2024,2023,2022,2021,2020]},
+  {title:'Mehran University',icon:'⚡',cls:'c6',desc:'MUET Entry Test',tags:['PDF','Solved'],years:[2024,2023,2022,2021]},
+  {title:'FAST University',icon:'💻',cls:'c7',desc:'CS & Engineering',tags:['PDF','MCQ Bank'],years:[2024,2023,2022,2021]},
+  {title:'PIEAS Islamabad',icon:'⚛️',cls:'c8',desc:'Nuclear Engineering',tags:['PDF','Solved'],years:[2023,2022,2021,2020]},
+  {title:'ECAT Papers',icon:'📐',cls:'c9',desc:'Engg Common AT',tags:['PDF','Year-wise','MCQ'],years:[2024,2023,2022,2021,2020]},
+  {title:'General Entry Tests',icon:'📋',cls:'c10',desc:'All Universities',tags:['PDF','MCQ','IQ'],years:[2024,2023,2022,2021,2020]},
+];
+
+const PREP_DATA = {
+  eng:[
+    {icon:'📐',title:'Mathematics',desc:'Algebra, Calculus, Trigonometry',mcq:'500+ MCQs'},
+    {icon:'⚡',title:'Physics',desc:'Mechanics, Electricity, Waves',mcq:'450+ MCQs'},
+    {icon:'🧪',title:'Chemistry',desc:'Organic, Inorganic, Physical',mcq:'400+ MCQs'},
+    {icon:'📝',title:'English',desc:'Grammar, Vocabulary, Comprehension',mcq:'300+ MCQs'},
+    {icon:'🧩',title:'IQ / Logical',desc:'Reasoning, Patterns, Problem Solving',mcq:'250+ MCQs'},
+  ],
+  med:[
+    {icon:'🧬',title:'Biology',desc:'Cell Bio, Genetics, Physiology',mcq:'600+ MCQs'},
+    {icon:'🧪',title:'Chemistry',desc:'Organic Chemistry & Biochemistry',mcq:'400+ MCQs'},
+    {icon:'⚡',title:'Physics',desc:'Medical Physics & Biophysics',mcq:'350+ MCQs'},
+    {icon:'📝',title:'English',desc:'Vocabulary, Grammar, Passages',mcq:'300+ MCQs'},
+    {icon:'🧩',title:'Logical Reasoning',desc:'Critical Thinking & Analysis',mcq:'200+ MCQs'},
+  ],
+  cs:[
+    {icon:'📐',title:'Mathematics',desc:'Discrete Math, Algebra, Stats',mcq:'450+ MCQs'},
+    {icon:'🧩',title:'IQ / Aptitude',desc:'Patterns, Series, Problem Solving',mcq:'250+ MCQs'},
+    {icon:'💾',title:'Computer Basics',desc:'Hardware, Software, Networking',mcq:'300+ MCQs'},
+    {icon:'📝',title:'English',desc:'Grammar, Vocabulary, Comprehension',mcq:'300+ MCQs'},
+  ]
+};
+
+// UNI_DATA defined below with logos
+
+// ═══════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════
+function renderPapers(){
+  const el = document.getElementById('papersGrid');
+  if(!el) return;
+  el.innerHTML = PAPERS_DATA.map((p,i)=>`
+    <div class="paper-card fade">
+      <div class="pc-icon ${p.cls}">${p.icon}</div>
+      <h3>${p.title}</h3>
+      <p>${p.desc}</p>
+      <div class="paper-tags">${p.tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
+      <button class="paper-btn" onclick="openPapersModal(${i})">View Papers →</button>
+    </div>`).join('');
+}
+
+function renderPrep(){
+  ['eng','med','cs'].forEach(k=>{
+    const el = document.getElementById('pane-'+k);
+    if(!el) return;
+    el.innerHTML = PREP_DATA[k].map(s=>`
+      <div class="sub-card fade" onclick="startSubjectPractice('${k}')">
+        <div class="sub-icon">${s.icon}</div>
+        <h3>${s.title}</h3>
+        <p>${s.desc}</p>
+        <span class="mcq-badge">${s.mcq}</span>
+      </div>`).join('');
+  });
+}
+
+function renderQuizTypes(){
+  const el = document.getElementById('quizTypesGrid');
+  if(!el) return;
+  el.innerHTML = QUIZ_TYPES.map((qt,i)=>`
+    <div class="qt-card fade" onclick="startQuiz(${i})">
+      <div class="qt-icon">${qt.icon}</div>
+      <h3>${qt.title}</h3>
+      <p>${qt.desc}</p>
+      <div class="qt-meta">
+        ${qt.tags.map(t=>`<span class="qt-tag qt-tag-blue">${t}</span>`).join('')}
+        <span class="qt-tag qt-tag-gold">${qt.qs} Qs</span>
+        <span class="qt-tag qt-tag-green">${qt.time} min</span>
+        ${qt.neg?'<span class="qt-tag" style="background:rgba(239,68,68,.12);color:#FC8181;">-ve marking</span>':''}
+      </div>
+    </div>`).join('');
+}
+
+function renderLB(key){
+  const el = document.getElementById('lbBody');
+  if(!el) return;
+  el.innerHTML = LEADERBOARD_DATA[key].map(r=>{
+    const medal = r.rank===1?'🥇 ':r.rank===2?'🥈 ':r.rank===3?'🥉 ':r.rank;
+    const cls = r.rank===1?'g':r.rank===2?'s':r.rank===3?'b':'';
+    return `<div class="lb-row">
+      <div class="lb-rank ${cls}">${r.rank<=3?medal:r.rank}</div>
+      <div><div class="lb-name">${r.name}</div><div class="lb-name lb-sub">${r.sub}</div></div>
+      <div class="lb-score-col"><div class="lb-score-num">${r.score}/${r.total}</div><div class="lb-score-pct">${r.pct}%</div></div>
+      <div class="lb-badge-col"><span class="badge ${r.bc}">${r.badge}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// renderUnis defined below with logos
+
+// ═══════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════
+let quiz={};
+function startQuiz(idx){
+  const qt = QUIZ_TYPES[idx];
+  const bank = MCQ_BANK[qt.id] || MCQ_BANK.engineering;
+  const shuffled = [...bank].sort(()=>Math.random()-.5);
+  const qs = shuffled.slice(0, Math.min(qt.qs, shuffled.length));
+  quiz = {
+    title:qt.title, questions:qs, current:0,
+    answers:new Array(qs.length).fill(null),
+    marked:new Array(qs.length).fill(false),
+    timeLeft:qt.time*60, neg:qt.neg,
+    startTime:Date.now(), answered:false
+  };
+  document.getElementById('quizSelector').classList.add('hidden');
+  document.getElementById('quizResult').style.display='none';
+  document.getElementById('quizEngine').style.display='block';
+  document.getElementById('quizEngine').style.removeProperty('display');
+  document.getElementById('quizEngine').style.display='';
+  document.getElementById('qeTitle').textContent=qt.title;
+  if(qt.neg) document.getElementById('qeNeg').innerHTML='⚠️ Negative marking: −0.25 per wrong';
+  else document.getElementById('qeNeg').innerHTML='';
+  renderQuestion();
+  startTimer();
+  window.scrollTo({top:document.getElementById('quiz').offsetTop-70,behavior:'smooth'});
+}
+
+function renderQuestion(){
+  const q = quiz.questions[quiz.current];
+  const n = quiz.questions.length;
+  const pct = ((quiz.current)/n)*100;
+  document.getElementById('qeProgress').style.width=pct+'%';
+  document.getElementById('qeQnum').textContent=`Question ${quiz.current+1} of ${n} ${quiz.marked[quiz.current]?'⚑':''}`;
+  document.getElementById('qeQtext').textContent=q.q;
+  document.getElementById('qeOptions').innerHTML = q.opts.map((o,i)=>{
+    const sel = quiz.answers[quiz.current]===i;
+    return `<div class="qe-opt ${sel?'selected':''}" onclick="selectAnswer(${i})">
+      <span class="ol">${String.fromCharCode(65+i)}</span>${o}
+    </div>`;
+  }).join('');
+  const isLast = quiz.current===n-1;
+  document.getElementById('btnNext').textContent = isLast ? 'Submit ✓' : 'Next →';
+  quiz.answered = quiz.answers[quiz.current]!==null;
+}
+
+function selectAnswer(i){
+  quiz.answers[quiz.current]=i;
+  quiz.answered=true;
+  renderQuestion();
+}
+
+function markReview(){
+  quiz.marked[quiz.current]=!quiz.marked[quiz.current];
+  renderQuestion();
+  showToast(quiz.marked[quiz.current]?'⚑ Marked for review':'Unmarked');
+}
+
+function nextQuestion(){
+  if(quiz.current < quiz.questions.length-1){
+    quiz.current++;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+let timerInterval;
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    quiz.timeLeft--;
+    const m=Math.floor(quiz.timeLeft/60).toString().padStart(2,'0');
+    const s=(quiz.timeLeft%60).toString().padStart(2,'0');
+    const el=document.getElementById('qeTimer');
+    if(el){ el.textContent=`${m}:${s}`; el.classList.toggle('urgent',quiz.timeLeft<60); }
+    if(quiz.timeLeft<=0){ clearInterval(timerInterval); finishQuiz(); }
+  },1000);
+}
+
+function finishQuiz(){
+  clearInterval(timerInterval);
+  const elapsed=Math.floor((Date.now()-quiz.startTime)/1000);
+  const em=Math.floor(elapsed/60).toString().padStart(2,'0');
+  const es=(elapsed%60).toString().padStart(2,'0');
+  let correct=0,wrong=0,skipped=0;
+  quiz.questions.forEach((q,i)=>{
+    if(quiz.answers[i]===null) skipped++;
+    else if(quiz.answers[i]===q.ans) correct++;
+    else wrong++;
+  });
+  const raw = correct - (quiz.neg ? wrong*0.25 : 0);
+  const score = Math.max(0, Math.round(raw*10)/10);
+  const total = quiz.questions.length;
+  const pct = Math.round((score/total)*100);
+  const pass = pct>=50;
+
+  document.getElementById('quizEngine').style.display='none';
+  const res=document.getElementById('quizResult');
+  res.style.display='block';
+  const circle=document.getElementById('qrCircle');
+  circle.style.borderColor=pct>=70?'var(--green)':pct>=40?'var(--gold)':'var(--red)';
+  document.getElementById('qrScore').textContent=score;
+  document.getElementById('qrScore').style.color=pct>=70?'var(--green)':pct>=40?'var(--gold)':'var(--red)';
+  document.getElementById('qrTotal').textContent=`/ ${total}`;
+  document.getElementById('qrStatus').textContent=pass?'🎉 Passed!':'😔 Failed';
+  document.getElementById('qrStatus').style.color=pass?'var(--green)':'var(--red)';
+  document.getElementById('qrSub').textContent=`${pct}% score — ${pct>=70?'Excellent':'pct>=50'?'Good':'Needs improvement'}`;
+  document.getElementById('qrCorrect').textContent=correct;
+  document.getElementById('qrWrong').textContent=wrong;
+  document.getElementById('qrSkipped').textContent=skipped;
+  document.getElementById('qrTime').textContent=`${em}:${es}`;
+  document.getElementById('reviewList').innerHTML = quiz.questions.map((q,i)=>{
+    const ua=quiz.answers[i]; const correct2=ua===q.ans;
+    const skipped2=ua===null;
+    return `<div class="rev-item ${skipped2?'':correct2?'correct-bg':'wrong-bg'}">
+      <div class="rev-q">Q${i+1}. ${q.q}</div>
+      <div class="rev-ans">
+        ${skipped2?'<span style="color:var(--muted)">Skipped</span>':
+          correct2?`<b>✓ ${q.opts[q.ans]}</b>`:
+          `<s>${q.opts[ua]}</s> → <b>${q.opts[q.ans]}</b>`}
+        <span style="color:var(--muted);margin-left:.5rem;font-size:.72rem;">${q.exp}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Save to Firebase if configured
+  if(db && !FB_CONFIG.apiKey.includes('PASTE')){
+    db.ref('results/general').push({
+      test:quiz.title, score, total, pct, correct, wrong, skipped,
+      timeTaken:`${em}:${es}`, submittedAt:Date.now()
+    });
+  }
+  window.scrollTo({top:document.getElementById('quiz').offsetTop-70,behavior:'smooth'});
+}
+
+function restartQuiz(){ startQuiz(quiz._idx||0); }
+function backToSelector(){
+  document.getElementById('quizResult').style.display='none';
+  document.getElementById('quizSelector').classList.remove('hidden');
+  renderQuizTypes();
+}
+function shareWA(){
+  const txt=encodeURIComponent(`🎓 Manzil-e-Kamyabi Quiz Result\n📝 Test: ${quiz.title}\n🏆 Score: ${document.getElementById('qrScore').textContent}/${document.getElementById('qrTotal').textContent.replace('/ ','')}\nTake the test: https://manzil-e-kamyabi.netlify.app`);
+  window.open(`https://wa.me/?text=${txt}`,'_blank');
+}
+function startSubjectPractice(key){
+  const idx = QUIZ_TYPES.findIndex(qt=>qt.id===key);
+  if(idx>=0){ document.getElementById('quiz').scrollIntoView({behavior:'smooth'}); setTimeout(()=>startQuiz(idx),600); }
+}
+
+// ═══════════════════════════════════════
+// PAPERS MODAL
+// ═══════════════════════════════════════
+function openPapersModal(idx){
+  const p=PAPERS_DATA[idx];
+  document.getElementById('modalTitle').textContent=p.title;
+  document.getElementById('modalBody').innerHTML=`
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;">Select a year to download PDF or solved paper.</p>
+    <div class="paper-year-grid">
+      ${p.years.map(y=>`<div class="py-card">
+        <div class="yr">${y}</div>
+        <div class="type">${p.desc}</div>
+        <div class="dl-btns">
+          <button class="dl-btn dl-pdf" onclick="showToast('📄 ${y} PDF — Coming Soon!')">📄 PDF</button>
+          <button class="dl-btn dl-solved" onclick="showToast('✅ ${y} Solved — Coming Soon!')">✅ Solved</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div style="margin-top:1.25rem;padding:1rem;background:rgba(245,184,0,.06);border:1px solid rgba(245,184,0,.15);border-radius:var(--r);">
+      <p style="font-size:.78rem;color:var(--muted);">📥 Papers are being uploaded. Contact on WhatsApp for immediate access: <a href="https://wa.me/923073179891" style="color:var(--blue);font-weight:600;">03073179891</a></p>
+    </div>`;
+  openModal('papersModal');
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+// ═══════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════
+function switchPrep(k,btn){
+  document.querySelectorAll('.prep-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pane-'+k).classList.add('active');
+  btn.classList.add('active');
+}
+function switchLB(key,btn){
+  document.querySelectorAll('.lb-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLB(key);
+}
+
+// ═══════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════
+// ══ THEME SYSTEM ══
+const THEMES = ['default','dark','emerald','purple','ocean','crimson','midnight','saffron'];
+let currentTheme = localStorage.getItem('mk_theme') || 'default';
+
+function applyTheme(theme, optId) {
+  // Remove all theme classes
+  THEMES.forEach(t => { if(t!=='default') document.body.classList.remove('theme-'+t); });
+  if(theme !== 'default') document.body.classList.add('theme-'+theme);
+  currentTheme = theme;
+  localStorage.setItem('mk_theme', theme);
+  // Update active state
+  document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+  if(optId) document.getElementById(optId)?.classList.add('active');
+}
+
+function toggleThemePanel() {
+  document.getElementById('themePanel').classList.toggle('open');
+}
+
+// Close theme panel on outside click
+document.addEventListener('click', e => {
+  const panel = document.getElementById('themePanel');
+  const btn = document.querySelector('.btn-toggle');
+  if(panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
+// Apply saved theme on load
+window.addEventListener('DOMContentLoaded', () => {
+  if(currentTheme && currentTheme !== 'default') {
+    applyTheme(currentTheme, 'topt-'+currentTheme);
+  } else {
+    document.getElementById('topt-default')?.classList.add('active');
+  }
+});
+
+function toggleMob(){
+  document.getElementById('mobMenu').classList.toggle('open');
+  document.getElementById('hbg').classList.toggle('open');
+}
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',scrollY>50));
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+function sendContact(){ showToast('✅ Message sent! We\'ll reply on WhatsApp soon.'); }
+
+
+// Fade observer
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
+function observeFade(){ document.querySelectorAll('.fade').forEach(el=>obs.observe(el)); }
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function loadAnnouncements(){
+  if(!db) return;
+  db.ref('announcements').orderByChild('createdAt').once('value').then(snap=>{
+    const anns=snap.val()||{};
+    const entries=Object.values(anns).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    if(!entries.length) return;
+    const latest=entries[0];
+    const nb=document.getElementById('nb');
+    const nbBadge=document.getElementById('nb-badge');
+    const nbText=document.getElementById('nb-text');
+    if(nb && latest){
+      const tagMap={exam:'EXAM',event:'EVENT',notice:'NOTICE',result:'RESULT'};
+      nbBadge.textContent=tagMap[latest.tag]||'NEW';
+      nbText.textContent=' '+latest.title+(latest.detail?' — '+latest.detail:'');
+      nb.style.display='flex';
+    }
+    const sec=document.getElementById('announcements');
+    const grid=document.getElementById('ann-grid');
+    if(sec && grid){
+      const tagColor={exam:'rgba(245,184,0,.12)',event:'rgba(16,185,129,.1)',notice:'rgba(139,92,246,.12)',result:'rgba(21,101,216,.12)'};
+      const tagText={exam:'var(--gold)',event:'#10B981',notice:'#A78BFA',result:'#60A5FA'};
+      const tagIcon={exam:'📝',event:'🎯',notice:'📢',result:'🏆'};
+      grid.innerHTML=entries.map(a=>`
+        <div class="fade" style="background:#0F1E35;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:1.25rem 1.35rem;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(245,184,0,.25)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem;">
+            <span style="font-size:1.1rem;">${tagIcon[a.tag]||'📢'}</span>
+            <span style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.2rem .6rem;border-radius:20px;background:${tagColor[a.tag]||'rgba(255,255,255,.07)'};color:${tagText[a.tag]||'rgba(255,255,255,.5)'};">${a.tag?.toUpperCase()||'NOTICE'}</span>
+            <span style="font-size:.65rem;color:rgba(255,255,255,.25);margin-left:auto;">${a.date||''}</span>
+          </div>
+          <h4 style="font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.4rem;line-height:1.4;">${a.title}</h4>
+          ${a.detail?`<p style="font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;">${a.detail}</p>`:''}
+        </div>`).join('');
+      sec.style.display='block';
+      setTimeout(observeFade,100);
+    }
+  }).catch(e=>console.error('Ann error:',e));
+}
+
+// ── RESULTS BOARD ──
+let _raAllData = [];
+function loadResultsBoard() {
+  if(!db) return;
+  db.ref('resultsBoard').orderByChild('date').limitToLast(20).once('value').then(snap=>{
+    const data = snap.val()||{};
+    _raAllData = Object.values(data).sort((a,b)=>(b.date||0)-(a.date||0));
+    filterRA('all', document.querySelector('.ra-filter.active'));
+  }).catch(()=>{});
+}
+function filterRA(type, btn) {
+  if(btn) { document.querySelectorAll('.ra-filter').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  const grid = document.getElementById('raGrid');
+  if(!grid) return;
+  const filtered = type==='all' ? _raAllData : _raAllData.filter(a=>a.type===type);
+  if(!filtered.length) { grid.innerHTML='<div class="ra-empty">⏳ Koi announcement abhi nahi. Jaldi aayegi!</div>'; return; }
+  const typeLabels = {result:'📊 Result',exam:'📝 Exam',merit:'🏆 Merit List',announce:'📢 Announcement'};
+  const typeClasses = {result:'ra-type-result',exam:'ra-type-exam',merit:'ra-type-merit',announce:'ra-type-announce'};
+  grid.innerHTML = filtered.map(a=>`
+    <div class="ra-card fade">
+      <div class="ra-card-top">
+        <span class="ra-type ${typeClasses[a.type]||'ra-type-announce'}">${typeLabels[a.type]||'📢 Notice'}</span>
+        <div class="ra-title">${a.title||''}</div>
+        <div class="ra-desc">${a.detail||''}</div>
+      </div>
+      <div class="ra-card-bottom">
+        <span class="ra-date">${a.date?new Date(a.date).toLocaleDateString('en-PK'):''}</span>
+        ${a.link?`<a class="ra-link" href="${a.link}" target="_blank">View →</a>`:''}
+      </div>
+    </div>`).join('');
+  setTimeout(observeFade, 100);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  // Null-safe render calls
+  if(document.getElementById('papersGrid')) renderPapers();
+  if(document.getElementById('quizTypesGrid')) renderQuizTypes();
+  ['eng','med','cs'].forEach(k=>{ if(document.getElementById('pane-'+k)) renderPrep(); });
+  loadResultsBoard();
+  if(document.getElementById('lbBody')) renderLB('weekly');
+  if(document.getElementById('uniGrid')) renderUnis();
+  loadAnnouncements();
+  checkLiveTests();
+  initMCQBank();
+  setTimeout(observeFade,100);
+});
+
+// ════════════════════════════════════════
+// MCQ BANK — COMPLETE JS
+// ════════════════════════════════════════
+
+const MCQ_SUBJECTS = [
+  {id:'physics',name:'Physics',icon:'⚛️'},
+  {id:'chemistry',name:'Chemistry',icon:'🧪'},
+  {id:'mathematics',name:'Mathematics',icon:'📐'},
+  {id:'biology',name:'Biology',icon:'🧬'},
+  {id:'english',name:'English',icon:'📝'},
+  {id:'logical',name:'Logical Reasoning',icon:'🧠'},
+  {id:'general',name:'General Knowledge',icon:'🌍'},
+];
+
+const MCQ_PER_PAGE = 10;
+let mcqState = {
+  subject: null,
+  subjectName: '',
+  allMCQs: [],
+  currentPage: 1,
+  totalPages: 1,
+  mode: 'browse', // browse | quiz
+  quiz: {
+    questions: [],
+    current: 0,
+    score: 0,
+    answered: false,
+    timer: null,
+    timeLeft: 600,
+    pageName: ''
+  }
+};
+
+// ── MATH FORMAT ──
+function formatMath(text) {
+  if(!text) return '';
+  return text
+    .replace(/\^(\d+)/g, '<sup>$1</sup>')
+    .replace(/sqrt\(([^)]+)\)/g, '√($1)')
+    .replace(/\bsqrt\b/g, '√')
+    .replace(/pi\b/g, 'π')
+    .replace(/alpha\b/g, 'α')
+    .replace(/beta\b/g, 'β')
+    .replace(/theta\b/g, 'θ')
+    .replace(/infinity\b/g, '∞')
+    .replace(/!=|≠/g, '≠')
+    .replace(/<=|≤/g, '≤')
+    .replace(/>=|≥/g, '≥');
+}
+
+// ── INSERT MATH SYMBOL ──
+function insertMath(fieldId, symbol) {
+  const el = document.getElementById(fieldId);
+  if(!el) return;
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  el.value = el.value.substring(0,start) + symbol + el.value.substring(end);
+  el.selectionStart = el.selectionEnd = start + symbol.length;
+  el.focus();
+}
+
+// ── MAIN TABS ──
+function switchMCQ(tab, btn) {
+  document.querySelectorAll('#mcqbank .tstab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mcq-pane').forEach(p=>p.style.display='none');
+  if(btn) btn.classList.add('active');
+  document.getElementById('mcq-'+tab).style.display='block';
+  if(tab==='ranking') loadMCQRanking('daily');
+  if(tab==='submit') populateSubjectDropdown();
+  setTimeout(observeFade,100);
+}
+
+// ── LOAD SUBJECTS ──
+function renderSubjectGrid() {
+  if(!db) return;
+  const grid = document.getElementById('subjectGrid');
+  if(!grid) return;
+  db.ref('mcqBank').once('value').then(snap=>{
+    const data = snap.val()||{};
+    grid.innerHTML = MCQ_SUBJECTS.map(s=>{
+      const count = data[s.id] ? Object.keys(data[s.id]).length : 0;
+      return `<div class="subj-card fade" onclick="selectSubject('${s.id}','${s.name}')">
+        <div class="sc-icon">${s.icon}</div>
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-count">${count} MCQs</div>
+      </div>`;
+    }).join('');
+    setTimeout(observeFade,100);
+  });
+}
+
+// ── SELECT SUBJECT ──
+function selectSubject(subjectId, subjectName) {
+  if(!db){alert('Connection error!');return;}
+  mcqState.subject = subjectId;
+  mcqState.subjectName = subjectName;
+  mcqState.currentPage = 1;
+  document.getElementById('mcq-subject-select').style.display='none';
+  document.getElementById('mcq-content').style.display='block';
+  document.getElementById('mcq-subject-title').textContent = MCQ_SUBJECTS.find(s=>s.id===subjectId)?.icon+' '+subjectName;
+  loadMCQPage();
+}
+
+// ── BACK TO SUBJECTS ──
+function backToSubjects() {
+  mcqState.subject = null;
+  document.getElementById('mcq-subject-select').style.display='block';
+  document.getElementById('mcq-content').style.display='none';
+  setMCQMode('browse');
+  renderSubjectGrid();
+}
+
+// ── LOAD MCQ PAGE ──
+function loadMCQPage() {
+  if(!db||!mcqState.subject) return;
+  db.ref('mcqBank/'+mcqState.subject).orderByChild('approved').equalTo(true).once('value').then(snap=>{
+    const data = snap.val()||{};
+    mcqState.allMCQs = Object.values(data).filter(m=>m.approved);
+    mcqState.totalPages = Math.max(1, Math.ceil(mcqState.allMCQs.length/MCQ_PER_PAGE));
+    document.getElementById('mcqPageCurrent').textContent = mcqState.currentPage;
+    document.getElementById('mcqPageTotal').textContent = mcqState.totalPages;
+    renderMCQList();
+    renderPagination();
+  });
+}
+
+// ── RENDER MCQ LIST ──
+function renderMCQList() {
+  const start = (mcqState.currentPage-1)*MCQ_PER_PAGE;
+  const pageMCQs = mcqState.allMCQs.slice(start, start+MCQ_PER_PAGE);
+  const list = document.getElementById('mcqList');
+  if(!pageMCQs.length){
+    list.innerHTML='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.3);">Is subject mein abhi MCQs nahi hain.</div>';
+    return;
+  }
+  list.innerHTML = pageMCQs.map((m,i)=>{
+    const globalNum = start+i+1;
+    const opts = ['A','B','C','D'];
+    return `<div class="mcq-card fade" id="mcqcard-${globalNum}">
+      <div class="mcq-num">Q${globalNum}</div>
+      <div class="mcq-q">${formatMath(m.question)}</div>
+      <div class="mcq-options">
+        ${opts.map(o=>`<button class="mcq-opt" onclick="revealAnswer(${globalNum},'${o}','${m.correct}')" id="mcqopt-${globalNum}-${o}">
+          <b>${o}.</b> ${formatMath(m['opt'+o]||m[o.toLowerCase()]||'')}
+        </button>`).join('')}
+      </div>
+      <div class="mcq-ans-area" id="ans-${globalNum}">
+        <div class="mcq-ans-label">✅ Sahi Jawab: ${m.correct}</div>
+        ${m.description?`<div class="mcq-desc">${formatMath(m.description)}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(observeFade,100);
+}
+
+// ── REVEAL ANSWER ──
+function revealAnswer(num, chosen, correct) {
+  const opts = ['A','B','C','D'];
+  opts.forEach(o=>{
+    const btn = document.getElementById(`mcqopt-${num}-${o}`);
+    if(!btn) return;
+    btn.classList.remove('correct','wrong','show-ans');
+    btn.onclick = null;
+    if(o===correct) btn.classList.add('correct');
+    else if(o===chosen && chosen!==correct) btn.classList.add('wrong');
+    else btn.classList.add('show-ans');
+  });
+  const ansArea = document.getElementById(`ans-${num}`);
+  if(ansArea) ansArea.style.display='block';
+}
+
+// ── PAGINATION ──
+function renderPagination() {
+  const pg = document.getElementById('mcqPagination');
+  if(!pg) return;
+  const total = mcqState.totalPages;
+  const cur = mcqState.currentPage;
+  if(total<=1){pg.innerHTML='';return;}
+  let nums = '';
+  const range = 2;
+  for(let i=Math.max(1,cur-range);i<=Math.min(total,cur+range);i++){
+    nums += `<button class="pg-num ${i===cur?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  pg.innerHTML = `
+    <button class="pg-btn" onclick="goToPage(${cur-1})" ${cur<=1?'disabled':''}>← Prev</button>
+    <div class="pg-nums">${nums}</div>
+    <button class="pg-btn" onclick="goToPage(${cur+1})" ${cur>=total?'disabled':''}>Next →</button>`;
+}
+
+function goToPage(n) {
+  if(n<1||n>mcqState.totalPages) return;
+  mcqState.currentPage = n;
+  document.getElementById('mcqPageCurrent').textContent = n;
+  renderMCQList();
+  renderPagination();
+  document.getElementById('mcqbank').scrollIntoView({behavior:'smooth'});
+}
+
+// ── SET MODE ──
+function setMCQMode(mode) {
+  mcqState.mode = mode;
+  document.getElementById('btnBrowseMode').classList.toggle('active', mode==='browse');
+  document.getElementById('btnQuizMode').classList.toggle('active', mode==='quiz');
+  document.getElementById('mcq-browse-mode').style.display = mode==='browse'?'block':'none';
+  document.getElementById('mcq-quiz-mode').style.display = mode==='quiz'?'block':'none';
+  if(mode==='quiz') showQuizStart();
+}
+
+// ── QUIZ START ──
+function showQuizStart() {
+  document.getElementById('quiz-start-screen').style.display='block';
+  document.getElementById('quiz-in-progress').style.display='none';
+  document.getElementById('quiz-result-screen').style.display='none';
+  const pageName = `${mcqState.subjectName} — Page ${mcqState.currentPage}`;
+  mcqState.quiz.pageName = pageName;
+  document.getElementById('quizStartTitle').textContent = mcqState.subjectName+' Quiz';
+  document.getElementById('quizStartPage').textContent = mcqState.currentPage+'/'+mcqState.totalPages;
+  // Show previous result if exists
+  const histKey = `mcqHist_${mcqState.subject}_${mcqState.currentPage}`;
+  const prev = localStorage.getItem(histKey);
+  if(prev) {
+    const p = JSON.parse(prev);
+    document.getElementById('quizPrevResult').style.display='block';
+    document.getElementById('quizPrevScore').textContent = `${p.score}/10 (${Math.round(p.score*10)}%)`;
+  } else {
+    document.getElementById('quizPrevResult').style.display='none';
+  }
+}
+
+// ── START QUIZ ──
+function startPageQuiz() {
+  const name = document.getElementById('quizUserName').value.trim();
+  if(!name){alert('Pehle apna naam likhein!');return;}
+  const start = (mcqState.currentPage-1)*MCQ_PER_PAGE;
+  mcqState.quiz.questions = mcqState.allMCQs.slice(start, start+MCQ_PER_PAGE);
+  if(!mcqState.quiz.questions.length){alert('Is page mein MCQs nahi hain!');return;}
+  mcqState.quiz.current = 0;
+  mcqState.quiz.score = 0;
+  mcqState.quiz.answered = false;
+  mcqState.quiz.timeLeft = 600;
+  document.getElementById('quiz-start-screen').style.display='none';
+  document.getElementById('quiz-in-progress').style.display='block';
+  renderQuizQuestion();
+  startQuizTimer();
+}
+
+// ── QUIZ QUESTION ──
+function renderQuizQuestion() {
+  const q = mcqState.quiz.questions[mcqState.quiz.current];
+  const total = mcqState.quiz.questions.length;
+  const cur = mcqState.quiz.current;
+  document.getElementById('quizQnum').textContent = `Question ${cur+1}/${total}`;
+  document.getElementById('quizProgressFill').style.width = `${((cur+1)/total)*100}%`;
+  document.getElementById('quizQuestion').innerHTML = formatMath(q.question);
+  document.getElementById('quizAnsArea').style.display='none';
+  document.getElementById('quizNextBtn').style.display='none';
+  mcqState.quiz.answered = false;
+  const opts = ['A','B','C','D'];
+  document.getElementById('quizOpts').innerHTML = opts.map(o=>`
+    <button class="quiz-opt" id="qopt-${o}" onclick="answerQuiz('${o}','${q.correct}')">
+      <b>${o}.</b> ${formatMath(q['opt'+o]||q[o.toLowerCase()]||'')}
+    </button>`).join('');
+}
+
+// ── ANSWER ──
+function answerQuiz(chosen, correct) {
+  if(mcqState.quiz.answered) return;
+  mcqState.quiz.answered = true;
+  const opts = ['A','B','C','D'];
+  opts.forEach(o=>{
+    const btn = document.getElementById(`qopt-${o}`);
+    if(!btn) return;
+    btn.classList.add('locked');
+    btn.onclick = null;
+    if(o===correct) btn.classList.add('correct');
+    else if(o===chosen) btn.classList.add('wrong');
+  });
+  if(chosen===correct) mcqState.quiz.score++;
+  // Show description
+  const q = mcqState.quiz.questions[mcqState.quiz.current];
+  if(q.description){
+    document.getElementById('quizDesc').innerHTML = '📖 '+formatMath(q.description);
+    document.getElementById('quizAnsArea').style.display='block';
+  }
+  document.getElementById('quizNextBtn').style.display='block';
+}
+
+// ── NEXT ──
+function quizNext() {
+  mcqState.quiz.current++;
+  if(mcqState.quiz.current >= mcqState.quiz.questions.length) {
+    endQuiz();
+  } else {
+    renderQuizQuestion();
+  }
+}
+
+// ── TIMER ──
+function startQuizTimer() {
+  clearInterval(mcqState.quiz.timer);
+  mcqState.quiz.timeLeft = 600;
+  mcqState.quiz.timer = setInterval(()=>{
+    mcqState.quiz.timeLeft--;
+    const m = Math.floor(mcqState.quiz.timeLeft/60);
+    const s = mcqState.quiz.timeLeft%60;
+    const el = document.getElementById('quizTimer');
+    if(el) el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    if(mcqState.quiz.timeLeft<=0){clearInterval(mcqState.quiz.timer);endQuiz();}
+  },1000);
+}
+
+// ── END QUIZ ──
+function endQuiz() {
+  clearInterval(mcqState.quiz.timer);
+  const score = mcqState.quiz.score;
+  const total = mcqState.quiz.questions.length;
+  const pct = Math.round((score/total)*100);
+  // Save to localStorage
+  const histKey = `mcqHist_${mcqState.subject}_${mcqState.currentPage}`;
+  const existing = JSON.parse(localStorage.getItem(histKey+'_all')||'[]');
+  const entry = {score, total, pct, page: mcqState.currentPage, date: new Date().toLocaleDateString('en-PK')};
+  existing.unshift(entry);
+  localStorage.setItem(histKey+'_all', JSON.stringify(existing.slice(0,5)));
+  localStorage.setItem(histKey, JSON.stringify({score,total,pct}));
+  // Save to Firebase ranking
+  const name = document.getElementById('quizUserName')?.value?.trim()||'Anonymous';
+  saveQuizPoints(name, score, pct);
+  // Show result
+  document.getElementById('quiz-in-progress').style.display='none';
+  document.getElementById('quiz-result-screen').style.display='block';
+  document.getElementById('quizFinalScore').textContent = `${score}/${total}`;
+  document.getElementById('quizResultSubject').textContent = mcqState.subjectName+' — Page '+mcqState.currentPage;
+  const msgs = pct>=90?'🏆 Shabaash! Kamaal ka result!':pct>=70?'👍 Acha result! Thodi aur mehnat karo.':pct>=50?'📚 Theek hai. Dobara koshish karo!':'💪 Haar mat mano — practice karo!';
+  document.getElementById('quizResultMsg').textContent = msgs;
+  document.getElementById('quizResultEmoji').textContent = pct>=90?'🏆':pct>=70?'🎓':pct>=50?'📚':'💪';
+  // Show history
+  const hist = JSON.parse(localStorage.getItem(histKey+'_all')||'[]');
+  if(hist.length>1){
+    document.getElementById('quizHistoryBox').style.display='block';
+    document.getElementById('histSubjectName').textContent = mcqState.subjectName;
+    document.getElementById('quizHistoryList').innerHTML = hist.map((h,i)=>`
+      <div class="qr-hist-row">
+        <span class="qr-hist-pages">Page ${h.page} — ${h.date}</span>
+        <span class="qr-hist-score">${h.score}/${h.total} (${h.pct}%)</span>
+      </div>`).join('');
+  }
+}
+
+// ── SAVE POINTS ──
+function saveQuizPoints(name, score, pct) {
+  if(!db||!name) return;
+  const today = new Date().toISOString().split('T')[0];
+  const week = `week-${getWeekNumber()}`;
+  const pts = score * 10;
+  const ref = db.ref('mcqRanking');
+  const key = name.replace(/[.#$/\[\]]/g,'_');
+  ref.child('daily/'+today+'/'+key).transaction(cur=>{
+    if(!cur) return {name, points:pts, quizzes:1};
+    return {...cur, points:(cur.points||0)+pts, quizzes:(cur.quizzes||0)+1};
+  });
+  ref.child('weekly/'+week+'/'+key).transaction(cur=>{
+    if(!cur) return {name, points:pts, quizzes:1};
+    return {...cur, points:(cur.points||0)+pts, quizzes:(cur.quizzes||0)+1};
+  });
+  ref.child('alltime/'+key).transaction(cur=>{
+    if(!cur) return {name, points:pts, quizzes:1};
+    return {...cur, points:(cur.points||0)+pts, quizzes:(cur.quizzes||0)+1};
+  });
+}
+
+function getWeekNumber() {
+  const d = new Date();
+  const onejan = new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7);
+}
+
+// ── RETRY / NEXT PAGE ──
+function retryQuiz() {
+  document.getElementById('quiz-result-screen').style.display='none';
+  showQuizStart();
+}
+function nextPageQuiz() {
+  if(mcqState.currentPage < mcqState.totalPages) {
+    goToPage(mcqState.currentPage+1);
+    setMCQMode('quiz');
+  } else {
+    alert('Yeh aakhri page tha! Dobara shuru karein.');
+    goToPage(1);
+    setMCQMode('quiz');
+  }
+}
+function shareQuizResult() {
+  const score = mcqState.quiz.score;
+  const total = mcqState.quiz.questions.length;
+  const pct = Math.round((score/total)*100);
+  const text = `🎓 Manzil-e-Kamyabi MCQ Quiz Result!\n📚 Subject: ${mcqState.subjectName}\n📄 Page: ${mcqState.currentPage}\n✅ Score: ${score}/${total} (${pct}%)\n\nJoin karein: https://manzil-e-kamyabi.netlify.app`;
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+}
+
+// ── MCQ RANKING ──
+let mcqRankPeriod = 'daily';
+function switchMCQRank(period, btn) {
+  mcqRankPeriod = period;
+  document.querySelectorAll('#mcq-ranking .tstab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  loadMCQRanking(period);
+}
+
+function loadMCQRanking(period) {
+  if(!db) return;
+  const today = new Date().toISOString().split('T')[0];
+  const week = `week-${getWeekNumber()}`;
+  const path = period==='daily'?`daily/${today}`:period==='weekly'?`weekly/${week}`:'alltime';
+  db.ref('mcqRanking/'+path).orderByChild('points').limitToLast(20).once('value').then(snap=>{
+    const data = snap.val()||{};
+    const entries = Object.values(data).sort((a,b)=>(b.points||0)-(a.points||0));
+    const body = document.getElementById('mcqRankBody');
+    if(!body) return;
+    if(!entries.length){body.innerHTML='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.3);font-size:.82rem;">Abhi koi data nahi. Quiz dein aur ranking mein aayein!</div>';return;}
+    const badges = ['🥇','🥈','🥉'];
+    const badgeColors = [['#FFD700','rgba(255,215,0,.1)'],['#C0C0C0','rgba(192,192,192,.1)'],['#CD7F32','rgba(205,127,50,.1)']];
+    body.innerHTML = entries.map((e,i)=>`
+      <div class="rank-row" style="${i<3?`background:${badgeColors[i]?.[1]||'transparent'}`:''}">
+        <div class="rank-pos ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i<3?badges[i]:i+1}</div>
+        <div class="rank-name">${e.name||'—'}<div style="font-size:.65rem;color:rgba(255,255,255,.3);">${e.quizzes||1} quiz${(e.quizzes||1)>1?'zes':''}</div></div>
+        <div class="rank-pts">${e.points||0}</div>
+        <div><span class="rank-badge" style="background:${i<3?badgeColors[i]?.[1]:'rgba(255,255,255,.05)'};color:${i===0?'#FFD700':i===1?'#C0C0C0':i===2?'#CD7F32':'rgba(255,255,255,.4)'};">${i===0?'Champion':i===1?'Top 2%':i===2?'Rising':i<10?'Top 10':'Active'}</span></div>
+      </div>`).join('');
+  });
+}
+
+// ── POPULATE SUBJECT DROPDOWN ──
+function populateSubjectDropdown() {
+  const sel = document.getElementById('subSubject');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">-- Subject Choose Karein --</option>' +
+    MCQ_SUBJECTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
+}
+
+// ── SUBMIT USER MCQ ──
+function submitUserMCQ() {
+  if(!db){alert('Connection error!');return;}
+  const name = document.getElementById('subName').value.trim();
+  const subject = document.getElementById('subSubject').value;
+  const question = document.getElementById('subQuestion').value.trim();
+  const optA = document.getElementById('subA').value.trim();
+  const optB = document.getElementById('subB').value.trim();
+  const optC = document.getElementById('subC').value.trim();
+  const optD = document.getElementById('subD').value.trim();
+  const correct = document.getElementById('subCorrect').value;
+  const description = document.getElementById('subDesc').value.trim();
+  const msg = document.getElementById('subMsg');
+  if(!name||!subject||!question||!optA||!optB||!optC||!optD){
+    msg.innerHTML='<span style="color:#EF4444;">⚠️ Sab required fields bharein!</span>';return;
+  }
+  const data = {name,subject,question,optA,optB,optC,optD,correct,description,approved:false,submittedAt:Date.now()};
+  db.ref('mcqPending').push(data).then(()=>{
+    msg.innerHTML='<span style="color:#10B981;">✅ MCQ submit ho gaya! Admin se approve hone ka wait karein.</span>';
+    ['subName','subQuestion','subA','subB','subC','subD','subDesc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('subSubject').value='';
+    document.getElementById('subCorrect').value='A';
+  }).catch(e=>{msg.innerHTML='<span style="color:#EF4444;">Error: '+e.message+'</span>';});
+}
+
+// ── INIT ──
+function initMCQBank() {
+  renderSubjectGrid();
+}
+
+
+
+// ── MATH TARGET (for options toolbar) ──
+let _mathActiveTarget = null;
+function setMathTarget(id) {
+  _mathActiveTarget = id;
+  const toolbar = document.getElementById('optMathToolbar');
+  const lbl = document.getElementById('optToolbarLabel');
+  if(toolbar) { toolbar.style.opacity='1'; toolbar.style.pointerEvents='auto'; }
+  if(lbl) {
+    const labels = {subA:'Option A',subB:'Option B',subC:'Option C',subD:'Option D',subQuestion:'Question'};
+    lbl.textContent = '→ ' + (labels[id]||id) + ' ke liye active';
+  }
+}
+function insertMathToActive(sym) {
+  if(!_mathActiveTarget) return;
+  insertMath(_mathActiveTarget, sym);
+}
+
+// ── BOTTOM NAV ──
+function setActiveNav(el) {
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  scrollBottomNavToActive(el);
+}
+
+function scrollBottomNavToActive(el) {
+  const nav = document.getElementById('bottomNav');
+  if(!nav || !el) return;
+  const navRect = nav.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  // Center the active item in the nav
+  const targetScroll = nav.scrollLeft + (elRect.left - navRect.left) - (navRect.width / 2) + (elRect.width / 2);
+  nav.scrollTo({ left: targetScroll, behavior: 'smooth' });
+}
+
+// Auto highlight on scroll
+window.addEventListener('scroll', ()=>{
+  const sections = [
+    {id:'home', bn:'bn-home'},
+    {id:'results-board', bn:'bn-updates'},
+    {id:'mcqbank', bn:'bn-mcq'},
+    {id:'tests', bn:'bn-tests'},
+    {id:'progress', bn:'bn-progress'},
+    {id:'create-quiz', bn:'bn-service'},
+    {id:'contact', bn:'bn-contact'},
+  ];
+  const scrollY = window.scrollY + window.innerHeight/2;
+  let active = 'bn-home';
+  sections.forEach(s=>{
+    const el = document.getElementById(s.id);
+    if(el && el.offsetTop <= scrollY) active = s.bn;
+  });
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const activeEl = document.getElementById(active);
+  if(activeEl) {
+    activeEl.classList.add('active');
+    scrollBottomNavToActive(activeEl);
+  }
+}, {passive:true});
+
+// ══ RESOURCE TABS ══
+function switchRes(tab, btn) {
+  document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.res-pane').forEach(p=>p.style.display='none');
+  if(btn) btn.classList.add('active');
+  document.getElementById('res-'+tab).style.display='block';
+  setTimeout(observeFade, 100);
+}
+
+// ══ TEST SUBTABS ══
+function switchTest(tab, btn) {
+  document.querySelectorAll('.tstab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.test-pane').forEach(p=>p.style.display='none');
+  if(btn) btn.classList.add('active');
+  document.getElementById('test-'+tab).style.display='block';
+  setTimeout(observeFade, 100);
+}
+
+// ══ LIVE TEST POPUP ══
+function closeLivePopup() {
+  document.getElementById('liveTestPopup').style.display='none';
+  sessionStorage.setItem('ltpClosed','1');
+}
+
+function checkLiveTests() {
+  if(!db) return;
+  if(sessionStorage.getItem('ltpClosed')) return;
+  db.ref('liveTests').orderByChild('active').equalTo(true).once('value').then(snap=>{
+    const tests = snap.val()||{};
+    const entries = Object.entries(tests);
+    const grid = document.getElementById('liveTestsList');
+    if(!entries.length) return;
+    // Show popup
+    const [id, test] = entries[0];
+    document.getElementById('ltpTitle').textContent = test.title||'Live Test';
+    document.getElementById('ltpDetail').textContent = test.detail||'';
+    document.getElementById('ltpTime').textContent = test.timeInfo ? '⏰ '+test.timeInfo : '';
+    document.getElementById('ltpBtn').href = test.link || (window.location.origin+'/test.html?id='+id);
+    setTimeout(()=>{ document.getElementById('liveTestPopup').style.display='flex'; }, 1800);
+    // Fill live list
+    if(grid) {
+      grid.innerHTML = entries.map(([lid,t])=>`
+        <div class="live-test-card fade">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#EF4444;animation:blink 1s infinite;display:inline-block;"></span>
+            <span style="font-size:.65rem;font-weight:800;color:#EF4444;text-transform:uppercase;letter-spacing:.08em;">Live Now</span>
+          </div>
+          <h3 style="font-family:var(--font-d);font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.4rem;">${t.title||'Live Test'}</h3>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.45);margin-bottom:.35rem;">${t.detail||''}</p>
+          ${t.timeInfo?`<p style="font-size:.75rem;color:var(--gold);margin-bottom:1rem;">⏰ ${t.timeInfo}</p>`:'<div style="height:.5rem;"></div>'}
+          <a href="${t.link||'/test.html?id='+lid}" class="btn btn-gold btn-sm">Join Test →</a>
+        </div>`).join('');
+    }
+  }).catch(e=>console.error(e));
+}
+
+// ══ UNI LOGOS ══
+const UNI_DATA = [
+  {logo:'images/quest.png',abbr:'QU',color:'#1a5276',name:'QUEST Nawabshah',desc:'Quaid-e-Awam Univ. of Engineering',info:['Entry Test: July 2025','Merit List: August','Scholarship Available'],status:'open'},
+  {logo:'images/muet.png',abbr:'MU',color:'#1a5276',name:'Mehran University (MUET)',desc:'Mehran Univ. of Engineering & Technology',info:['Entry Test: August 2025','Online Apply: Open','Fee: PKR 500'],status:'open'},
+  {logo:'images/sindh.png',abbr:'SU',color:'#117a65',name:'University of Sindh',desc:'University of Sindh, Jamshoro',info:['Multiple Programs','Online Apply: Open','Merit Based'],status:'open'},
+  {logo:'images/mdcat.png',abbr:'PMC',color:'#922b21',name:'MDCAT 2025',desc:'Medical & Dental College Admission Test',info:['Test: September 2025','Reg: July 2025','PMC Pattern'],status:'upcoming'},
+  {logo:'images/iba.png',abbr:'IBA',color:'#1a5276',name:'IBA Sukkur',desc:'Institute of Business Administration',info:['BBA/BS Programs','Merit Based','Scholarship: 100%'],status:'open'},
+  {logo:'images/ned.png',abbr:'NED',color:'#1f618d',name:'NED University',desc:'NED Univ. of Engineering Karachi',info:['Entry Test: August','Engineering Programs','Top Merit Required'],status:'upcoming'},
+  {logo:'images/fast.png',abbr:'FAST',color:'#1f618d',name:'FAST NUCES',desc:'National Univ. of Computer Sciences',info:['NU-AST Entry Test','CS & EE Programs','Multiple Campuses'],status:'upcoming'},
+  {logo:'images/pieas.png',abbr:'PIEAS',color:'#1a5276',name:'PIEAS Islamabad',desc:'Pakistan Institute of Engg & Applied Sci',info:['Highly Competitive','Full Scholarship','Nuclear/EE/CS'],status:'upcoming'},
+  {logo:'images/hec.png',abbr:'HEC',color:'#117a65',name:'Scholarships Guide',desc:'Merit, need-based & govt scholarships',info:['HEC Scholarships','PEEF Awards','Ehsaas Program'],status:'open'},
+];
+
+function renderUnis(){
+  const el = document.getElementById('uniGrid');
+  if(!el) return;
+  el.innerHTML = UNI_DATA.map(u=>`
+    <div class="uni-card fade">
+      <span class="uc-status ${u.status==='open'?'uc-open':'uc-upcoming'}">${u.status==='open'?'Open':'Upcoming'}</span>
+      <div class="u-logo-wrap">
+        <img src="${u.logo}" alt="${u.name}" class="u-logo-img"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="u-logo-fallback" style="display:none;background:${u.color};color:#fff;">${u.abbr}</div>
+      </div>
+      <h3>${u.name}</h3>
+      <p>${u.desc}</p>
+      <div class="uni-info">${u.info.map(i=>`<div class="ui-row">📌 ${i}</div>`).join('')}</div>
+    </div>`).join('');
+}
+
+</script>
+
+<!-- ════ BOTTOM NAVIGATION ════ -->
+<nav class="bottom-nav" id="bottomNav">
+  <a href="#home" class="bn-item active" onclick="setActiveNav(this)" id="bn-home">
+    <span class="bn-icon">🏠</span>
+    <span class="bn-label">Home</span>
+  </a>
+  <a href="#results-board" class="bn-item" onclick="setActiveNav(this)" id="bn-updates">
+    <span class="bn-icon">📢</span>
+    <span class="bn-label">Updates</span>
+  </a>
+  <a href="#mcqbank" class="bn-item" onclick="setActiveNav(this)" id="bn-mcq">
+    <span class="bn-icon">🧠</span>
+    <span class="bn-label">MCQ Bank</span>
+  </a>
+  <a href="#tests" class="bn-item" onclick="setActiveNav(this)" id="bn-tests">
+    <span class="bn-icon">🎯</span>
+    <span class="bn-label">Tests</span>
+  </a>
+  <a href="#progress" class="bn-item" onclick="setActiveNav(this)" id="bn-progress">
+    <span class="bn-icon">📊</span>
+    <span class="bn-label">Progress</span>
+  </a>
+  <a href="#create-quiz" class="bn-item" onclick="setActiveNav(this)" id="bn-service">
+    <span class="bn-icon">🛠️</span>
+    <span class="bn-label">Service</span>
+  </a>
+  <a href="#contact" class="bn-item" onclick="setActiveNav(this)" id="bn-contact">
+    <span class="bn-icon">📞</span>
+    <span class="bn-label">Contact</span>
+  </a>
+</nav>
+
+</body>
+</html>

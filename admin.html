@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEK Admin Panel — Manzil-e-Kamyabi</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+// Firebase load check
+window.addEventListener('load', function() {
+  if(typeof firebase === 'undefined') {
+    document.getElementById('setupWarn').style.display = 'block';
+    document.getElementById('setupWarn').innerHTML = '<b>⚠️ Firebase Load Nahi Hua</b> Internet connection check karein ya page refresh karein.';
+  }
+});
+</script>
+<style>
+:root {
+  --navy:#0B1829; --navy2:#122240; --navy3:#1A3158;
+  --gold:#F5B800; --gold2:#FFD040; --gold3:#C99200;
+  --blue:#1565D8; --blue2:#2979F5;
+  --green:#10B981; --red:#EF4444; --purple:#8B5CF6;
+  --white:#fff; --off:#F5F7FA; --border:#E4E9F2;
+  --text:#0B1829; --muted:#64748B; --muted2:#94A3B8;
+  --font-d:'Poppins',sans-serif; --font-b:'Inter',sans-serif; --font-m:'JetBrains Mono',monospace;
+  --r:12px; --r2:18px; --shadow:0 2px 16px rgba(11,24,41,.08); --shadow2:0 8px 40px rgba(11,24,41,.14);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-b);background:#060E1A;color:#E2EAF8;min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:var(--navy2);border-radius:3px;}
+
+/* ── LOGIN ── */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 20%,rgba(245,184,0,.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(21,101,216,.05) 0%,transparent 60%),#060E1A;}
+.login-box{width:100%;max-width:420px;background:#0F1E35;border:1px solid rgba(245,184,0,.15);border-radius:var(--r2);padding:2.5rem;margin:1rem;}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:2rem;}
+.ll-mark{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:1rem;color:var(--navy);}
+.login-logo h1{font-family:var(--font-d);font-size:.95rem;font-weight:800;color:#fff;}
+.login-logo span{font-size:.62rem;color:var(--gold);display:block;}
+.login-box h2{font-family:var(--font-d);font-size:1.3rem;font-weight:800;margin-bottom:.3rem;}
+.login-box p{font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:1.75rem;}
+.f{margin-bottom:1rem;}
+.f label{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45);margin-bottom:.4rem;}
+.f input{width:100%;padding:.72rem 1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);color:#fff;font-size:.88rem;font-family:var(--font-b);outline:none;transition:border-color .2s;}
+.f input:focus{border-color:var(--gold);}
+.f input::placeholder{color:rgba(255,255,255,.25);}
+.err{font-size:.78rem;color:var(--red);margin-bottom:.85rem;display:none;}
+.setup-warn{background:rgba(245,184,0,.08);border:1px solid rgba(245,184,0,.2);border-radius:var(--r);padding:.9rem 1rem;font-size:.78rem;color:var(--gold);line-height:1.6;margin-bottom:1.25rem;display:none;}
+.setup-warn b{display:block;font-size:.82rem;margin-bottom:.25rem;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;cursor:pointer;font-family:var(--font-b);font-weight:600;border-radius:var(--r);transition:all .2s;font-size:.875rem;}
+.btn-gold{background:var(--gold);color:var(--navy);padding:.72rem 1.5rem;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-blue{background:var(--blue);color:#fff;padding:.72rem 1.5rem;}
+.btn-blue:hover{background:var(--blue2);}
+.btn-red{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);color:var(--red);padding:.5rem 1rem;}
+.btn-red:hover{background:rgba(239,68,68,.2);}
+.btn-green{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.2);color:var(--green);padding:.5rem 1rem;}
+.btn-green:hover{background:rgba(16,185,129,.2);}
+.btn-outline{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.65);padding:.5rem 1rem;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-sm{padding:.42rem .85rem;font-size:.75rem;}
+.btn-full{width:100%;justify-content:center;}
+
+/* ── DASHBOARD ── */
+#dashboard{display:none;min-height:100vh;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:60px;background:rgba(6,14,26,.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(245,184,0,.1);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;}
+.tb-brand{display:flex;align-items:center;gap:9px;}
+.tb-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:.82rem;color:var(--navy);}
+.tb-title{font-family:var(--font-d);font-size:.88rem;font-weight:700;color:#fff;}
+.tb-title span{color:var(--gold);}
+.tb-right{display:flex;align-items:center;gap:.6rem;}
+.tb-user{font-size:.75rem;color:rgba(255,255,255,.45);}
+.layout{display:flex;padding-top:60px;min-height:100vh;}
+.sidebar{width:220px;flex-shrink:0;background:#0A1628;border-right:1px solid rgba(255,255,255,.06);padding:1.25rem 0;position:fixed;top:60px;bottom:0;left:0;overflow-y:auto;}
+.sb-section{padding:0 .9rem;margin-bottom:1.25rem;}
+.sb-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.25);padding:0 .5rem;margin-bottom:.4rem;}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:.58rem .75rem;border-radius:8px;font-size:.8rem;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:var(--font-b);}
+.nav-btn:hover{background:rgba(255,255,255,.05);color:#fff;}
+.nav-btn.active{background:rgba(245,184,0,.1);color:var(--gold);}
+.nav-btn .ni{font-size:.95rem;width:18px;text-align:center;}
+.main{margin-left:220px;flex:1;padding:2rem;}
+
+/* ── TABS ── */
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.page-head{margin-bottom:1.75rem;}
+.page-head h1{font-family:var(--font-d);font-size:1.35rem;font-weight:800;margin-bottom:.25rem;}
+.page-head p{font-size:.8rem;color:rgba(255,255,255,.4);}
+
+/* ── CARDS ── */
+.card{background:#0F1E35;border:1px solid rgba(255,255,255,.07);border-radius:var(--r2);padding:1.5rem;margin-bottom:1.25rem;}
+.card-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.35);margin-bottom:1.1rem;padding-bottom:.65rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.card-title .ct-right{display:flex;gap:.5rem;}
+
+/* ── FORM FIELDS ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.fi{margin-bottom:.9rem;}
+.fi label{display:block;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.4);margin-bottom:.38rem;}
+.fi input,.fi select,.fi textarea{width:100%;padding:.62rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:8px;color:#fff;font-size:.85rem;font-family:var(--font-b);outline:none;transition:border-color .2s;resize:vertical;}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--gold);}
+.fi input::placeholder,.fi textarea::placeholder{color:rgba(255,255,255,.2);}
+.fi select option{background:#0F1E35;}
+
+/* ── MCQ BUILDER ── */
+.q-list{display:flex;flex-direction:column;gap:.85rem;margin-bottom:1.25rem;}
+.q-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:1.1rem;}
+.q-item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;}
+.q-badge{font-family:var(--font-m);font-size:.65rem;font-weight:500;color:var(--gold);background:rgba(245,184,0,.1);padding:.15rem .5rem;border-radius:4px;}
+.q-type-tag{font-size:.62rem;font-weight:700;text-transform:uppercase;padding:.15rem .45rem;border-radius:4px;}
+.qt-mcq{background:rgba(21,101,216,.15);color:#60A5FA;}
+.qt-tf{background:rgba(16,185,129,.15);color:var(--green);}
+.qt-short{background:rgba(139,92,246,.15);color:#A78BFA;}
+.q-del{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.25);font-size:.95rem;transition:color .2s;padding:3px;}
+.q-del:hover{color:var(--red);}
+.opt-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.45rem;}
+.opt-row input[type=text]{flex:1;padding:.48rem .75rem;background:#060E1A;border:1px solid rgba(255,255,255,.09);border-radius:8px;color:#fff;font-size:.82rem;font-family:var(--font-b);outline:none;transition:border-color .2s;}
+.opt-row input[type=text]:focus{border-color:var(--gold);}
+.opt-row input[type=text]::placeholder{color:rgba(255,255,255,.2);}
+.opt-radio{accent-color:var(--gold);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
+.opt-lbl{font-size:.68rem;color:rgba(255,255,255,.35);white-space:nowrap;}
+.add-opt{background:none;border:1px dashed rgba(255,255,255,.12);color:rgba(255,255,255,.3);border-radius:6px;padding:.3rem .7rem;font-size:.72rem;cursor:pointer;font-family:var(--font-b);transition:all .2s;margin-top:.2rem;}
+.add-opt:hover{border-color:var(--gold);color:var(--gold);}
+.q-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
+
+/* ── TESTS LIST ── */
+.test-list{display:flex;flex-direction:column;gap:.65rem;}
+.test-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:var(--r);padding:1.1rem 1.35rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.85rem;transition:border-color .2s;}
+.test-item:hover{border-color:rgba(245,184,0,.2);}
+.ti-info h3{font-size:.88rem;font-weight:600;color:#fff;margin-bottom:.2rem;}
+.ti-meta{display:flex;gap:.85rem;flex-wrap:wrap;}
+.ti-tag{font-family:var(--font-m);font-size:.65rem;color:rgba(255,255,255,.35);}
+.ti-actions{display:flex;gap:.45rem;align-items:center;}
+.link-row{margin-top:.65rem;display:flex;align-items:center;gap:.5rem;background:#060E1A;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:.45rem .75rem;}
+.link-text{font-family:var(--font-m);font-size:.7rem;color:var(--gold);flex:1;word-break:break-all;}
+.copy-btn{background:rgba(245,184,0,.1);border:none;color:var(--gold);border-radius:6px;padding:.25rem .55rem;font-size:.65rem;cursor:pointer;font-family:var(--font-b);font-weight:600;white-space:nowrap;transition:background .2s;}
+.copy-btn:hover{background:rgba(245,184,0,.2);}
+
+/* ── RESULTS TABLE ── */
+.results-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;}
+.res-search{padding:.48rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:8px;color:#fff;font-size:.82rem;font-family:var(--font-b);outline:none;width:210px;transition:border-color .2s;}
+.res-search:focus{border-color:var(--gold);}
+.res-search::placeholder{color:rgba(255,255,255,.2);}
+.res-filter{padding:.48rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:8px;color:#fff;font-size:.82rem;font-family:var(--font-b);outline:none;}
+.res-filter option{background:#0F1E35;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{text-align:left;padding:.6rem .9rem;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);border-bottom:1px solid rgba(255,255,255,.06);}
+td{padding:.7rem .9rem;border-bottom:1px solid rgba(255,255,255,.04);color:rgba(255,255,255,.6);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.015);color:rgba(255,255,255,.85);}
+.score-pill{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:700;font-family:var(--font-m);}
+.sp-high{background:rgba(16,185,129,.12);color:var(--green);}
+.sp-mid{background:rgba(245,184,0,.12);color:var(--gold);}
+.sp-low{background:rgba(239,68,68,.12);color:var(--red);}
+.pass-tag{font-size:.65rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;}
+.pt-pass{background:rgba(16,185,129,.12);color:var(--green);}
+.pt-fail{background:rgba(239,68,68,.12);color:var(--red);}
+
+/* ── STATS CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-box{background:#0F1E35;border:1px solid rgba(255,255,255,.07);border-radius:var(--r2);padding:1.1rem 1.35rem;}
+.sb-label2{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);margin-bottom:.45rem;}
+.sb-val{font-family:var(--font-d);font-size:1.7rem;font-weight:800;color:var(--gold);}
+.sb-sub{font-size:.68rem;color:rgba(255,255,255,.25);margin-top:.15rem;}
+
+/* ── PAPERS ADMIN ── */
+.papers-list{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.25rem;}
+.paper-row{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);gap:.75rem;flex-wrap:wrap;}
+.pr-info h4{font-size:.82rem;font-weight:600;color:#fff;margin-bottom:.15rem;}
+.pr-info .pr-meta{font-size:.7rem;color:rgba(255,255,255,.35);}
+.pr-actions{display:flex;gap:.4rem;}
+
+/* ── ANNOUNCEMENTS ── */
+.ann-list{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.25rem;}
+.ann-row{display:flex;align-items:flex-start;justify-content:space-between;padding:.85rem 1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);gap:.75rem;}
+.ann-info h4{font-size:.82rem;font-weight:600;color:#fff;margin-bottom:.15rem;}
+.ann-info p{font-size:.73rem;color:rgba(255,255,255,.4);}
+.ann-tag{font-size:.62rem;font-weight:700;padding:.15rem .45rem;border-radius:4px;margin-right:.4rem;}
+.at-exam{background:rgba(245,184,0,.12);color:var(--gold);}
+.at-event{background:rgba(16,185,129,.12);color:var(--green);}
+.at-notice{background:rgba(139,92,246,.15);color:#A78BFA;}
+
+/* ── SETUP GUIDE ── */
+.setup-step{display:flex;gap:.9rem;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:var(--r);padding:1.1rem;margin-bottom:.75rem;}
+.ss-num{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:rgba(245,184,0,.12);border:1px solid rgba(245,184,0,.25);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:800;color:var(--gold);}
+.ss-body h4{font-size:.85rem;font-weight:700;color:#fff;margin-bottom:.25rem;}
+.ss-body p{font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;}
+.code-box{background:#060E1A;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:.85rem 1rem;margin-top:.6rem;font-family:var(--font-m);font-size:.72rem;color:rgba(255,255,255,.55);white-space:pre-wrap;word-break:break-all;line-height:1.8;}
+code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;border-radius:3px;font-family:var(--font-m);font-size:.75rem;}
+.step-success{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.18);border-radius:var(--r);padding:1rem 1.1rem;margin-top:.5rem;font-size:.8rem;color:var(--green);}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#0F1E35;border:1px solid rgba(245,184,0,.15);border-radius:var(--r2);width:100%;max-width:620px;max-height:88vh;overflow-y:auto;padding:2rem;margin:1rem;}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem;}
+.modal-head h2{font-family:var(--font-d);font-size:1rem;font-weight:800;color:#fff;}
+.modal-close{background:none;border:none;font-size:1.2rem;cursor:pointer;color:rgba(255,255,255,.35);transition:color .2s;}
+.modal-close:hover{color:#fff;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:#0F1E35;border:1px solid rgba(245,184,0,.25);color:#fff;padding:.8rem 1.2rem;border-radius:10px;font-size:.82rem;max-width:310px;transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:rgba(16,185,129,.35);}
+.toast.error{border-color:rgba(239,68,68,.35);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;padding:1.25rem;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:#0A1628;border-top:1px solid rgba(245,184,0,.15);padding:.4rem .5rem;gap:.25rem;}
+.mn-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:.4rem .2rem;border:none;background:none;cursor:pointer;border-radius:8px;transition:all .2s;font-family:'Inter',sans-serif;}
+.mn-btn span{font-size:.58rem;font-weight:600;color:rgba(255,255,255,.45);}
+.mn-btn .ni,.mn-btn > :first-child{font-size:1.1rem;}
+.mn-btn.active{background:rgba(245,184,0,.12);}
+.mn-btn.active span{color:var(--gold);}
+@media(max-width:768px){
+  .mob-nav{display:flex!important;}
+  .sidebar{display:none;}
+  .main{margin-left:0;padding:1rem 1rem 5rem;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .topbar{padding:0 1rem;}
+  .tb-user{display:none;}
+}
+
+.math-btn{padding:.25rem .5rem;border-radius:6px;border:1px solid rgba(245,184,0,.2);background:rgba(245,184,0,.06);color:var(--gold);font-size:.75rem;cursor:pointer;font-family:"Courier New",monospace;transition:all .15s;margin:.15rem;}
+.math-btn:hover{background:rgba(245,184,0,.15);}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ LOGIN ════════════════ -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="ll-mark">M</div>
+      <div>
+        <h1>Manzil-e-Kamyabi</h1>
+        <span>Admin Control Panel</span>
+      </div>
+    </div>
+    <h2>Admin Login</h2>
+    <p>Firebase se connect ho kar apna platform manage karein.</p>
+
+    <div class="setup-warn" id="setupWarn">
+      <b>⚠️ Firebase Config Nahi Mila</b>
+      Neeche JS mein apna Firebase config paste karein. Setup Guide tab mein step-by-step guide hai.
+    </div>
+
+    <div class="f"><label>Email</label><input type="email" id="loginEmail" placeholder="admin@example.com"></div>
+    <div class="f"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+    <p class="err" id="loginErr">❌ Galat email ya password.</p>
+    <button class="btn btn-gold btn-full" onclick="doLogin()" style="padding:.8rem;">Login →</button>
+    <p style="font-size:.72rem;color:rgba(255,255,255,.25);text-align:center;margin-top:1rem;">First time? Firebase setup ke liye login ke baad Setup Guide dekhein.</p>
+  </div>
+</div>
+
+<!-- ════════════════ DASHBOARD ════════════════ -->
+<div id="dashboard">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-mark">M</div>
+      <div class="tb-title"><span>MEK</span> Admin Panel</div>
+    </div>
+    <div class="tb-right">
+      <span class="tb-user" id="tbUser"></span>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <div class="mob-nav">
+    <button class="mn-btn active" onclick="showTabMob('overview',this)"><span style="font-size:1.1rem;">📊</span><span>Overview</span></button>
+    <button class="mn-btn" onclick="showTabMob('create',this)"><span style="font-size:1.1rem;">✏️</span><span>Create</span></button>
+    <button class="mn-btn" onclick="showTabMob('tests',this)"><span style="font-size:1.1rem;">📋</span><span>Tests</span></button>
+    <button class="mn-btn" onclick="showTabMob('results',this)"><span style="font-size:1.1rem;">🏆</span><span>Results</span></button>
+    <button class="mn-btn" onclick="showTabMob('papers',this)"><span style="font-size:1.1rem;">📄</span><span>Papers</span></button>
+    <button class="mn-btn" onclick="showTabMob('announce',this)"><span style="font-size:1.1rem;">📢</span><span>Notice</span></button>
+    <button class="mn-btn" onclick="showTabMob('livetest',this)"><span style="font-size:1.1rem;">🔴</span><span>Live</span></button>
+    <button class="mn-btn" onclick="showTabMob('mcqadmin',this)"><span style="font-size:1.1rem;">🧠</span><span>MCQs</span></button>
+  </div>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Dashboard</div>
+        <button class="nav-btn active" onclick="showTab('overview',this)"><span class="ni">📊</span> Overview</button>
+        <button class="nav-btn" onclick="showTab('tests',this)"><span class="ni">📋</span> My Tests</button>
+        <button class="nav-btn" onclick="showTab('create',this)"><span class="ni">✏️</span> Create Test</button>
+        <button class="nav-btn" onclick="showTab('results',this)"><span class="ni">🏆</span> Results</button>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Content</div>
+        <button class="nav-btn" onclick="showTab('papers',this)"><span class="ni">📄</span> Past Papers</button>
+        <button class="nav-btn" onclick="showTab('announce',this)"><span class="ni">📢</span> Announcements</button>
+        <button class="nav-btn" onclick="showTab('livetest',this)"><span class="ni">🔴</span> Live Tests</button>
+        <button class="nav-btn" onclick="showTab('mcqadmin',this)"><span class="ni">🧠</span> MCQ Bank</button>
+        <button class="nav-btn" onclick="showTab('leaderboard',this)"><span class="ni">🥇</span> Leaderboard</button>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Help</div>
+        <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">🔧</span> Setup Guide</button>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="tab-pane active" id="tab-overview">
+        <div class="page-head">
+          <h1>Overview 📊</h1>
+          <p>Apne platform ki overall activity dekhein</p>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="sb-label2">Total Tests</div><div class="sb-val" id="st-tests">—</div></div>
+          <div class="stat-box"><div class="sb-label2">Total Submissions</div><div class="sb-val" id="st-subs">—</div></div>
+          <div class="stat-box"><div class="sb-label2">Avg Score</div><div class="sb-val" id="st-avg">—</div></div>
+          <div class="stat-box"><div class="sb-label2">Past Papers</div><div class="sb-val" id="st-papers">—</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Submissions</div>
+          <div id="recentSubs"><p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">No submissions yet.</p></div>
+        </div>
+      </div>
+
+      <!-- ── CREATE TEST ── -->
+      <div class="tab-pane" id="tab-create">
+        <div class="page-head">
+          <h1>Create New Test ✏️</h1>
+          <p>MCQ test banayein aur students ko link share karein</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Test Details</div>
+          <div class="form-row">
+            <div class="fi"><label>Test Title *</label><input type="text" id="testTitle" placeholder="e.g. Physics Chapter 5 Quiz"></div>
+            <div class="fi"><label>Subject / Category</label><input type="text" id="testSubject" placeholder="e.g. Engineering Physics"></div>
+          </div>
+          <div class="form-row">
+            <div class="fi"><label>Time Limit (minutes)</label><input type="number" id="testTime" placeholder="30" min="1" max="180"></div>
+            <div class="fi"><label>Pass Percentage (%)</label><input type="number" id="testPass" placeholder="50" min="0" max="100"></div>
+          </div>
+          <div class="form-row">
+            <div class="fi"><label>Negative Marking</label>
+              <select id="testNeg"><option value="0">No Negative Marking</option><option value="0.25">-0.25 per wrong</option><option value="0.5">-0.5 per wrong</option><option value="1">-1 per wrong</option></select>
+            </div>
+            <div class="fi"><label>Show Answer After Submit</label>
+              <select id="testShowAns"><option value="yes">Yes — Show correct answers</option><option value="no">No — Result only</option></select>
+            </div>
+          </div>
+          <div class="fi"><label>Instructions (optional)</label><textarea id="testInstr" rows="2" placeholder="Students ke liye koi special instructions..."></textarea></div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            Questions
+            <div class="ct-right">
+              <button class="btn btn-sm btn-outline" onclick="addQ('mcq')">+ MCQ</button>
+              <button class="btn btn-sm btn-outline" onclick="addQ('tf')">+ True/False</button>
+              <button class="btn btn-sm btn-outline" onclick="addQ('short')">+ Short Ans</button>
+              <button class="btn btn-sm" style="background:rgba(245,184,0,.15);border:1px solid rgba(245,184,0,.3);color:var(--gold);" onclick="toggleBulk()">📋 Bulk Paste</button>
+            </div>
+          </div>
+          <div id="bulkSection" style="display:none;background:rgba(245,184,0,.05);border:1px solid rgba(245,184,0,.15);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+              <h4 style="font-size:.85rem;font-weight:700;color:var(--gold);">📋 Bulk MCQ Paste — 200 tak ek saath!</h4>
+              <button onclick="toggleBulk()" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:1rem;">✕</button>
+            </div>
+            <div style="background:#060E1A;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:1rem;margin-bottom:1rem;font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.9;">
+              <b style="color:var(--gold);display:block;margin-bottom:.4rem;">📌 Yeh format use karo — * correct answer par lagao:</b>
+              Q: What is powerhouse of cell?<br>
+              A. Nucleus<br>
+              B. Mitochondria*<br>
+              C. Ribosome<br>
+              D. Golgi Apparatus<br><br>
+              Q: DNA stands for?<br>
+              A. Deoxyribonucleic Acid*<br>
+              B. Double Nucleic Acid<br>
+              C. Diribonucleic Acid<br>
+              D. None<br><br>
+              <span style="color:rgba(16,185,129,.8);">✅ Har question ke baad ek blank line zaroor honi chahiye</span>
+            </div>
+            <div class="fi">
+              <label>Apne MCQs yahan paste karein</label>
+              <textarea id="bulkText" rows="10" placeholder="Q: Question text?&#10;A. Option A*&#10;B. Option B&#10;C. Option C&#10;D. Option D&#10;&#10;Q: Next question?&#10;A. Option A&#10;B. Option B*&#10;..."></textarea>
+            </div>
+            <div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin-top:.75rem;">
+              <button class="btn btn-gold" onclick="parseBulk()">⚡ Add All Questions</button>
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('bulkText').value='';document.getElementById('bulkCount').textContent=''">Clear</button>
+              <span id="bulkCount" style="font-size:.75rem;color:rgba(255,255,255,.4);"></span>
+            </div>
+            <div id="bulkError" style="font-size:.75rem;color:var(--red);margin-top:.5rem;display:none;"></div>
+          </div>
+          <div class="q-list" id="qList">
+            <p id="qEmpty" style="font-size:.8rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Koi question nahi. Upar se manually add karein ya Bulk Paste use karein.</p>
+          </div>
+          <div id="qCount" style="font-size:.75rem;color:rgba(255,255,255,.35);text-align:right;margin-top:.5rem;"></div>
+        </div>
+        <button class="btn btn-gold btn-full" onclick="saveTest()" style="padding:.88rem;font-size:.95rem;">💾 Test Save Karein & Link Generate Karein</button>
+      </div>
+
+      <!-- ── MY TESTS ── -->
+      <div class="tab-pane" id="tab-tests">
+        <div class="page-head">
+          <h1>My Tests 📋</h1>
+          <p>Banaye hue tests manage karein aur links share karein</p>
+        </div>
+        <div class="test-list" id="testsList">
+          <p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">Abhi koi test nahi. Create Test se banayein.</p>
+        </div>
+      </div>
+
+      <!-- ── RESULTS ── -->
+      <div class="tab-pane" id="tab-results">
+        <div class="page-head">
+          <h1>Results 🏆</h1>
+          <p>Students ke sare submissions dekhein</p>
+        </div>
+        <div class="card">
+          <div class="results-top">
+            <select class="res-filter" id="resFilter" onchange="loadResults()">
+              <option value="all">All Tests</option>
+            </select>
+            <input type="text" class="res-search" id="resSearch" placeholder="Student name search..." oninput="filterResults()">
+          </div>
+          <div style="overflow-x:auto;">
+            <table>
+              <thead><tr>
+                <th>Student Name</th><th>Test</th><th>Score</th><th>%</th>
+                <th>Status</th><th>Time</th><th>Submitted At</th><th></th>
+              </tr></thead>
+              <tbody id="resBody"><tr><td colspan="8" style="text-align:center;padding:2rem;color:rgba(255,255,255,.25);">No results yet.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAST PAPERS ── -->
+      <div class="tab-pane" id="tab-papers">
+        <div class="page-head">
+          <h1>Past Papers 📄</h1>
+          <p>Papers add karein jinhein students download kar saken</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Add New Paper</div>
+          <div class="form-row">
+            <div class="fi"><label>Paper Name *</label><input type="text" id="pName" placeholder="e.g. QUEST 2024 Entry Test"></div>
+            <div class="fi"><label>University / Category</label><input type="text" id="pUni" placeholder="e.g. QUEST Nawabshah"></div>
+          </div>
+          <div class="form-row">
+            <div class="fi"><label>Year</label><input type="text" id="pYear" placeholder="2024"></div>
+            <div class="fi"><label>Type</label>
+              <select id="pType"><option>Past Paper (PDF)</option><option>Solved Paper</option><option>MCQ Bank</option><option>Sample Paper</option></select>
+            </div>
+          </div>
+          <div class="fi"><label>Download Link (Google Drive ya direct PDF URL)</label><input type="url" id="pLink" placeholder="https://drive.google.com/..."></div>
+          <button class="btn btn-gold" onclick="addPaper()">Add Paper</button>
+        </div>
+        <div class="card">
+          <div class="card-title">All Past Papers</div>
+          <div class="papers-list" id="papersList">
+            <p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">No papers added yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ANNOUNCEMENTS ── -->
+      <div class="tab-pane" id="tab-announce">
+        <div class="page-head">
+          <h1>Announcements 📢</h1>
+          <p>Website par notifications aur updates add karein</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Add Announcement</div>
+          <div class="form-row">
+            <div class="fi"><label>Title *</label><input type="text" id="aTitle" placeholder="Announcement title"></div>
+            <div class="fi"><label>Category</label>
+              <select id="aTag">
+  <option value="result">📊 Result (Test/Quiz Result)</option>
+  <option value="merit">🏆 Merit List</option>
+  <option value="exam">📝 Exam Date/Schedule</option>
+  <option value="announce">📢 General Announcement</option>
+  <option value="notice">📋 Notice</option>
+  <option value="event">🎯 Event</option>
+</select>
+            </div>
+          </div>
+          <div class="fi"><label>Detail</label><textarea id="aDetail" rows="2" placeholder="Brief description..."></textarea></div>
+          <div class="fi"><label>Link (optional — result PDF ya website link)</label><input type="url" id="aLink" placeholder="https://..."></div>
+          <button class="btn btn-gold" onclick="addAnnouncement()">Add Announcement</button>
+        </div>
+        <div class="card">
+          <div class="card-title">All Announcements</div>
+          <div class="ann-list" id="annList">
+            <p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">No announcements yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LIVE TESTS ── -->
+      <div class="tab-pane" id="tab-livetest">
+        <div class="page-head">
+          <h1>Live Tests 🔴</h1>
+          <p>Live test schedule karein — popup aur list dono mein show hoga</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Schedule New Live Test</div>
+          <div class="form-row">
+            <div class="fi"><label>Test Title *</label><input type="text" id="ltTitle" placeholder="e.g. Physics Grand Test"></div>
+            <div class="fi"><label>Time Info</label><input type="text" id="ltTime" placeholder="e.g. 8:00 PM Sharp — 24 Jun 2026"></div>
+          </div>
+          <div class="fi"><label>Detail / Description</label><textarea id="ltDetail" rows="2" placeholder="Brief info about the test..."></textarea></div>
+          <div class="fi"><label>Test Link (test.html?id=... ya koi aur link)</label><input type="url" id="ltLink" placeholder="https://..."></div>
+          <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-gold" onclick="addLiveTest()">🔴 Go Live</button>
+            <span style="font-size:.75rem;color:rgba(255,255,255,.35);">Publish hote hi website par popup show hoga!</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Active Live Tests</div>
+          <div id="liveTestAdminList">
+            <p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">Koi live test nahi abhi.</p>
+          </div>
+        </div>
+      </div>
+
+<!-- MCQ ADMIN TAB — Add inside admin.html tabs -->
+
+<!-- SIDEBAR BUTTON (add after livetest button) -->
+<!-- <button class="nav-btn" onclick="showTab('mcqadmin',this)"><span class="ni">🧠</span> MCQ Bank</button> -->
+
+<!-- TAB PANE -->
+<div class="tab-pane" id="tab-mcqadmin">
+  <div class="page-head">
+    <h1>MCQ Bank 🧠</h1>
+    <p>MCQs add karein, pending submissions approve/reject karein</p>
+  </div>
+
+  <!-- Sub tabs -->
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+    <button class="btn btn-navy btn-sm active" id="mcqAdminTab-add" onclick="switchMCQAdmin('add',this)">➕ Add MCQ</button>
+    <button class="btn btn-outline btn-sm" id="mcqAdminTab-pending" onclick="switchMCQAdmin('pending',this)">⏳ Pending <span id="pendingCount" style="background:#EF4444;color:#fff;padding:.1rem .4rem;border-radius:10px;font-size:.65rem;margin-left:.3rem;"></span></button>
+    <button class="btn btn-outline btn-sm" id="mcqAdminTab-manage" onclick="switchMCQAdmin('manage',this)">📋 Manage MCQs</button>
+    <button class="btn btn-outline btn-sm" id="mcqAdminTab-bulk" onclick="switchMCQAdmin('bulk',this)">📥 Bulk Import</button>
+  </div>
+
+  <!-- ADD MCQ -->
+  <div id="mcqAdmin-add">
+    <div class="card">
+      <div class="card-title">➕ Naya MCQ Add Karein</div>
+      <div class="form-row">
+        <div class="fi">
+          <label>Subject *</label>
+          <select id="aSubject" style="width:100%;padding:.65rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);">
+            <option value="">-- Subject --</option>
+            <option value="physics">⚛️ Physics</option>
+            <option value="chemistry">🧪 Chemistry</option>
+            <option value="mathematics">📐 Mathematics</option>
+            <option value="biology">🧬 Biology</option>
+            <option value="english">📝 English</option>
+            <option value="logical">🧠 Logical Reasoning</option>
+            <option value="general">🌍 General Knowledge</option>
+          </select>
+        </div>
+      </div>
+      <div class="fi" style="margin-bottom:.85rem;">
+        <label>Question * <span style="font-size:.7rem;color:rgba(255,255,255,.3);font-weight:400;">(Math symbols use kar sakte hain)</span></label>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.4rem;">
+          <button class="math-btn" onclick="adminInsert('aQuestion','²')">x²</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','³')">x³</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','√')">√</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','π')">π</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','÷')">÷</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','×')">×</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','≠')">≠</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','≤')">≤</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','≥')">≥</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','∞')">∞</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','α')">α</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','β')">β</button>
+          <button class="math-btn" onclick="adminInsert('aQuestion','θ')">θ</button>
+        </div>
+        <textarea id="aQuestion" rows="3" placeholder="Question likhein..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="fi"><label>Option A *</label><input type="text" id="aOptA" placeholder="Option A"></div>
+        <div class="fi"><label>Option B *</label><input type="text" id="aOptB" placeholder="Option B"></div>
+        <div class="fi"><label>Option C *</label><input type="text" id="aOptC" placeholder="Option C"></div>
+        <div class="fi"><label>Option D *</label><input type="text" id="aOptD" placeholder="Option D"></div>
+      </div>
+      <div class="form-row">
+        <div class="fi">
+          <label>Correct Answer *</label>
+          <select id="aCorrect" style="width:100%;padding:.65rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+        <div class="fi">
+          <label>Description <span style="font-size:.7rem;color:rgba(255,255,255,.3);">(optional)</span></label>
+          <input type="text" id="aDesc" placeholder="Explanation (optional)">
+        </div>
+      </div>
+      <button class="btn btn-gold" onclick="addMCQAdmin()">➕ Add MCQ</button>
+      <div id="addMCQMsg" style="margin-top:.75rem;font-size:.8rem;"></div>
+    </div>
+  </div>
+
+  <!-- PENDING -->
+  <div id="mcqAdmin-pending" style="display:none;">
+    <div class="card">
+      <div class="card-title">⏳ User Submissions — Pending Approval</div>
+      <div id="pendingList">
+        <p style="font-size:.8rem;color:rgba(255,255,255,.3);">Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANAGE -->
+  <div id="mcqAdmin-manage" style="display:none;">
+    <div class="card">
+      <div class="card-title">
+        📋 MCQs Manage Karein
+        <span id="manageCountLabel" style="font-size:.7rem;color:rgba(255,255,255,.3);font-weight:400;"></span>
+      </div>
+      <div style="display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <select id="manageSubjectFilter" onchange="loadManageMCQs()" style="flex:1;min-width:160px;padding:.6rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.82rem;font-family:var(--font-b);">
+          <option value="">All Subjects</option>
+          <option value="physics">⚛️ Physics</option>
+          <option value="chemistry">🧪 Chemistry</option>
+          <option value="mathematics">📐 Mathematics</option>
+          <option value="biology">🧬 Biology</option>
+          <option value="english">📝 English</option>
+          <option value="logical">🧠 Logical Reasoning</option>
+          <option value="general">🌍 General Knowledge</option>
+        </select>
+        <input type="text" id="manageSearchBox" placeholder="🔍 Question ya word search karein..." oninput="searchManageMCQs()" style="flex:2;min-width:200px;padding:.6rem .9rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);outline:none;">
+      </div>
+      <div id="manageMCQList"></div>
+    </div>
+  </div>
+
+  <!-- BULK IMPORT -->
+  <div id="mcqAdmin-bulk" style="display:none;">
+    <div class="card">
+      <div class="card-title">📥 Bulk Import MCQs</div>
+      <p style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:1rem;">Neeche format mein MCQs paste karein — ek saath kaafi MCQs add ho jayenge.</p>
+      <div class="fi" style="margin-bottom:.75rem;">
+        <label>Subject *</label>
+        <select id="bulkSubject" style="width:100%;padding:.65rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);">
+          <option value="">-- Subject --</option>
+          <option value="physics">Physics</option>
+          <option value="chemistry">Chemistry</option>
+          <option value="mathematics">Mathematics</option>
+          <option value="biology">Biology</option>
+          <option value="english">English</option>
+          <option value="logical">Logical Reasoning</option>
+          <option value="general">General Knowledge</option>
+        </select>
+      </div>
+      <div class="fi" style="margin-bottom:.75rem;">
+        <label>Format: Q|A|B|C|D|CorrectLetter|Description(optional)</label>
+        <textarea id="bulkTextMCQ" rows="10" placeholder="Newton ka qanoon kya hai?|Force=ma|Force=mv|Force=ma²|Force=m/a|A|F=ma Newton ka doosra qanoon hai
+Paani ka chemical formula?|H2O|CO2|O2|N2|A|"></textarea>
+      </div>
+      <button class="btn btn-gold" onclick="bulkImportMCQs()" id="bulkImportBtn">📥 Import All</button>
+      <div id="bulkMsg" style="margin-top:.75rem;font-size:.8rem;"></div>
+    </div>
+  </div>
+
+</div>
+
+
+      <!-- ── LEADERBOARD ── -->
+      <div class="tab-pane" id="tab-leaderboard">
+        <div class="page-head">
+          <h1>Leaderboard 🥇</h1>
+          <p>Top performing students — auto Firebase se update hota hai</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Top 10 Students (All Tests)</div>
+          <div id="lbAdmin">
+            <p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">Koi submissions nahi abhi tak.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SETUP GUIDE ── -->
+      <div class="tab-pane" id="tab-setup">
+        <div class="page-head">
+          <h1>Firebase Setup Guide 🔧</h1>
+          <p>Ek baar setup karein — sab kuch live ho jayega</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Step-by-Step Setup (5-10 minutes)</div>
+
+          <div class="setup-step">
+            <div class="ss-num">1</div>
+            <div class="ss-body">
+              <h4>Firebase Project Banayein</h4>
+              <p>Browser mein kholo: <code>console.firebase.google.com</code><br>
+              → <b>Add project</b> click karein<br>
+              → Naam dein: <b>manzil-e-kamyabi</b><br>
+              → Google Analytics: OFF kar dein<br>
+              → <b>Create project</b></p>
+            </div>
+          </div>
+
+          <div class="setup-step">
+            <div class="ss-num">2</div>
+            <div class="ss-body">
+              <h4>Authentication Enable Karein</h4>
+              <p>Firebase Console mein:<br>
+              → Left menu: <b>Authentication</b><br>
+              → <b>Get started</b><br>
+              → <b>Email/Password</b> → Enable → Save<br>
+              → <b>Users</b> tab → <b>Add user</b><br>
+              → Apni email aur password enter karein (yeh admin login hoga)</p>
+            </div>
+          </div>
+
+          <div class="setup-step">
+            <div class="ss-num">3</div>
+            <div class="ss-body">
+              <h4>Realtime Database Banayein</h4>
+              <p>Firebase Console mein:<br>
+              → Left menu: <b>Realtime Database</b><br>
+              → <b>Create database</b><br>
+              → Location: <b>us-central1</b> (ya koi bhi)<br>
+              → <b>Start in test mode</b> → Enable</p>
+            </div>
+          </div>
+
+          <div class="setup-step">
+            <div class="ss-num">4</div>
+            <div class="ss-body">
+              <h4>Firebase Config Copy Karein</h4>
+              <p>Firebase Console:<br>
+              → Gear icon (⚙️) → <b>Project settings</b><br>
+              → Scroll down: <b>Your apps</b><br>
+              → Web app icon (<b>&lt;/&gt;</b>) click karein<br>
+              → App nickname: <b>mek-web</b> → Register<br>
+              → <b>firebaseConfig</b> object copy karein</p>
+              <div class="code-box">// Aapka config kuch aise dikhega:
+const firebaseConfig = {
+  apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXX",
+  authDomain: "manzil-e-kamyabi.firebaseapp.com",
+  databaseURL: "https://manzil-e-kamyabi-default-rtdb.firebaseio.com",
+  projectId: "manzil-e-kamyabi",
+  storageBucket: "manzil-e-kamyabi.appspot.com",
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdefghijklmnop"
+};</div>
+            </div>
+          </div>
+
+          <div class="setup-step">
+            <div class="ss-num">5</div>
+            <div class="ss-body">
+              <h4>Config Paste Karein Dono Files Mein</h4>
+              <p>Is <b>admin.html</b> file ko Notepad/VS Code mein open karein.<br>
+              <code>PASTE_YOUR_APIKEY</code> wali line dhundein (top of JS section).<br>
+              Apna actual config wahan paste karein.<br><br>
+              Phir <b>index.html</b> (main website) mein bhi yahi karein.</p>
+            </div>
+          </div>
+
+          <div class="setup-step">
+            <div class="ss-num">6</div>
+            <div class="ss-body">
+              <h4>Database Security Rules Set Karein</h4>
+              <p>Realtime Database → <b>Rules</b> tab → yeh paste karein → Publish:</p>
+              <div class="code-box">{
+  "rules": {
+    "tests": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "results": {
+      ".read": "auth != null",
+      "$testId": {
+        "$sid": { ".write": "!data.exists()" }
+      }
+    },
+    "papers": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "announcements": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "mcqBank": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "mcqPending": {
+      ".read": "auth != null",
+      ".write": true
+    },
+    "liveTests": {
+      ".read": true,
+      ".write": "auth != null"
+    }
+  }
+}</div>
+            </div>
+          </div>
+
+          <div class="setup-step">
+            <div class="ss-num">7</div>
+            <div class="ss-body">
+              <h4>Netlify par Deploy Karein (Free Hosting)</h4>
+              <p>1. <code>netlify.com</code> → Free account banayein<br>
+              2. <b>Sites</b> → <b>Deploy manually</b><br>
+              3. Apna folder (jismein admin.html aur index.html hain) drag & drop karein<br>
+              4. Aapko milega: <b>https://your-name.netlify.app</b><br>
+              5. Student test link banega: <b>https://your-name.netlify.app/test.html?id=TEST_ID</b></p>
+            </div>
+          </div>
+
+          <div class="step-success">
+            ✅ <b>Total Cost: ZERO</b> — Firebase free tier + Netlify free tier = bilkul free!<br>
+            Koi bhi masla ho to WhatsApp karein: <b>03073179891</b>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /layout -->
+</div><!-- /dashboard -->
+
+<!-- Result Detail Modal -->
+<div class="modal-overlay" id="resModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Submission Detail</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="resDetail"></div>
+  </div>
+</div>
+
+<!-- Link Modal -->
+<div class="modal-overlay" id="linkModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>🎉 Test Successfully Created!</h2>
+      <button class="modal-close" onclick="document.getElementById('linkModal').classList.remove('open')">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:1.25rem;">Yeh link students ko share karein. Woh seedha is link se test de saken ge.</p>
+    <div class="fi"><label>Student Test Link</label>
+      <div class="link-row"><span class="link-text" id="genLink"></span><button class="copy-btn" onclick="copyLink()">Copy</button></div>
+    </div>
+    <p style="font-size:.72rem;color:rgba(255,255,255,.25);margin-top:.65rem;">⚠️ Pehle Netlify par deploy karein, phir yeh link kaam karega. Setup Guide dekhein.</p>
+    <div style="display:flex;gap:.65rem;margin-top:1.25rem;">
+      <button class="btn btn-gold btn-sm" onclick="copyLink()">Copy Link</button>
+      <button class="btn btn-outline btn-sm" onclick="shareWA()">💬 WhatsApp Share</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('linkModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════
+// 🔥 APNA FIREBASE CONFIG YAHAN PASTE KAREIN
+// ════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyCRhkn4aIUz7tDp3ERmfQ6B4uwz9yuqTZ4",
+  authDomain:        "manzil-e-kamyabi-3439b.firebaseapp.com",
+  databaseURL:       "https://manzil-e-kamyabi-3439b-default-rtdb.firebaseio.com",
+  projectId:         "manzil-e-kamyabi-3439b",
+  storageBucket:     "manzil-e-kamyabi-3439b.firebasestorage.app",
+  messagingSenderId: "316807608847",
+  appId:             "1:316807608847:web:35acce169c1d00fb30017a"
+};
+// ════════════════════════════════════════
+// 🌐 Netlify deploy ke baad apna URL yahan
+const SITE_URL = window.location.origin;
+// ════════════════════════════════════════
+
+let db=null, auth=null, currentUser=null;
+let allResults=[], currentTestId=null;
+let qCount=0;
+
+// Init Firebase
+const configured = !firebaseConfig.apiKey.includes('PASTE');
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+  auth = firebase.auth();
+} catch(e) {
+  // Already initialized — get existing instance
+  try {
+    db = firebase.database();
+    auth = firebase.auth();
+  } catch(e2) {
+    console.error('Firebase init failed:', e2);
+    if(!configured) document.getElementById('setupWarn').style.display='block';
+  }
+}
+
+// Auth state
+if(auth) {
+  auth.onAuthStateChanged(u => {
+    if(u) {
+      currentUser=u;
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('dashboard').style.display='block';
+      document.getElementById('tbUser').textContent=u.email;
+      loadAll();
+    } else {
+      document.getElementById('loginScreen').style.display='flex';
+      document.getElementById('dashboard').style.display='none';
+    }
+  });
+}
+
+// ── AUTH ──
+function doLogin() {
+  if(!auth) { showToast('Firebase config nahi hai. Setup Guide dekhein.','error'); return; }
+  const e=document.getElementById('loginEmail').value.trim();
+  const p=document.getElementById('loginPass').value;
+  if(!e||!p) { document.getElementById('loginErr').style.display='block'; return; }
+  auth.signInWithEmailAndPassword(e,p)
+    .catch(()=>document.getElementById('loginErr').style.display='block');
+}
+function doLogout() { auth.signOut(); }
+
+// ── TABS ──
+
+function showTabMob(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mn-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='results') loadResults();
+  if(name==='tests') loadTests();
+  if(name==='overview') loadOverview();
+  if(name==='papers') loadPapers();
+  if(name==='announce') loadAnnouncements();
+  if(name==='livetest') loadLiveTests();
+  if(name==='mcqadmin') {loadPendingMCQs();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(name==='results') loadResults();
+  if(name==='tests') loadTests();
+  if(name==='overview') loadOverview();
+  if(name==='papers') loadPapers();
+  if(name==='announce') loadAnnouncements();
+  if(name==='livetest') loadLiveTests();
+  if(name==='mcqadmin') {loadPendingMCQs();}
+  if(name==='leaderboard') loadLeaderboard();
+}
+
+// ── LOAD ALL ──
+function loadAll() {
+  loadOverview(); loadTests(); loadPapers(); loadAnnouncements(); loadLiveTests();
+}
+
+// ── BULK PASTE ──
+function toggleBulk() {
+  const s = document.getElementById('bulkSection');
+  s.style.display = s.style.display === 'none' ? 'block' : 'none';
+}
+
+function parseBulk() {
+  const raw = document.getElementById('bulkText').value.trim();
+  const errEl = document.getElementById('bulkError');
+  const countEl = document.getElementById('bulkCount');
+  errEl.style.display = 'none';
+  if (!raw) { errEl.textContent = 'Kuch nahi likha!'; errEl.style.display='block'; return; }
+  const blocks = raw.split(/\n\s*\n/).filter(b=>b.trim());
+  if (!blocks.length) { errEl.textContent='Format galat hai.'; errEl.style.display='block'; return; }
+  let added=0, errors=0;
+  blocks.forEach((block,idx)=>{
+    const lines=block.trim().split('\n').map(l=>l.trim()).filter(l=>l);
+    if(lines.length<3){errors++;return;}
+    const qText=lines[0].replace(/^Q\s*[:\.]\s*/i,'').trim();
+    if(!qText){errors++;return;}
+    const options=[]; let correctIdx=-1;
+    lines.slice(1).forEach((line,i)=>{
+      const cleaned=line.replace(/^[A-Za-z]\s*[\.)\s]\s*/,'').trim();
+      if(cleaned.endsWith('*')){options.push(cleaned.slice(0,-1).trim());correctIdx=i;}
+      else options.push(cleaned);
+    });
+    if(options.length<2){errors++;return;}
+    if(correctIdx===-1)correctIdx=0;
+    qCount++;
+    document.getElementById('qEmpty')?.remove();
+    const id='q_'+Date.now()+'_'+idx;
+    const el=document.createElement('div');
+    el.className='q-item'; el.id=id; el.dataset.type='mcq';
+    el.innerHTML=`<div class="q-item-head"><span class="q-badge">Q${qCount}</span><div style="display:flex;align-items:center;gap:.5rem;"><span class="q-type-tag qt-mcq">MCQ</span><input type="number" style="width:65px;padding:.28rem .5rem;font-size:.75rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:6px;color:#fff;outline:none;" value="1" min="1" data-marks><button class="q-del" onclick="this.closest('.q-item').remove();updateQCount()">🗑</button></div></div><div class="fi"><label>Question</label><textarea rows="2" data-qtext style="resize:vertical;">${qText}</textarea></div><div class="opts-wrap"><label style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);display:block;margin-bottom:.4rem;">Options — Correct ◉</label>${options.map((opt,i)=>`<div class="opt-row"><input type="radio" name="cor_${id}" value="${i}" class="opt-radio" ${i===correctIdx?'checked':''}><span class="opt-lbl">${String.fromCharCode(65+i)}.</span><input type="text" value="${opt}" data-opt="${i}"></div>`).join('')}</div>`;
+    document.getElementById('qList').appendChild(el);
+    added++;
+  });
+  updateQCount();
+  countEl.textContent=`✅ ${added} add hue${errors?` | ⚠️ ${errors} skip`:''}`;
+  if(added>0){
+    document.getElementById('bulkSection').style.display='none';
+    document.getElementById('bulkText').value='';
+    showToast('✅ '+added+' MCQs add ho gaye!','success');
+  } else {
+    errEl.textContent='Koi question add nahi hua. Format check karein.';
+    errEl.style.display='block';
+  }
+}
+
+function updateQCount(){
+  const count=document.querySelectorAll('.q-item').length;
+  const el=document.getElementById('qCount');
+  if(el) el.textContent=count>0?`Total: ${count} questions`:'';
+  if(count===0){
+    const ql=document.getElementById('qList');
+    if(!document.getElementById('qEmpty')) ql.innerHTML='<p id="qEmpty" style="font-size:.8rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Koi question nahi.</p>';
+  }
+}
+
+// ── OVERVIEW ──
+async function loadOverview() {
+  if(!db) return;
+  try {
+    const [ts,rs,ps] = await Promise.all([
+      db.ref('tests').once('value'),
+      db.ref('results').once('value'),
+      db.ref('papers').once('value'),
+    ]);
+    const tests=ts.val()||{}; const results=rs.val()||{}; const papers=ps.val()||{};
+    let totalSubs=0, totalScore=0;
+    const recent=[];
+    Object.entries(results).forEach(([tid,subs])=>{
+      Object.entries(subs).forEach(([sid,sub])=>{
+        totalSubs++; totalScore+=sub.pct||0;
+        recent.push({...sub,testTitle:tests[tid]?.title||tid,tid,sid});
+      });
+    });
+    document.getElementById('st-tests').textContent=Object.keys(tests).length;
+    document.getElementById('st-subs').textContent=totalSubs;
+    document.getElementById('st-avg').textContent=totalSubs?Math.round(totalScore/totalSubs)+'%':'—';
+    document.getElementById('st-papers').textContent=Object.keys(papers).length;
+    recent.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));
+    const el=document.getElementById('recentSubs');
+    if(!recent.length){el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.25);text-align:center;padding:2rem;">No submissions yet.</p>';return;}
+    el.innerHTML=`<table><thead><tr><th>Student</th><th>Test</th><th>Score</th><th>Submitted</th></tr></thead><tbody>
+      ${recent.slice(0,8).map(r=>`<tr><td style="color:#fff;font-weight:500;">${r.name||'Anonymous'}</td><td>${r.testTitle}</td><td>${scorePill(r.pct)}</td><td style="font-family:'JetBrains Mono';font-size:.7rem;">${r.submittedAt?new Date(r.submittedAt).toLocaleString():''}</td></tr>`).join('')}
+    </tbody></table>`;
+  } catch(e){console.error(e);}
+}
+
+// ── CREATE TEST ──
+function addQ(type) {
+  qCount++;
+  document.getElementById('qEmpty')?.remove();
+  const id='q_'+Date.now();
+  const el=document.createElement('div');
+  el.className='q-item'; el.id=id; el.dataset.type=type;
+  const typeLabel=type==='mcq'?'MCQ':type==='tf'?'True/False':'Short Answer';
+  const typeClass=type==='mcq'?'qt-mcq':type==='tf'?'qt-tf':'qt-short';
+  let inner=`
+    <div class="q-item-head">
+      <span class="q-badge">Q${qCount}</span>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <span class="q-type-tag ${typeClass}">${typeLabel}</span>
+        <input type="number" style="width:65px;padding:.28rem .5rem;font-size:.75rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:6px;color:#fff;outline:none;" placeholder="Marks" value="1" min="1" data-marks>
+        <button class="q-del" onclick="document.getElementById('${id}').remove()">🗑</button>
+      </div>
+    </div>
+    <div class="fi"><label>Question *</label><textarea rows="2" placeholder="Question text..." data-qtext style="resize:vertical;"></textarea></div>`;
+  if(type==='mcq'){
+    inner+=`<div class="opts-wrap">
+      <label style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);display:block;margin-bottom:.4rem;">Options — Correct option mark karein ◉</label>
+      ${[0,1,2,3].map(i=>`<div class="opt-row">
+        <input type="radio" name="cor_${id}" value="${i}" class="opt-radio" ${i===0?'checked':''}>
+        <span class="opt-lbl">${String.fromCharCode(65+i)}.</span>
+        <input type="text" placeholder="Option ${String.fromCharCode(65+i)}" data-opt="${i}">
+      </div>`).join('')}
+      <button class="add-opt" onclick="addOption('${id}')">+ Option add karein</button>
+    </div>`;
+  } else if(type==='tf'){
+    inner+=`<div style="display:flex;gap:1rem;margin-top:.25rem;">
+      <label style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:rgba(255,255,255,.6);cursor:pointer;"><input type="radio" name="cor_${id}" value="true" class="opt-radio" checked> True</label>
+      <label style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:rgba(255,255,255,.6);cursor:pointer;"><input type="radio" name="cor_${id}" value="false" class="opt-radio"> False</label>
+    </div>`;
+  } else {
+    inner+=`<div class="fi"><label>Model Answer (admin reference ke liye)</label><input type="text" placeholder="Expected answer..." data-answer></div>`;
+  }
+  el.innerHTML=inner;
+  document.getElementById('qList').appendChild(el);
+}
+
+function addOption(qId) {
+  const wrap=document.querySelector(`#${qId} .opts-wrap`);
+  const n=wrap.querySelectorAll('.opt-row').length;
+  const row=document.createElement('div'); row.className='opt-row';
+  row.innerHTML=`<input type="radio" name="cor_${qId}" value="${n}" class="opt-radio"><span class="opt-lbl">${String.fromCharCode(65+n)}.</span><input type="text" placeholder="Option ${String.fromCharCode(65+n)}" data-opt="${n}">`;
+  wrap.insertBefore(row,wrap.querySelector('.add-opt'));
+}
+
+async function saveTest() {
+  if(!db){showToast('Firebase config nahi hai!','error');return;}
+  const title=document.getElementById('testTitle').value.trim();
+  if(!title){showToast('Test title zaroor likhein!','error');return;}
+  const items=document.querySelectorAll('.q-item');
+  if(!items.length){showToast('Kam az kam ek question add karein!','error');return;}
+  const questions=[]; let valid=true;
+  items.forEach(q=>{
+    const type=q.dataset.type;
+    const qtext=q.querySelector('[data-qtext]')?.value.trim();
+    const marks=parseInt(q.querySelector('[data-marks]')?.value)||1;
+    if(!qtext){valid=false;return;}
+    const obj={type,text:qtext,marks};
+    if(type==='mcq'){
+      obj.options=[...q.querySelectorAll('[data-opt]')].map(i=>i.value.trim());
+      obj.correct=parseInt(q.querySelector('.opt-radio:checked')?.value||0);
+    } else if(type==='tf'){
+      obj.correct=q.querySelector('.opt-radio:checked')?.value==='true';
+    } else {
+      obj.answer=q.querySelector('[data-answer]')?.value.trim()||'';
+    }
+    questions.push(obj);
+  });
+  if(!valid){showToast('Sare questions ka text fill karein!','error');return;}
+  const testData={
+    title, subject:document.getElementById('testSubject').value.trim(),
+    timeLimit:parseInt(document.getElementById('testTime').value)||30,
+    passPercent:parseInt(document.getElementById('testPass').value)||50,
+    negMarking:parseFloat(document.getElementById('testNeg').value)||0,
+    showAnswer:document.getElementById('testShowAns').value==='yes',
+    instructions:document.getElementById('testInstr').value.trim(),
+    questions, createdAt:Date.now(), createdBy:currentUser.email
+  };
+  try {
+    const ref=await db.ref('tests').push(testData);
+    const link=`${SITE_URL}/test.html?id=${ref.key}`;
+    document.getElementById('genLink').textContent=link;
+    document.getElementById('linkModal').classList.add('open');
+    resetCreateForm();
+    loadTests(); loadOverview();
+    showToast('✅ Test save ho gaya!','success');
+  } catch(e){showToast('Error: '+e.message,'error');}
+}
+
+function resetCreateForm(){
+  ['testTitle','testSubject','testTime','testPass','testInstr'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('qList').innerHTML='<p id="qEmpty" style="font-size:.8rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Koi question nahi. Upar se add karein.</p>';
+  qCount=0;
+}
+
+// ── TESTS LIST ──
+async function loadTests() {
+  if(!db) return;
+  try {
+    const snap=await db.ref('tests').orderByChild('createdBy').equalTo(currentUser.email).once('value');
+    const tests=snap.val()||{};
+    const el=document.getElementById('testsList');
+    if(!Object.keys(tests).length){el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">Koi test nahi. Create Test se banayein.</p>';return;}
+    el.innerHTML=Object.entries(tests).sort((a,b)=>b[1].createdAt-a[1].createdAt).map(([id,t])=>{
+      const link=`${SITE_URL}/test.html?id=${id}`;
+      return `<div class="test-item">
+        <div class="ti-info">
+          <h3>${t.title}</h3>
+          <div class="ti-meta">
+            <span class="ti-tag">📚 ${t.subject||'General'}</span>
+            <span class="ti-tag">❓ ${t.questions?.length||0} Qs</span>
+            <span class="ti-tag">⏱ ${t.timeLimit||30} min</span>
+            <span class="ti-tag">✅ Pass: ${t.passPercent||50}%</span>
+            ${t.negMarking?`<span class="ti-tag">➖ -${t.negMarking}/wrong</span>`:''}
+          </div>
+          <div class="link-row" style="margin-top:.65rem;">
+            <span class="link-text">${link}</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('✅ Link copied!'))">Copy</button>
+          </div>
+        </div>
+        <div class="ti-actions">
+          <button class="btn btn-green btn-sm" onclick="viewTestResults('${id}')">Results</button>
+          <button class="btn btn-red btn-sm" onclick="deleteTest('${id}')">Delete</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){console.error(e);}
+}
+
+async function deleteTest(id) {
+  if(!confirm('Is test ko aur iske sare results ko delete karein?')) return;
+  try {
+    await Promise.all([db.ref('tests/'+id).remove(), db.ref('results/'+id).remove()]);
+    loadTests(); loadOverview();
+    showToast('Test delete ho gaya.','success');
+  } catch(e){showToast('Error: '+e.message,'error');}
+}
+
+// ── RESULTS ──
+async function loadResults() {
+  if(!db) return;
+  try {
+    const [ts,rs]=await Promise.all([
+      db.ref('tests').orderByChild('createdBy').equalTo(currentUser.email).once('value'),
+      db.ref('results').once('value')
+    ]);
+    const tests=ts.val()||{}; const results=rs.val()||{};
+    const sel=document.getElementById('resFilter');
+    const prev=sel.value;
+    sel.innerHTML='<option value="all">All Tests</option>'+Object.entries(tests).map(([id,t])=>`<option value="${id}">${t.title}</option>`).join('');
+    sel.value=prev;
+    allResults=[];
+    Object.entries(results).forEach(([tid,subs])=>{
+      if(!tests[tid]) return;
+      Object.entries(subs).forEach(([sid,sub])=>allResults.push({...sub,testTitle:tests[tid].title,passPercent:tests[tid].passPercent||50,tid,sid}));
+    });
+    allResults.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));
+    filterResults();
+  } catch(e){console.error(e);}
+}
+
+function filterResults() {
+  const filter=document.getElementById('resFilter').value;
+  const search=document.getElementById('resSearch').value.toLowerCase();
+  let data=allResults;
+  if(filter!=='all') data=data.filter(r=>r.tid===filter);
+  if(search) data=data.filter(r=>r.name?.toLowerCase().includes(search));
+  const body=document.getElementById('resBody');
+  if(!data.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:rgba(255,255,255,.25);">No results.</td></tr>';return;}
+  body.innerHTML=data.map(r=>`
+    <tr style="cursor:pointer;" onclick="showResDetail('${r.tid}','${r.sid}')">
+      <td style="color:#fff;font-weight:500;">${r.name||'Anonymous'}</td>
+      <td>${r.testTitle}</td>
+      <td>${r.score}/${r.total}</td>
+      <td>${scorePill(r.pct)}</td>
+      <td><span class="pass-tag ${r.pct>=r.passPercent?'pt-pass':'pt-fail'}">${r.pct>=r.passPercent?'PASS':'FAIL'}</span></td>
+      <td style="font-family:'JetBrains Mono';font-size:.72rem;">${r.timeTaken||'—'}</td>
+      <td style="font-family:'JetBrains Mono';font-size:.68rem;color:rgba(255,255,255,.35);">${r.submittedAt?new Date(r.submittedAt).toLocaleString():''}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showResDetail('${r.tid}','${r.sid}')">Detail</button></td>
+    </tr>`).join('');
+}
+
+async function showResDetail(tid,sid) {
+  try {
+    const [s,t]=await Promise.all([db.ref(`results/${tid}/${sid}`).once('value'),db.ref(`tests/${tid}`).once('value')]);
+    const sub=s.val(); const test=t.val();
+    if(!sub||!test) return;
+    document.getElementById('resDetail').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+        <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">Student</div><div style="font-weight:600;">${sub.name||'Anonymous'}</div></div>
+        <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">Score</div><div style="font-weight:800;font-size:1.2rem;color:var(--gold);">${sub.score}/${sub.total} (${sub.pct}%)</div></div>
+        <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">Time</div><div>${sub.timeTaken||'—'}</div></div>
+        <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">Status</div><div style="color:${sub.pct>=(test.passPercent||50)?'var(--green)':'var(--red)'};font-weight:700;">${sub.pct>=(test.passPercent||50)?'✅ PASSED':'❌ FAILED'}</div></div>
+      </div>
+      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:rgba(255,255,255,.3);margin-bottom:.65rem;">Answer Review</div>
+      ${(test.questions||[]).map((q,i)=>{
+        const ans=sub.answers?.[i]; const isCorrect=q.type==='mcq'?ans===q.correct:q.type==='tf'?String(ans)===String(q.correct):null;
+        return `<div style="background:${isCorrect===null?'rgba(255,255,255,.02)':isCorrect?'rgba(16,185,129,.04)':'rgba(239,68,68,.04)'};border:1px solid ${isCorrect===null?'rgba(255,255,255,.06)':isCorrect?'rgba(16,185,129,.15)':'rgba(239,68,68,.15)'};border-radius:8px;padding:.9rem;margin-bottom:.55rem;">
+          <div style="font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:.3rem;">Q${i+1}. ${q.text}</div>
+          ${q.type==='mcq'?`<div style="font-size:.78rem;">Diya: <b style="color:#fff;">${q.options?.[ans]??'Skipped'}</b> | Sahi: <b style="color:var(--green);">${q.options?.[q.correct]}</b></div>`:''}
+          ${q.type==='tf'?`<div style="font-size:.78rem;">Diya: <b style="color:#fff;">${ans===undefined?'Skipped':ans}</b> | Sahi: <b style="color:var(--green);">${q.correct}</b></div>`:''}
+          ${q.type==='short'?`<div style="font-size:.78rem;">Answer: <b style="color:#fff;">${ans||'Skipped'}</b></div>`:''}
+          ${isCorrect!==null?`<div style="font-size:.7rem;margin-top:.3rem;color:${isCorrect?'var(--green)':'var(--red)'};">${isCorrect?`✓ Correct (+${q.marks} marks)`:`✗ Wrong (0 marks)`}</div>`:'<div style="font-size:.7rem;margin-top:.3rem;color:rgba(255,255,255,.3);">Manual check required</div>'}
+        </div>`;
+      }).join('')}`;
+    document.getElementById('resModal').classList.add('open');
+  } catch(e){console.error(e);}
+}
+
+function viewTestResults(tid) {
+  showTab('results', document.querySelector('.nav-btn[onclick*="results"]'));
+  setTimeout(()=>{ document.getElementById('resFilter').value=tid; filterResults(); }, 300);
+}
+
+// ── PAST PAPERS ──
+async function addPaper() {
+  if(!db){showToast('Firebase config nahi!','error');return;}
+  const name=document.getElementById('pName').value.trim();
+  const uni=document.getElementById('pUni').value.trim();
+  const year=document.getElementById('pYear').value.trim();
+  const type=document.getElementById('pType').value;
+  const link=document.getElementById('pLink').value.trim();
+  if(!name){showToast('Paper name likhein!','error');return;}
+  try {
+    await db.ref('papers').push({name,uni,year,type,link,addedAt:Date.now()});
+    ['pName','pUni','pYear','pLink'].forEach(id=>document.getElementById(id).value='');
+    loadPapers();
+    showToast('✅ Paper add ho gaya!','success');
+  } catch(e){showToast('Error: '+e.message,'error');}
+}
+
+async function loadPapers() {
+  if(!db) return;
+  try {
+    const snap=await db.ref('papers').orderByChild('addedAt').once('value');
+    const papers=snap.val()||{};
+    const el=document.getElementById('papersList');
+    document.getElementById('st-papers').textContent=Object.keys(papers).length;
+    if(!Object.keys(papers).length){el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">No papers added yet.</p>';return;}
+    el.innerHTML=Object.entries(papers).reverse().map(([id,p])=>`
+      <div class="paper-row">
+        <div class="pr-info">
+          <h4>${p.name}</h4>
+          <div class="pr-meta">${p.uni||''} ${p.year?'· '+p.year:''} · ${p.type}</div>
+        </div>
+        <div class="pr-actions">
+          ${p.link?`<a href="${p.link}" target="_blank" class="btn btn-green btn-sm">View</a>`:'<span style="font-size:.72rem;color:rgba(255,255,255,.25);">No link</span>'}
+          <button class="btn btn-red btn-sm" onclick="delPaper('${id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  } catch(e){console.error(e);}
+}
+
+async function delPaper(id){
+  if(!confirm('Delete this paper?')) return;
+  await db.ref('papers/'+id).remove();
+  loadPapers();
+  showToast('Paper delete ho gaya.','success');
+}
+
+// ── ANNOUNCEMENTS ──
+async function addAnnouncement() {
+  if(!db){showToast('Firebase config nahi!','error');return;}
+  const title=document.getElementById('aTitle').value.trim();
+  const tag=document.getElementById('aTag').value;
+  const detail=document.getElementById('aDetail').value.trim();
+  if(!title){showToast('Title likhein!','error');return;}
+  try {
+    const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    const link = document.getElementById('aLink')?.value.trim()||'';
+    await db.ref('announcements').push({title,tag,detail,link,date:today,createdAt:Date.now()});
+    document.getElementById('aTitle').value='';
+    document.getElementById('aDetail').value='';
+    if(document.getElementById('aLink')) document.getElementById('aLink').value='';
+    loadAnnouncements();
+    showToast('✅ Announcement add ho gaya!','success');
+  } catch(e){showToast('Error: '+e.message,'error');}
+}
+
+async function loadAnnouncements() {
+  if(!db) return;
+  try {
+    const snap=await db.ref('announcements').once('value');
+    const anns=snap.val()||{};
+    const el=document.getElementById('annList');
+    if(!Object.keys(anns).length){el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">No announcements yet.</p>';return;}
+    const tagCls={exam:'at-exam',event:'at-event',notice:'at-notice',result:'at-exam'};
+    el.innerHTML=Object.entries(anns).sort((a,b)=>b[1].createdAt-a[1].createdAt).map(([id,a])=>`
+      <div class="ann-row">
+        <div class="ann-info">
+          <h4><span class="ann-tag ${tagCls[a.tag]||'at-notice'}">${a.tag?.toUpperCase()}</span>${a.title}</h4>
+          <p>${a.detail||''} <span style="color:rgba(255,255,255,.2);margin-left:.5rem;">${a.date||''}</span></p>
+        </div>
+        <button class="btn btn-red btn-sm" onclick="delAnn('${id}')">Delete</button>
+      </div>`).join('');
+  } catch(e){console.error(e);}
+}
+
+async function delAnn(id){
+  if(!confirm('Delete this announcement?')) return;
+  await db.ref('announcements/'+id).remove();
+  loadAnnouncements();
+  showToast('Deleted.','success');
+}
+
+// ── LEADERBOARD ──
+async function loadLeaderboard() {
+  if(!db) return;
+  try {
+    const [ts,rs]=await Promise.all([
+      db.ref('tests').once('value'),
+      db.ref('results').once('value')
+    ]);
+    const tests=ts.val()||{}; const results=rs.val()||{};
+    const students={};
+    Object.entries(results).forEach(([tid,subs])=>{
+      Object.entries(subs).forEach(([sid,sub])=>{
+        const n=sub.name||'Anonymous';
+        if(!students[n]) students[n]={name:n,totalScore:0,tests:0,bestPct:0};
+        students[n].totalScore+=sub.pct||0;
+        students[n].tests++;
+        students[n].bestPct=Math.max(students[n].bestPct,sub.pct||0);
+      });
+    });
+    const sorted=Object.values(students).sort((a,b)=>b.bestPct-a.bestPct).slice(0,10);
+    const el=document.getElementById('lbAdmin');
+    if(!sorted.length){el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">No submissions yet.</p>';return;}
+    el.innerHTML=`<table><thead><tr><th>#</th><th>Student</th><th>Best Score</th><th>Tests Taken</th><th>Avg Score</th></tr></thead><tbody>
+      ${sorted.map((s,i)=>`<tr>
+        <td style="font-weight:700;color:${i===0?'var(--gold)':i===1?'#C0C0C0':i===2?'#CD7F32':'rgba(255,255,255,.35)'};">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+        <td style="color:#fff;font-weight:500;">${s.name}</td>
+        <td>${scorePill(s.bestPct)}</td>
+        <td style="color:rgba(255,255,255,.5);">${s.tests}</td>
+        <td>${scorePill(Math.round(s.totalScore/s.tests))}</td>
+      </tr>`).join('')}
+    </tbody></table>`;
+  } catch(e){console.error(e);}
+}
+
+// ── HELPERS ──
+function scorePill(pct){
+  const cls=pct>=70?'sp-high':pct>=40?'sp-mid':'sp-low';
+  return `<span class="score-pill ${cls}">${pct}%</span>`;
+}
+function copyLink(){
+  const txt=document.getElementById('genLink').textContent;
+  navigator.clipboard.writeText(txt).then(()=>showToast('✅ Link copy ho gaya!','success'));
+}
+function shareWA(){
+  const link=document.getElementById('genLink').textContent;
+  window.open(`https://wa.me/?text=${encodeURIComponent('📝 Test Link: '+link)}`, '_blank');
+}
+function closeModal(){ document.getElementById('resModal').classList.remove('open'); }
+
+// ── LIVE TESTS ──
+async function addLiveTest() {
+  if(!db){showToast('Firebase config nahi!','error');return;}
+  const title=document.getElementById('ltTitle').value.trim();
+  const timeInfo=document.getElementById('ltTime').value.trim();
+  const detail=document.getElementById('ltDetail').value.trim();
+  const link=document.getElementById('ltLink').value.trim();
+  if(!title){showToast('Title likhein!','error');return;}
+  try {
+    await db.ref('liveTests').push({title,timeInfo,detail,link,active:true,createdAt:Date.now(),createdBy:currentUser.email});
+    ['ltTitle','ltTime','ltDetail','ltLink'].forEach(id=>document.getElementById(id).value='');
+    loadLiveTests();
+    showToast('✅ Live test publish ho gaya! Website par popup show hoga.','success');
+  } catch(e){showToast('Error: '+e.message,'error');}
+}
+
+async function loadLiveTests() {
+  if(!db) return;
+  try {
+    const snap=await db.ref('liveTests').orderByChild('createdAt').once('value');
+    const tests=snap.val()||{};
+    const el=document.getElementById('liveTestAdminList');
+    if(!el) return;
+    const entries=Object.entries(tests).sort((a,b)=>b[1].createdAt-a[1].createdAt);
+    if(!entries.length){el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">Koi live test nahi.</p>';return;}
+    el.innerHTML=entries.map(([id,t])=>`
+      <div class="test-item">
+        <div class="ti-info">
+          <h3>${t.title} ${t.active?'<span style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#EF4444;font-size:.62rem;padding:.15rem .5rem;border-radius:4px;font-weight:700;">LIVE</span>':''}</h3>
+          <div class="ti-meta">
+            ${t.timeInfo?`<span class="ti-tag">⏰ ${t.timeInfo}</span>`:''}
+            ${t.detail?`<span class="ti-tag">📝 ${t.detail}</span>`:''}
+          </div>
+        </div>
+        <div class="ti-actions">
+          ${t.active
+            ? `<button class="btn btn-outline btn-sm" onclick="toggleLiveTest('${id}',false)">⏹ End</button>`
+            : `<button class="btn btn-green btn-sm" onclick="toggleLiveTest('${id}',true)">▶ Restart</button>`}
+          <button class="btn btn-red btn-sm" onclick="delLiveTest('${id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  } catch(e){console.error(e);}
+}
+
+async function toggleLiveTest(id, active) {
+  await db.ref('liveTests/'+id+'/active').set(active);
+  loadLiveTests();
+  showToast(active ? '🔴 Test live ho gaya!' : '⏹ Test end ho gaya.', 'success');
+}
+
+async function delLiveTest(id) {
+  if(!confirm('Delete this live test?')) return;
+  await db.ref('liveTests/'+id).remove();
+  loadLiveTests();
+  showToast('Deleted.','success');
+}
+
+
+// ── MCQ ADMIN ──
+function switchMCQAdmin(tab, btn) {
+  document.querySelectorAll('[id^="mcqAdminTab-"]').forEach(b=>{b.className='btn btn-outline btn-sm';});
+  document.querySelectorAll('[id^="mcqAdmin-"]').forEach(p=>p.style.display='none');
+  if(btn){btn.className='btn btn-navy btn-sm';}
+  document.getElementById('mcqAdmin-'+tab).style.display='block';
+  if(tab==='pending') loadPendingMCQs();
+  if(tab==='manage') loadManageMCQs();
+}
+
+function adminInsert(fieldId, symbol) {
+  const el = document.getElementById(fieldId);
+  if(!el) return;
+  const s = el.selectionStart, e = el.selectionEnd;
+  el.value = el.value.substring(0,s)+symbol+el.value.substring(e);
+  el.selectionStart = el.selectionEnd = s+symbol.length;
+  el.focus();
+}
+
+async function addMCQAdmin() {
+  if(!db) return;
+  const subject = document.getElementById('aSubject').value;
+  const question = document.getElementById('aQuestion').value.trim();
+  const optA = document.getElementById('aOptA').value.trim();
+  const optB = document.getElementById('aOptB').value.trim();
+  const optC = document.getElementById('aOptC').value.trim();
+  const optD = document.getElementById('aOptD').value.trim();
+  const correct = document.getElementById('aCorrect').value;
+  const description = document.getElementById('aDesc').value.trim();
+  const msg = document.getElementById('addMCQMsg');
+  if(!subject||!question||!optA||!optB||!optC||!optD){
+    msg.innerHTML='<span style="color:#EF4444;">⚠️ Sab required fields bharein!</span>';return;
+  }
+  try {
+    await db.ref('mcqBank/'+subject).push({question,optA,optB,optC,optD,correct,description,approved:true,addedAt:Date.now()});
+    ['aQuestion','aOptA','aOptB','aOptC','aOptD','aDesc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('aSubject').value='';
+    msg.innerHTML='<span style="color:#10B981;">✅ MCQ add ho gaya!</span>';
+    setTimeout(()=>msg.innerHTML='',3000);
+  } catch(e){msg.innerHTML='<span style="color:#EF4444;">Error: '+e.message+'</span>';}
+}
+
+// ══════════════════════════════════════
+// PENDING MCQs — Publish / Edit / Delete
+// ══════════════════════════════════════
+function loadPendingMCQs() {
+  if(!db) return;
+  db.ref('mcqPending').once('value').then(snap=>{
+    const data = snap.val()||{};
+    const entries = Object.entries(data).filter(([k,v])=>!v.approved);
+    const el = document.getElementById('pendingList');
+    const countEl = document.getElementById('pendingCount');
+    if(countEl) countEl.textContent = entries.length||'';
+    if(!entries.length){
+      el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">✅ Koi pending MCQ nahi — sab clear hai!</p>';
+      return;
+    }
+    el.innerHTML = entries.map(([id,m])=>`
+      <div class="test-item" style="margin-bottom:1rem;flex-direction:column;align-items:flex-start;">
+        <div style="width:100%;">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap;">
+            <span style="font-size:.62rem;background:rgba(245,184,0,.12);color:var(--gold);font-weight:700;text-transform:uppercase;padding:.15rem .5rem;border-radius:4px;">${m.subject||'—'}</span>
+            <span style="font-size:.65rem;color:rgba(255,255,255,.3);">By: <b style="color:rgba(255,255,255,.55);">${m.name||'Anonymous'}</b></span>
+          </div>
+          <div style="font-size:.88rem;font-weight:600;color:#fff;margin-bottom:.5rem;line-height:1.5;">${m.question}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem .75rem;margin-bottom:.4rem;">
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);"><b style="color:${m.correct==='A'?'#10B981':'rgba(255,255,255,.6)'};">A.</b> ${m.optA||''}</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);"><b style="color:${m.correct==='B'?'#10B981':'rgba(255,255,255,.6)'};">B.</b> ${m.optB||''}</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);"><b style="color:${m.correct==='C'?'#10B981':'rgba(255,255,255,.6)'};">C.</b> ${m.optC||''}</div>
+            <div style="font-size:.75rem;color:rgba(255,255,255,.45);"><b style="color:${m.correct==='D'?'#10B981':'rgba(255,255,255,.6)'};">D.</b> ${m.optD||''}</div>
+          </div>
+          <div style="font-size:.72rem;color:var(--green);margin-bottom:.3rem;">✅ Correct: <b>${m.correct}</b></div>
+          ${m.description?`<div style="font-size:.72rem;color:rgba(255,255,255,.35);background:rgba(255,255,255,.03);border-radius:6px;padding:.4rem .6rem;margin-top:.3rem;">📖 ${m.description}</div>`:''}
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.85rem;padding-top:.75rem;border-top:1px solid rgba(255,255,255,.06);width:100%;">
+          <button class="btn btn-green btn-sm" onclick="publishPendingMCQ('${id}')">✅ Publish</button>
+          <button class="btn btn-sm" style="background:rgba(21,101,216,.15);border:1px solid rgba(21,101,216,.3);color:#60A5FA;" onclick="editPendingMCQ('${id}')">✏️ Edit & Publish</button>
+          <button class="btn btn-red btn-sm" onclick="rejectMCQ('${id}')">🗑️ Delete</button>
+        </div>
+      </div>`).join('');
+  });
+}
+
+async function publishPendingMCQ(pendingId) {
+  if(!db) return;
+  const snap = await db.ref('mcqPending/'+pendingId).once('value');
+  const mcq = snap.val();
+  if(!mcq){showToast('MCQ nahi mila!','error');return;}
+  if(!mcq.subject){showToast('Subject missing hai — Edit kar ke publish karein.','error');return;}
+  try {
+    await db.ref('mcqBank/'+mcq.subject).push({
+      question:mcq.question, optA:mcq.optA, optB:mcq.optB, optC:mcq.optC, optD:mcq.optD,
+      correct:mcq.correct, description:mcq.description||'', approved:true,
+      addedBy:mcq.name||'', addedAt:Date.now()
+    });
+    await db.ref('mcqPending/'+pendingId).remove();
+    loadPendingMCQs();
+    showToast('✅ MCQ publish ho gaya — live hai!','success');
+  } catch(e){showToast('Error: '+e.message,'error');}
+}
+
+function editPendingMCQ(pendingId) {
+  if(!db) return;
+  db.ref('mcqPending/'+pendingId).once('value').then(snap=>{
+    const m = snap.val();
+    if(!m) return;
+    openMCQEditModal({
+      ...m, id: pendingId, subjectKey: m.subject,
+      _source: 'pending'
+    });
+  });
+}
+
+async function rejectMCQ(pendingId) {
+  if(!confirm('Yeh MCQ delete ho jayega — confirm?')) return;
+  await db.ref('mcqPending/'+pendingId).remove();
+  loadPendingMCQs();
+  showToast('MCQ delete ho gaya.','success');
+}
+
+// ══════════════════════════════════════
+// MANAGE MCQs — Search + Edit + Delete + Republish
+// ══════════════════════════════════════
+let _allManagedMCQs = [];
+
+function loadManageMCQs() {
+  if(!db) return;
+  const subject = document.getElementById('manageSubjectFilter').value;
+  const el = document.getElementById('manageMCQList');
+  el.innerHTML = '<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">⏳ Loading...</p>';
+  const ref = subject ? db.ref('mcqBank/'+subject) : db.ref('mcqBank');
+  ref.once('value').then(snap=>{
+    const data = snap.val()||{};
+    _allManagedMCQs = [];
+    if(subject){
+      Object.entries(data).forEach(([id,m])=>_allManagedMCQs.push({...m,id,subjectKey:subject}));
+    } else {
+      Object.entries(data).forEach(([subj,mcqs])=>{
+        Object.entries(mcqs||{}).forEach(([id,m])=>_allManagedMCQs.push({...m,id,subjectKey:subj}));
+      });
+    }
+    document.getElementById('manageCountLabel').textContent = _allManagedMCQs.length + ' MCQs';
+    renderManageMCQs(_allManagedMCQs);
+  });
+}
+
+function searchManageMCQs() {
+  const q = document.getElementById('manageSearchBox').value.trim().toLowerCase();
+  if(!q) { renderManageMCQs(_allManagedMCQs); return; }
+  const filtered = _allManagedMCQs.filter(m=>
+    (m.question||'').toLowerCase().includes(q) ||
+    (m.optA||'').toLowerCase().includes(q) ||
+    (m.optB||'').toLowerCase().includes(q) ||
+    (m.optC||'').toLowerCase().includes(q) ||
+    (m.optD||'').toLowerCase().includes(q) ||
+    (m.description||'').toLowerCase().includes(q) ||
+    (m.subjectKey||'').toLowerCase().includes(q)
+  );
+  document.getElementById('manageCountLabel').textContent = filtered.length + ' results';
+  renderManageMCQs(filtered);
+}
+
+function renderManageMCQs(entries) {
+  const el = document.getElementById('manageMCQList');
+  if(!entries.length){
+    el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">Koi MCQ nahi mila.</p>';
+    return;
+  }
+  el.innerHTML = entries.map((m,i)=>`
+    <div class="test-item" style="margin-bottom:.65rem;flex-direction:column;align-items:flex-start;">
+      <div style="width:100%;">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.35rem;flex-wrap:wrap;">
+          <span style="font-size:.6rem;background:rgba(245,184,0,.12);color:var(--gold);font-weight:700;text-transform:uppercase;padding:.12rem .45rem;border-radius:4px;">${m.subjectKey||'—'}</span>
+          ${m.addedBy?`<span style="font-size:.62rem;color:rgba(255,255,255,.3);">By: ${m.addedBy}</span>`:''}
+        </div>
+        <div style="font-size:.85rem;font-weight:600;color:#fff;line-height:1.5;margin-bottom:.35rem;">${m.question||''}</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);">
+          <b style="color:${m.correct==='A'?'#10B981':'rgba(255,255,255,.5)'};">A.</b> ${m.optA||''}
+          &nbsp;|&nbsp;<b style="color:${m.correct==='B'?'#10B981':'rgba(255,255,255,.5)'};">B.</b> ${m.optB||''}
+          &nbsp;|&nbsp;<b style="color:${m.correct==='C'?'#10B981':'rgba(255,255,255,.5)'};">C.</b> ${m.optC||''}
+          &nbsp;|&nbsp;<b style="color:${m.correct==='D'?'#10B981':'rgba(255,255,255,.5)'};">D.</b> ${m.optD||''}
+        </div>
+        ${m.description?`<div style="font-size:.68rem;color:rgba(255,255,255,.3);margin-top:.25rem;">📖 ${m.description}</div>`:''}
+      </div>
+      <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.65rem;padding-top:.55rem;border-top:1px solid rgba(255,255,255,.05);width:100%;">
+        <button class="btn btn-sm" style="background:rgba(21,101,216,.15);border:1px solid rgba(21,101,216,.3);color:#60A5FA;" onclick="editManagedMCQ('${m.subjectKey}','${m.id}')">✏️ Edit</button>
+        <button class="btn btn-red btn-sm" onclick="deleteMCQ('${m.subjectKey}','${m.id}')">🗑️ Delete</button>
+        <button class="btn btn-sm" style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);color:#A78BFA;" onclick="unpublishMCQ('${m.subjectKey}','${m.id}')">📤 Unpublish</button>
+      </div>
+    </div>`).join('');
+}
+
+function editManagedMCQ(subject, id) {
+  const m = _allManagedMCQs.find(x=>x.id===id && x.subjectKey===subject);
+  if(!m) return;
+  openMCQEditModal({...m, _source:'bank'});
+}
+
+async function deleteMCQ(subject, id) {
+  if(!confirm('Yeh MCQ permanently delete ho jayega?')) return;
+  await db.ref('mcqBank/'+subject+'/'+id).remove();
+  _allManagedMCQs = _allManagedMCQs.filter(m=>!(m.id===id && m.subjectKey===subject));
+  document.getElementById('manageCountLabel').textContent = _allManagedMCQs.length + ' MCQs';
+  renderManageMCQs(_allManagedMCQs);
+  showToast('MCQ delete ho gaya.','success');
+}
+
+async function unpublishMCQ(subject, id) {
+  if(!confirm('MCQ unpublish karein? Students ko nahi dikhega jab tak dobara publish na karein.')) return;
+  await db.ref('mcqBank/'+subject+'/'+id+'/approved').set(false);
+  showToast('MCQ unpublish ho gaya.','success');
+  loadManageMCQs();
+}
+
+// ══════════════════════════════════════
+// MCQ EDIT MODAL
+// ══════════════════════════════════════
+let _editMCQData = null;
+
+function openMCQEditModal(mcq) {
+  _editMCQData = mcq;
+  document.getElementById('editMCQId').value = mcq.id||'';
+  document.getElementById('editMCQSource').value = mcq._source||'bank';
+  document.getElementById('editMCQSubject').value = mcq.subjectKey||mcq.subject||'';
+  document.getElementById('editMCQQuestion').value = mcq.question||'';
+  document.getElementById('editMCQOptA').value = mcq.optA||'';
+  document.getElementById('editMCQOptB').value = mcq.optB||'';
+  document.getElementById('editMCQOptC').value = mcq.optC||'';
+  document.getElementById('editMCQOptD').value = mcq.optD||'';
+  document.getElementById('editMCQCorrect').value = mcq.correct||'A';
+  document.getElementById('editMCQDesc').value = mcq.description||'';
+  document.getElementById('editMCQModal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('editMCQModal').classList.remove('open');
+  _editMCQData = null;
+}
+
+async function saveEditedMCQ() {
+  if(!db || !_editMCQData) return;
+  const id = document.getElementById('editMCQId').value;
+  const source = document.getElementById('editMCQSource').value;
+  const subject = document.getElementById('editMCQSubject').value;
+  const question = document.getElementById('editMCQQuestion').value.trim();
+  const optA = document.getElementById('editMCQOptA').value.trim();
+  const optB = document.getElementById('editMCQOptB').value.trim();
+  const optC = document.getElementById('editMCQOptC').value.trim();
+  const optD = document.getElementById('editMCQOptD').value.trim();
+  const correct = document.getElementById('editMCQCorrect').value;
+  const description = document.getElementById('editMCQDesc').value.trim();
+  const msg = document.getElementById('editMCQMsg');
+
+  if(!subject||!question||!optA||!optB||!optC||!optD) {
+    msg.innerHTML='<span style="color:#EF4444;">⚠️ Sab required fields bharein!</span>'; return;
+  }
+  msg.innerHTML='<span style="color:#F5B800;">⏳ Saving...</span>';
+
+  try {
+    const updated = {question,optA,optB,optC,optD,correct,description,approved:true,updatedAt:Date.now()};
+    if(source==='pending') {
+      // Save to mcqBank and remove from pending
+      await db.ref('mcqBank/'+subject).push({...updated, addedBy:_editMCQData.name||'', addedAt:Date.now()});
+      await db.ref('mcqPending/'+id).remove();
+      closeEditModal();
+      loadPendingMCQs();
+      showToast('✅ MCQ edit ho ke publish ho gaya!','success');
+    } else {
+      // Update in mcqBank — if subject changed, move it
+      const oldSubject = _editMCQData.subjectKey;
+      if(oldSubject !== subject) {
+        await db.ref('mcqBank/'+subject).push({...updated, addedBy:_editMCQData.addedBy||'', addedAt:_editMCQData.addedAt||Date.now()});
+        await db.ref('mcqBank/'+oldSubject+'/'+id).remove();
+      } else {
+        await db.ref('mcqBank/'+subject+'/'+id).update(updated);
+      }
+      closeEditModal();
+      loadManageMCQs();
+      showToast('✅ MCQ update ho gaya — live!','success');
+    }
+  } catch(e){ msg.innerHTML='<span style="color:#EF4444;">Error: '+e.message+'</span>'; }
+}
+
+function adminInsertEdit(fieldId, sym) {
+  const el = document.getElementById(fieldId);
+  if(!el) return;
+  const s = el.selectionStart, e = el.selectionEnd;
+  el.value = el.value.slice(0,s) + sym + el.value.slice(e);
+  el.selectionStart = el.selectionEnd = s + sym.length;
+  el.focus();
+}
+
+async function bulkImportMCQs() {
+  if(!db) return;
+  const subject = document.getElementById('bulkSubject').value;
+  const text = document.getElementById('bulkTextMCQ').value.trim();
+  const msg = document.getElementById('bulkMsg');
+  const btn = document.getElementById('bulkImportBtn');
+  if(!subject){msg.innerHTML='<span style="color:#EF4444;">⚠️ Pehle subject select karein!</span>';return;}
+  if(!text){msg.innerHTML='<span style="color:#EF4444;">⚠️ MCQs paste karein!</span>';return;}
+  
+  // Parse all lines first
+  const lines = text.split('\n').filter(l=>l.trim());
+  let toAdd = [], errors = 0, errorLines = [];
+  lines.forEach((line, idx)=>{
+    const parts = line.split('|');
+    if(parts.length < 6){errors++;errorLines.push(idx+1);return;}
+    const [question,optA,optB,optC,optD,correct,...rest] = parts.map(p=>p.trim());
+    const description = rest.join('|').trim();
+    const validLetters = ['A','B','C','D'];
+    if(!question||!optA||!optB||!optC||!optD||!correct){errors++;errorLines.push(idx+1);return;}
+    if(!validLetters.includes(correct.toUpperCase())){errors++;errorLines.push(idx+1);return;}
+    toAdd.push({question,optA,optB,optC,optD,correct:correct.toUpperCase(),description,approved:true,addedAt:Date.now()});
+  });
+
+  if(!toAdd.length){
+    msg.innerHTML=`<span style="color:#EF4444;">⚠️ Koi valid MCQ nahi mila. Format check karein: Q|A|B|C|D|CorrectLetter</span>`;
+    return;
+  }
+
+  // Batch write — ek hi operation mein sab
+  btn.disabled=true; btn.textContent='⏳ Adding...';
+  msg.innerHTML=`<span style="color:#F5B800;">⏳ ${toAdd.length} MCQs upload ho rahi hain...</span>`;
+  
+  try {
+    // Build batch object for single Firebase write
+    const updates = {};
+    toAdd.forEach(mcq=>{
+      const newKey = db.ref('mcqBank/'+subject).push().key;
+      updates['mcqBank/'+subject+'/'+newKey] = mcq;
+    });
+    await db.ref().update(updates);
+    msg.innerHTML = `<span style="color:#10B981;">✅ ${toAdd.length} MCQs successfully add ho gaye!</span>${errors?` <span style="color:#EF4444;">⚠️ ${errors} lines skip huin (line: ${errorLines.join(', ')}) — format check karein.</span>`:''}`;
+    document.getElementById('bulkTextMCQ').value='';
+    showToast('✅ '+toAdd.length+' MCQs add ho gaye!','success');
+  } catch(e) {
+    msg.innerHTML=`<span style="color:#EF4444;">❌ Firebase Error: ${e.message}<br><small>Firebase Rules check karein — mcqBank ke liye write permission chahiye.</small></span>`;
+    showToast('Error: '+e.message,'error');
+  } finally {
+    btn.disabled=false; btn.textContent='📥 Import All';
+  }
+}
+
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+(type||'');
+  setTimeout(()=>t.className='toast',3200);
+}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+</script>
+
+<!-- ════ MCQ EDIT MODAL ════ -->
+<div class="modal-overlay" id="editMCQModal">
+  <div class="modal" style="max-width:660px;">
+    <div class="modal-head">
+      <h2>✏️ MCQ Edit Karein</h2>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <input type="hidden" id="editMCQId">
+    <input type="hidden" id="editMCQSource">
+
+    <div class="fi">
+      <label>Subject *</label>
+      <select id="editMCQSubject" style="width:100%;padding:.65rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);">
+        <option value="physics">⚛️ Physics</option>
+        <option value="chemistry">🧪 Chemistry</option>
+        <option value="mathematics">📐 Mathematics</option>
+        <option value="biology">🧬 Biology</option>
+        <option value="english">📝 English</option>
+        <option value="logical">🧠 Logical Reasoning</option>
+        <option value="general">🌍 General Knowledge</option>
+      </select>
+    </div>
+
+    <div class="fi">
+      <label>Question *</label>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.4rem;">
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','²')">x²</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','³')">x³</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','√')">√</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','π')">π</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','÷')">÷</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','×')">×</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','±')">±</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','≤')">≤</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','≥')">≥</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','∞')">∞</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','°')">°</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','α')">α</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','θ')">θ</button>
+        <button class="math-btn" onclick="adminInsertEdit('editMCQQuestion','½')">½</button>
+      </div>
+      <textarea id="editMCQQuestion" rows="3" style="width:100%;padding:.65rem .9rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);resize:vertical;outline:none;" placeholder="Question..."></textarea>
+    </div>
+
+    <!-- Options with inline math toolbars -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.75rem;">
+      <div class="fi">
+        <label>Option A *</label>
+        <input type="text" id="editMCQOptA" placeholder="Option A" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);">
+      </div>
+      <div class="fi">
+        <label>Option B *</label>
+        <input type="text" id="editMCQOptB" placeholder="Option B" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);">
+      </div>
+      <div class="fi">
+        <label>Option C *</label>
+        <input type="text" id="editMCQOptC" placeholder="Option C" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);">
+      </div>
+      <div class="fi">
+        <label>Option D *</label>
+        <input type="text" id="editMCQOptD" placeholder="Option D" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);">
+      </div>
+    </div>
+
+    <!-- Shared math for options -->
+    <div style="background:rgba(245,184,0,.04);border:1px solid rgba(245,184,0,.1);border-radius:8px;padding:.5rem .7rem;margin-bottom:.75rem;">
+      <div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Options ke liye math</div>
+      <div id="editOptMathTarget" style="font-size:.6rem;color:var(--gold);margin-bottom:.3rem;">(option field click karein)</div>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;" id="editOptToolbar">
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'²')">x²</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'³')">x³</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'√')">√</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'π')">π</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'÷')">÷</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'×')">×</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'±')">±</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'°')">°</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'½')">½</button>
+        <button class="math-btn" onclick="adminInsertEdit(_editOptTarget,'¼')">¼</button>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="fi">
+        <label>Correct Answer *</label>
+        <select id="editMCQCorrect" style="width:100%;padding:.65rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);">
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+      </div>
+      <div class="fi">
+        <label>Description / Explanation</label>
+        <input type="text" id="editMCQDesc" placeholder="Explanation (optional)" style="width:100%;padding:.62rem .9rem;border-radius:8px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);">
+      </div>
+    </div>
+
+    <div id="editMCQMsg" style="font-size:.8rem;margin-bottom:.75rem;"></div>
+    <div style="display:flex;gap:.65rem;">
+      <button class="btn btn-gold" onclick="saveEditedMCQ()" style="flex:1;justify-content:center;">💾 Save &amp; Publish</button>
+      <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Track which option field is active for edit modal math toolbar
+let _editOptTarget = 'editMCQOptA';
+['editMCQOptA','editMCQOptB','editMCQOptC','editMCQOptD'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('focus', ()=>{
+    _editOptTarget = id;
+    const lbl = document.getElementById('editOptMathTarget');
+    const names = {editMCQOptA:'Option A',editMCQOptB:'Option B',editMCQOptC:'Option C',editMCQOptD:'Option D'};
+    if(lbl) lbl.textContent = '→ ' + names[id] + ' active';
+  });
+});
+</script>
+
+<div class="toast" id="toast"></div>
+</body>
+</html>
