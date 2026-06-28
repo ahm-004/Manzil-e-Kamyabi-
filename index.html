@@ -262,6 +262,77 @@ body.theme-dark .mcq-opt,body.theme-midnight .mcq-opt{background:#0B1829!importa
 body.theme-dark .mcq-opt:hover,body.theme-midnight .mcq-opt:hover{background:#0F1E35!important;border-color:var(--blue)!important;}
 body.theme-dark .mcq-opt-letter,body.theme-midnight .mcq-opt-letter{background:#1A3158!important;border-color:#243B5E!important;}
 
+
+/* ══════════════════════════════════════
+   MCQ SUBJECT GRID
+══════════════════════════════════════ */
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.85rem;margin-bottom:1.5rem;}
+
+/* ══════════════════════════════════════
+   MCQ BROWSE/QUIZ HEADER
+══════════════════════════════════════ */
+.mcq-browse-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.1rem;flex-wrap:wrap;gap:.75rem;}
+.mcq-page-info{font-size:.78rem;color:rgba(255,255,255,.45);font-weight:600;}
+.mcq-mode-tabs{display:flex;gap:.4rem;}
+.mcq-mode-btn{padding:.4rem .9rem;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.5);font-size:.78rem;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:all .18s;}
+.mcq-mode-btn.active{background:rgba(245,184,0,.15);border-color:rgba(245,184,0,.4);color:var(--gold);}
+.mcq-mode-btn:hover{border-color:rgba(255,255,255,.25);color:#fff;}
+
+/* ══════════════════════════════════════
+   MCQ BANK CARDS
+══════════════════════════════════════ */
+.mcq-list{display:flex;flex-direction:column;gap:.85rem;}
+.mcq-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.25rem;transition:border-color .2s;}
+.mcq-card:hover{border-color:rgba(245,184,0,.25);}
+.mcq-num{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);background:rgba(245,184,0,.1);padding:.18rem .5rem;border-radius:20px;display:inline-block;margin-bottom:.65rem;}
+.mcq-q{font-size:.9rem;font-weight:600;color:#fff;line-height:1.6;margin-bottom:.9rem;}
+.mcq-options{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.75rem;}
+.mcq-opt{padding:.6rem .85rem;border:1.5px solid rgba(255,255,255,.1);border-radius:9px;cursor:pointer;font-size:.83rem;color:rgba(255,255,255,.75);transition:all .18s;display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.03);font-family:var(--font-b);text-align:left;width:100%;}
+.mcq-opt:hover{border-color:rgba(245,184,0,.4);background:rgba(245,184,0,.06);color:#fff;}
+.mcq-opt.correct{border-color:var(--green)!important;background:rgba(16,185,129,.1)!important;color:#6EE7B7!important;}
+.mcq-opt.wrong{border-color:var(--red)!important;background:rgba(239,68,68,.1)!important;color:#FCA5A5!important;}
+.mcq-opt-letter{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.mcq-opt.correct .mcq-opt-letter{background:rgba(16,185,129,.2);border-color:var(--green);}
+.mcq-opt.wrong .mcq-opt-letter{background:rgba(239,68,68,.2);border-color:var(--red);}
+.mcq-ans-area{display:none;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:9px;padding:.7rem 1rem;margin-top:.5rem;}
+.mcq-ans-area.show{display:block;}
+.mcq-ans-label{font-size:.82rem;font-weight:600;color:#6EE7B7;}
+.mcq-exp{font-size:.74rem;color:rgba(255,255,255,.45);margin-top:.25rem;line-height:1.55;}
+
+/* ══════════════════════════════════════
+   MCQ QUIZ MODE
+══════════════════════════════════════ */
+.quiz-q-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.35rem;margin-bottom:.85rem;}
+.quiz-q-num{font-size:.65rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;}
+.quiz-q-text{font-size:.92rem;font-weight:600;color:#fff;line-height:1.6;margin-bottom:1rem;}
+.quiz-opts{display:flex;flex-direction:column;gap:.45rem;}
+.quiz-opt{padding:.6rem .85rem;border:1.5px solid rgba(255,255,255,.1);border-radius:9px;cursor:pointer;font-size:.83rem;color:rgba(255,255,255,.75);display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.03);font-family:var(--font-b);width:100%;text-align:left;transition:all .18s;}
+.quiz-opt:hover{border-color:rgba(245,184,0,.4);color:#fff;}
+.quiz-opt.selected{border-color:var(--gold);background:rgba(245,184,0,.08);color:var(--gold);}
+
+
+/* ══════════════════════════════════════
+   MATH CALCULATOR MODAL
+══════════════════════════════════════ */
+.calc-trigger{display:inline-flex;align-items:center;gap:6px;background:rgba(245,184,0,.1);border:1.5px solid rgba(245,184,0,.25);color:var(--gold);border-radius:9px;padding:.4rem .85rem;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--font-b);transition:all .18s;margin-bottom:.5rem;}
+.calc-trigger:hover{background:rgba(245,184,0,.18);border-color:rgba(245,184,0,.4);}
+.calc-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;backdrop-filter:blur(4px);}
+.calc-modal-overlay.open{display:flex;align-items:flex-end;justify-content:center;}
+@media(min-width:480px){.calc-modal-overlay.open{align-items:center;}}
+.calc-modal{background:#0F1E35;border:1px solid rgba(245,184,0,.2);border-radius:20px 20px 0 0;width:100%;max-width:420px;padding:1.25rem;box-shadow:0 -8px 40px rgba(0,0,0,.4);}
+@media(min-width:480px){.calc-modal{border-radius:20px;}}
+.calc-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.calc-modal-title{font-family:var(--font-d);font-size:.95rem;font-weight:800;color:#fff;}
+.calc-close{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.6);width:30px;height:30px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.calc-close:hover{background:rgba(239,68,68,.2);color:var(--red);}
+.calc-target-label{font-size:.68rem;color:rgba(255,255,255,.35);margin-bottom:.75rem;background:rgba(255,255,255,.04);padding:.35rem .65rem;border-radius:6px;}
+.calc-target-label span{color:var(--gold);font-weight:600;}
+.calc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin-bottom:.75rem;}
+.calc-btn{padding:.55rem .3rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.8);font-size:.82rem;font-weight:600;cursor:pointer;font-family:'Courier New',monospace;transition:all .15s;text-align:center;}
+.calc-btn:hover{background:rgba(245,184,0,.15);border-color:rgba(245,184,0,.35);color:var(--gold);}
+.calc-btn:active{transform:scale(.95);}
+.calc-section-label{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.25);margin-bottom:.4rem;margin-top:.5rem;}
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--font-b);color:var(--text);background:var(--white);overflow-x:hidden;}
@@ -979,7 +1050,7 @@ body{padding-bottom:70px;}
     <div class="sec-head fade">
       <div class="eyebrow eyebrow-blue">Updates</div>
       <h2>Results & Announcements</h2>
-      <p>Test results, merit lists, exam dates aur important notifications.</p>
+      <p>Test results, merit lists, exam dates and important notifications.</p>
       <div class="gold-bar"></div>
     </div>
     <div class="ra-filter-bar fade">
@@ -990,7 +1061,7 @@ body{padding-bottom:70px;}
       <button class="ra-filter" onclick="filterRA('announce',this)">📢 General</button>
     </div>
     <div class="ra-grid fade" id="raGrid">
-      <div class="ra-empty">⏳ Koi announcement abhi nahi. Jaldi aayegi!</div>
+      <div class="ra-empty">⏳ No announcements yet. Stay tuned!</div>
     </div>
   </div>
 </section>
@@ -1002,7 +1073,7 @@ body{padding-bottom:70px;}
     <div class="sec-head fade">
       <div class="eyebrow eyebrow-blue">Resources</div>
       <h2>Study Resources</h2>
-      <p>Past Papers aur University Guide — sab ek jagah.</p>
+      <p>Past Papers aur University Guide — all in one place.</p>
       <div class="gold-bar"></div>
     </div>
     <div class="res-tabs fade">
@@ -1034,7 +1105,7 @@ body{padding-bottom:70px;}
     <div class="sec-head light fade">
       <div class="eyebrow eyebrow-white">MCQ Bank</div>
       <h2 style="color:#fff;">MCQ Bank & Daily Quiz</h2>
-      <p style="color:rgba(255,255,255,.5);">Subject wise MCQs parhen, quiz den aur ranking mein apni jagah banayein.</p>
+      <p style="color:rgba(255,255,255,.5);">Browse subject-wise MCQs, take quizzes and earn your place in the rankings.</p>
       <div class="gold-bar"></div>
     </div>
 
@@ -1050,7 +1121,7 @@ body{padding-bottom:70px;}
 
       <!-- Subject not selected -->
       <div id="mcq-subject-select">
-        <p style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:1rem;">Subject choose karein:</p>
+        <p style="font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:1rem;">Choose a subject:</p>
         <div class="subject-grid fade" id="subjectGrid"></div>
       </div>
 
@@ -1108,8 +1179,8 @@ body{padding-bottom:70px;}
                 📊 Last attempt: <span id="quizPrevScore"></span>
               </div>
               <div style="margin-bottom:1.25rem;">
-                <label style="font-size:.78rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.4rem;">Apna naam likhein (ranking ke liye):</label>
-                <input type="text" id="quizUserName" placeholder="Jaise: Ali Hassan" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
+                <label style="font-size:.78rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.4rem;">Enter your name (for ranking):</label>
+                <input type="text" id="quizUserName" placeholder="e.g. Ali Hassan" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
               </div>
               <button class="btn btn-gold btn-lg" onclick="startPageQuiz()">Start Quiz →</button>
             </div>
@@ -1161,7 +1232,7 @@ body{padding-bottom:70px;}
     <!-- SUBMIT PANE -->
     <div id="mcq-submit" class="mcq-pane" style="display:none;">
       <div class="submit-mcq-form fade">
-        <h3 style="font-family:var(--font-d);font-size:1rem;font-weight:800;color:#fff;margin-bottom:1rem;">✍️ MCQ Submit Karein</h3>
+        <h3 style="font-family:var(--font-d);font-size:1rem;font-weight:800;color:#fff;margin-bottom:1rem;">✍️ Submit an MCQ</h3>
         <p style="font-size:.78rem;color:rgba(255,255,255,.35);margin-bottom:1.25rem;">Your MCQ will be added after admin approval.</p>
         <div class="fi" style="margin-bottom:.85rem;">
           <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Your Name *</label>
@@ -1175,62 +1246,16 @@ body{padding-bottom:70px;}
         </div>
         <div class="fi" style="margin-bottom:.5rem;">
           <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Question * <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(Math symbols supported)</span></label>
-          <div class="math-toolbar">
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b2')">x²</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b3')">x³</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2074')">x⁴</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u207b\u00b9')">x⁻¹</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u221a')">√</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u221b')">\u221b</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03c0')">π</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00f7')">÷</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00d7')">×</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b1')">±</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2260')">≠</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2264')">≤</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2265')">≥</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u221e')">∞</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2211')">Σ</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u222b')">∫</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b0')">°</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03b1')">α</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03b2')">β</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03b8')">θ</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03bb')">λ</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u0394')">Δ</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00bd')">½</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00bc')">¼</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00be')">¾</button>
-          </div>
+          <button class="calc-trigger" onclick="openCalcModal('subQuestion','Question')">🧮 Open Math Calculator</button>
           <textarea id="subQuestion" rows="3" placeholder="Type your question..." onfocus="setMathTarget('subQuestion')" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
         </div>
 
-        <!-- Shared Math Toolbar for Options -->
-        <div style="margin-bottom:.65rem;background:rgba(245,184,0,.04);border:1px solid rgba(245,184,0,.12);border-radius:10px;padding:.65rem .75rem;">
-          <div style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;">&#9998; Math Calculator — Options ke liye <span id="optToolbarLabel" style="color:var(--gold);font-weight:600;">(neeche wala option click karein)</span></div>
-          <div class="math-toolbar" id="optMathToolbar" style="opacity:.45;pointer-events:none;transition:opacity .2s;">
-            <button class="math-btn" onclick="insertMathToActive('\u00b2')">x²</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00b3')">x³</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2074')">x⁴</button>
-            <button class="math-btn" onclick="insertMathToActive('\u207b\u00b9')">x⁻¹</button>
-            <button class="math-btn" onclick="insertMathToActive('\u221a')">√</button>
-            <button class="math-btn" onclick="insertMathToActive('\u221b')">\u221b</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03c0')">π</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00f7')">÷</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00d7')">×</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00b1')">±</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2260')">≠</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2264')">≤</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2265')">≥</button>
-            <button class="math-btn" onclick="insertMathToActive('\u221e')">∞</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00b0')">°</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03b1')">α</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03b2')">β</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03b8')">θ</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00bd')">½</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00bc')">¼</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00be')">¾</button>
-          </div>
+        <!-- Options Math Calculator Buttons -->
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.65rem;">
+          <button class="calc-trigger" onclick="openCalcModal('subA','Option A')">🧮 Option A</button>
+          <button class="calc-trigger" onclick="openCalcModal('subB','Option B')">🧮 Option B</button>
+          <button class="calc-trigger" onclick="openCalcModal('subC','Option C')">🧮 Option C</button>
+          <button class="calc-trigger" onclick="openCalcModal('subD','Option D')">🧮 Option D</button>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.85rem;">
@@ -1250,7 +1275,7 @@ body{padding-bottom:70px;}
         </div>
         <div class="fi" style="margin-bottom:1.25rem;">
           <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Description / Explanation <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(optional)</span></label>
-          <textarea id="subDesc" rows="2" placeholder="Explanation likhein (optional)..." style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
+          <textarea id="subDesc" rows="2" placeholder="Write explanation (optional)..." style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
         </div>
         <button class="btn btn-gold btn-lg" onclick="submitUserMCQ()">Submit MCQ →</button>
         <div id="subMsg" style="margin-top:.85rem;font-size:.8rem;"></div>
@@ -1268,7 +1293,7 @@ body{padding-bottom:70px;}
     <div class="sec-head light fade">
       <div class="eyebrow eyebrow-white">Tests & Challenges</div>
       <h2 style="color:#fff;">Tests, Quizzes & Competitions</h2>
-      <p style="color:rgba(255,255,255,.5);">MCQ Practice, Mock Tests, Live Tests aur Competitions — sab ek jagah.</p>
+      <p style="color:rgba(255,255,255,.5);">MCQ Practice, Mock Tests, Live Tests and Competitions — all in one place.</p>
       <div class="gold-bar"></div>
     </div>
     <div class="test-subtabs fade">
@@ -1310,12 +1335,12 @@ body{padding-bottom:70px;}
     </div>
     <div id="test-live" class="test-pane" style="display:none;">
       <div id="liveTestsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-top:1rem;">
-        <div style="text-align:center;padding:3rem;color:rgba(255,255,255,.3);font-size:.88rem;grid-column:1/-1;">⏳ Abhi koi live test nahi. Admin se notification ka intezaar karein!</div>
+        <div style="text-align:center;padding:3rem;color:rgba(255,255,255,.3);font-size:.88rem;grid-column:1/-1;">⏳ No live tests right now. Wait for admin notification!</div>
       </div>
     </div>
     <div id="test-comp" class="test-pane" style="display:none;">
       <div id="compList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1rem;">
-        <div style="text-align:center;padding:3rem;color:rgba(255,255,255,.3);font-size:.88rem;grid-column:1/-1;">🏆 Koi competition abhi available nahi. Jaldi announce hoga!</div>
+        <div style="text-align:center;padding:3rem;color:rgba(255,255,255,.3);font-size:.88rem;grid-column:1/-1;">🏆 No competitions available right now. Coming soon!</div>
       </div>
     </div>
   </div>
@@ -1328,7 +1353,7 @@ body{padding-bottom:70px;}
     <div class="sec-head light fade">
       <div class="eyebrow eyebrow-white">Progress</div>
       <h2 style="color:#fff;">Rankings & Dashboard</h2>
-      <p style="color:rgba(255,255,255,.5);">Leaderboard aur apni personal progress — sab ek jagah.</p>
+      <p style="color:rgba(255,255,255,.5);">Leaderboard and your personal progress — all in one place.</p>
       <div class="gold-bar"></div>
     </div>
     <div class="lb-wrap fade" style="margin-bottom:2.5rem;">
@@ -1361,7 +1386,7 @@ body{padding-bottom:70px;}
       </div>
     </div>
     <div style="text-align:center;margin-top:1.75rem;">
-      <a href="#tests" class="btn btn-blue btn-lg" style="color:#fff;">Test dein aur Progress track karein →</a>
+      <a href="#tests" class="btn btn-blue btn-lg" style="color:#fff;">Take a Test and Track Your Progress →</a>
     </div>
   </div>
 </section>
@@ -1379,16 +1404,16 @@ body{padding-bottom:70px;}
     <div class="service-grid fade" style="background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:20px;padding:2.5rem;">
       <div>
         <h3 style="font-family:var(--font-d);font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:.5rem;">Professional Quiz Creation Service</h3>
-        <p style="font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:1.5rem;line-height:1.75;">Apni academy, class, ya WhatsApp group ke liye professional online quiz banwayein.</p>
+        <p style="font-size:.85rem;color:rgba(255,255,255,.5);margin-bottom:1.5rem;line-height:1.75;">Get a professional online quiz created for your academy, class, or WhatsApp group.</p>
         <div class="service-steps">
-          <div class="sstep"><div class="ss-num">1</div><div><h4>Rs. 200 EasyPaisa par bhejen</h4><p>03073179891</p></div></div>
-          <div class="sstep"><div class="ss-num">2</div><div><h4>WhatsApp par Screenshot bhejen</h4><p>03073179891</p></div></div>
-          <div class="sstep"><div class="ss-num">3</div><div><h4>Quiz Link mil jayega</h4><p>WhatsApp par receive karein</p></div></div>
+          <div class="sstep"><div class="ss-num">1</div><div><h4>Send Rs. 200 via EasyPaisa</h4><p>03073179891</p></div></div>
+          <div class="sstep"><div class="ss-num">2</div><div><h4>Send Screenshot on WhatsApp</h4><p>03073179891</p></div></div>
+          <div class="sstep"><div class="ss-num">3</div><div><h4>Receive Your Quiz Link</h4><p>Delivered on WhatsApp</p></div></div>
         </div>
       </div>
       <div>
-        <div class="price-box"><div class="price-main">Rs. 200</div><div class="price-sub">Per Quiz — Sab Features</div></div>
-        <a href="https://wa.me/923073179891" target="_blank" class="btn btn-wa btn-full btn-lg" style="margin-top:1rem;">💬 WhatsApp par Order Karen</a>
+        <div class="price-box"><div class="price-main">Rs. 200</div><div class="price-sub">Per Quiz — All Features Included</div></div>
+        <a href="https://wa.me/923073179891" target="_blank" class="btn btn-wa btn-full btn-lg" style="margin-top:1rem;">💬 Order on WhatsApp</a>
       </div>
     </div>
   </div>
@@ -1414,7 +1439,7 @@ body{padding-bottom:70px;}
           <div class="cf-field"><label>Name</label><input type="text" placeholder="Full name"></div>
           <div class="cf-field"><label>WhatsApp</label><input type="tel" placeholder="03XX-XXXXXXX"></div>
         </div>
-        <div class="cf-field"><label>Message</label><textarea rows="4" placeholder="Apna sawal likhein..."></textarea></div>
+        <div class="cf-field"><label>Message</label><textarea rows="4" placeholder="Write your question here..."></textarea></div>
         <button class="btn btn-gold btn-full btn-lg" onclick="sendContact()">Send Message →</button>
       </div>
     </div>
@@ -1427,7 +1452,7 @@ body{padding-bottom:70px;}
     <div class="fb">
       <h2><span>Manzil-e-</span>Kamyabi</h2>
       <div class="tagline">Your Success, Our Mission</div>
-      <p>Pakistan ka comprehensive platform for entry test prep, past papers, mock tests aur university guidance.</p>
+      <p>Pakistan's comprehensive platform for entry test prep, past papers, mock tests and university guidance.</p>
       <div class="fb-admin">Admin: <b>Ahmed Jamali</b></div>
       <div class="socials">
         <a href="#" class="soc" title="Facebook">📘</a>
@@ -1736,7 +1761,7 @@ function finishQuiz(){
   const es=(elapsed%60).toString().padStart(2,'0');
   let correct=0,wrong=0,skipped=0;
   quiz.questions.forEach((q,i)=>{
-    if(quiz.answers[i]===null) skipped++;
+    if(quiz.answers[i]===null) skippedped++;
     else if(quiz.answers[i]===q.ans) correct++;
     else wrong++;
   });
@@ -1763,7 +1788,7 @@ function finishQuiz(){
   document.getElementById('qrTime').textContent=`${em}:${es}`;
   document.getElementById('reviewList').innerHTML = quiz.questions.map((q,i)=>{
     const ua=quiz.answers[i]; const correct2=ua===q.ans;
-    const skipped2=ua===null;
+    const skippedped2=ua===null;
     return `<div class="rev-item ${skipped2?'':correct2?'correct-bg':'wrong-bg'}">
       <div class="rev-q">Q${i+1}. ${q.q}</div>
       <div class="rev-ans">
@@ -1778,7 +1803,7 @@ function finishQuiz(){
   // Save to Firebase if configured
   if(db && !FB_CONFIG.apiKey.includes('PASTE')){
     db.ref('results/general').push({
-      test:quiz.title, score, total, pct, correct, wrong, skipped,
+      test:quiz.title, score, total, pct, correct, wrong, skippedped,
       timeTaken:`${em}:${es}`, submittedAt:Date.now()
     });
   }
@@ -1955,7 +1980,7 @@ function filterRA(type, btn) {
   const grid = document.getElementById('raGrid');
   if(!grid) return;
   const filtered = type==='all' ? _raAllData : _raAllData.filter(a=>a.type===type);
-  if(!filtered.length) { grid.innerHTML='<div class="ra-empty">⏳ Koi announcement abhi nahi. Jaldi aayegi!</div>'; return; }
+  if(!filtered.length) { grid.innerHTML='<div class="ra-empty">⏳ No announcements yet. Stay tuned!</div>'; return; }
   const typeLabels = {result:'📊 Result',exam:'📝 Exam',merit:'🏆 Merit List',announce:'📢 Announcement'};
   const typeClasses = {result:'ra-type-result',exam:'ra-type-exam',merit:'ra-type-merit',announce:'ra-type-announce'};
   grid.innerHTML = filtered.map(a=>`
@@ -2219,10 +2244,10 @@ function showQuizStart() {
 // ── START QUIZ ──
 function startPageQuiz() {
   const name = document.getElementById('quizUserName').value.trim();
-  if(!name){alert('Pehle apna naam likhein!');return;}
+  if(!name){alert('Please enter your name first!');return;}
   const start = (mcqState.currentPage-1)*MCQ_PER_PAGE;
   mcqState.quiz.questions = mcqState.allMCQs.slice(start, start+MCQ_PER_PAGE);
-  if(!mcqState.quiz.questions.length){alert('Is page mein MCQs nahi hain!');return;}
+  if(!mcqState.quiz.questions.length){alert('No MCQs available on this page!');return;}
   mcqState.quiz.current = 0;
   mcqState.quiz.score = 0;
   mcqState.quiz.answered = false;
@@ -2319,7 +2344,7 @@ function endQuiz() {
   document.getElementById('quiz-result-screen').style.display='block';
   document.getElementById('quizFinalScore').textContent = `${score}/${total}`;
   document.getElementById('quizResultSubject').textContent = mcqState.subjectName+' — Page '+mcqState.currentPage;
-  const msgs = pct>=90?'🏆 Shabaash! Kamaal ka result!':pct>=70?'👍 Acha result! Thodi aur mehnat karo.':pct>=50?'📚 Theek hai. Dobara koshish karo!':'💪 Haar mat mano — practice karo!';
+  const msgs = pct>=90?'🏆 Excellent! Outstanding result!':pct>=70?'👍 Great result! Keep pushing.':pct>=50?'📚 Not bad. Try again!':'💪 Don't give up — keep practicing!';
   document.getElementById('quizResultMsg').textContent = msgs;
   document.getElementById('quizResultEmoji').textContent = pct>=90?'🏆':pct>=70?'🎓':pct>=50?'📚':'💪';
   // Show history
@@ -2373,7 +2398,7 @@ function nextPageQuiz() {
     goToPage(mcqState.currentPage+1);
     setMCQMode('quiz');
   } else {
-    alert('Yeh aakhri page tha! Dobara shuru karein.');
+    alert('That was the last page! Starting from the beginning.');
     goToPage(1);
     setMCQMode('quiz');
   }
@@ -2382,7 +2407,7 @@ function shareQuizResult() {
   const score = mcqState.quiz.score;
   const total = mcqState.quiz.questions.length;
   const pct = Math.round((score/total)*100);
-  const text = `🎓 Manzil-e-Kamyabi MCQ Quiz Result!\n📚 Subject: ${mcqState.subjectName}\n📄 Page: ${mcqState.currentPage}\n✅ Score: ${score}/${total} (${pct}%)\n\nJoin karein: https://manzil-e-kamyabi.netlify.app`;
+  const text = `🎓 Manzil-e-Kamyabi MCQ Quiz Result!\n📚 Subject: ${mcqState.subjectName}\n📄 Page: ${mcqState.currentPage}\n✅ Score: ${score}/${total} (${pct}%)\n\nJoin us: https://manzil-e-kamyabi.netlify.app`;
   window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
 }
 
@@ -2405,7 +2430,7 @@ function loadMCQRanking(period) {
     const entries = Object.values(data).sort((a,b)=>(b.points||0)-(a.points||0));
     const body = document.getElementById('mcqRankBody');
     if(!body) return;
-    if(!entries.length){body.innerHTML='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.3);font-size:.82rem;">Abhi koi data nahi. Quiz dein aur ranking mein aayein!</div>';return;}
+    if(!entries.length){body.innerHTML='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.3);font-size:.82rem;">No data yet. Take a quiz to appear on the ranking!</div>';return;}
     const badges = ['🥇','🥈','🥉'];
     const badgeColors = [['#FFD700','rgba(255,215,0,.1)'],['#C0C0C0','rgba(192,192,192,.1)'],['#CD7F32','rgba(205,127,50,.1)']];
     body.innerHTML = entries.map((e,i)=>`
@@ -2440,7 +2465,7 @@ function submitUserMCQ() {
   const description = document.getElementById('subDesc').value.trim();
   const msg = document.getElementById('subMsg');
   if(!name||!subject||!question||!optA||!optB||!optC||!optD){
-    msg.innerHTML='<span style="color:#EF4444;">⚠️ Sab required fields bharein!</span>';return;
+    msg.innerHTML='<span style="color:#EF4444;">⚠️ Please fill in all required fields!</span>';return;
   }
   const data = {name,subject,question,optA,optB,optC,optD,correct,description,approved:false,submittedAt:Date.now()};
   db.ref('mcqPending').push(data).then(()=>{
@@ -2636,6 +2661,57 @@ function renderUnis(){
     <span class="bn-label">Contact</span>
   </a>
 </nav>
+
+
+<!-- ════════════════ MATH CALCULATOR MODAL ════════════════ -->
+<div class="calc-modal-overlay" id="calcModal" onclick="closeCalcModal(event)">
+  <div class="calc-modal">
+    <div class="calc-modal-head">
+      <div class="calc-modal-title">🧮 Math Calculator</div>
+      <button class="calc-close" onclick="closeCalcModalBtn()">×</button>
+    </div>
+    <div class="calc-target-label">Inserting into: <span id="calcTargetLabel">—</span></div>
+    <div class="calc-section-label">Powers & Roots</div>
+    <div class="calc-grid">
+      <button class="calc-btn" onclick="calcInsert('²')">x²</button>
+      <button class="calc-btn" onclick="calcInsert('³')">x³</button>
+      <button class="calc-btn" onclick="calcInsert('⁴')">x⁴</button>
+      <button class="calc-btn" onclick="calcInsert('⁻¹')">x⁻¹</button>
+      <button class="calc-btn" onclick="calcInsert('√')">√</button>
+      <button class="calc-btn" onclick="calcInsert('∛')">∛</button>
+      <button class="calc-btn" onclick="calcInsert('½')">½</button>
+      <button class="calc-btn" onclick="calcInsert('¼')">¼</button>
+      <button class="calc-btn" onclick="calcInsert('¾')">¾</button>
+      <button class="calc-btn" onclick="calcInsert('∞')">∞</button>
+    </div>
+    <div class="calc-section-label">Operations</div>
+    <div class="calc-grid">
+      <button class="calc-btn" onclick="calcInsert('÷')">÷</button>
+      <button class="calc-btn" onclick="calcInsert('×')">×</button>
+      <button class="calc-btn" onclick="calcInsert('±')">±</button>
+      <button class="calc-btn" onclick="calcInsert('≠')">≠</button>
+      <button class="calc-btn" onclick="calcInsert('≤')">≤</button>
+      <button class="calc-btn" onclick="calcInsert('≥')">≥</button>
+      <button class="calc-btn" onclick="calcInsert('∑')">Σ</button>
+      <button class="calc-btn" onclick="calcInsert('∫')">∫</button>
+      <button class="calc-btn" onclick="calcInsert('°')">°</button>
+      <button class="calc-btn" onclick="calcInsert('%')">%</button>
+    </div>
+    <div class="calc-section-label">Greek Letters</div>
+    <div class="calc-grid">
+      <button class="calc-btn" onclick="calcInsert('π')">π</button>
+      <button class="calc-btn" onclick="calcInsert('α')">α</button>
+      <button class="calc-btn" onclick="calcInsert('β')">β</button>
+      <button class="calc-btn" onclick="calcInsert('θ')">θ</button>
+      <button class="calc-btn" onclick="calcInsert('λ')">λ</button>
+      <button class="calc-btn" onclick="calcInsert('Δ')">Δ</button>
+      <button class="calc-btn" onclick="calcInsert('μ')">μ</button>
+      <button class="calc-btn" onclick="calcInsert('σ')">σ</button>
+      <button class="calc-btn" onclick="calcInsert('ω')">ω</button>
+      <button class="calc-btn" onclick="calcInsert('φ')">φ</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
