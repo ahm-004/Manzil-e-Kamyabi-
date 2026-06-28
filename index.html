@@ -1030,7 +1030,7 @@ body{padding-bottom:70px;}
       <div id="mcq-content" style="display:none;">
         <div class="mcq-browse-header">
           <div>
-            <button onclick="backToSubjects()" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:.8rem;margin-bottom:.4rem;display:block;font-family:var(--font-b);">← Subjects</button>
+            <button onclick="backToSubjects()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.8);cursor:pointer;font-size:.8rem;margin-bottom:.85rem;display:inline-flex;align-items:center;gap:5px;font-family:var(--font-b);padding:.4rem .9rem;border-radius:8px;font-weight:600;">← Back to Subjects</button>
             <span id="mcq-subject-title" style="font-family:var(--font-d);font-size:1.1rem;font-weight:800;color:#fff;"></span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;">
@@ -1134,74 +1134,74 @@ body{padding-bottom:70px;}
     <div id="mcq-submit" class="mcq-pane" style="display:none;">
       <div class="submit-mcq-form fade">
         <h3 style="font-family:var(--font-d);font-size:1rem;font-weight:800;color:#fff;margin-bottom:1rem;">✍️ MCQ Submit Karein</h3>
-        <p style="font-size:.78rem;color:rgba(255,255,255,.35);margin-bottom:1.25rem;">Aapka MCQ admin se approve hone ke baad MCQ Bank mein add hoga.</p>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.35);margin-bottom:1.25rem;">Your MCQ will be added after admin approval.</p>
         <div class="fi" style="margin-bottom:.85rem;">
-          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Apna Naam *</label>
-          <input type="text" id="subName" placeholder="Jaise: Fatima Malik" class="admin-input" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Your Name *</label>
+          <input type="text" id="subName" placeholder="e.g. Fatima Malik" class="admin-input" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
         </div>
         <div class="fi" style="margin-bottom:.85rem;">
           <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Subject *</label>
           <select id="subSubject" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;">
-            <option value="">-- Subject Choose Karein --</option>
+            <option value="">-- Choose Subject --</option>
           </select>
         </div>
         <div class="fi" style="margin-bottom:.5rem;">
-          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Question * <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(Math symbols use kar sakte hain)</span></label>
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Question * <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(Math symbols supported)</span></label>
           <div class="math-toolbar">
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b2')">x\u00b2</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b3')">x\u00b3</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2074')">x\u2074</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u207b\u00b9')">x\u207b\u00b9</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u221a')">\u221a</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b2')">x²</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b3')">x³</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2074')">x⁴</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u207b\u00b9')">x⁻¹</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u221a')">√</button>
             <button class="math-btn" onclick="insertMath('subQuestion','\u221b')">\u221b</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03c0')">\u03c0</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00f7')">\u00f7</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00d7')">\u00d7</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b1')">\u00b1</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2260')">\u2260</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2264')">\u2264</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2265')">\u2265</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u221e')">\u221e</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u2211')">\u2211</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u222b')">\u222b</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00b0')">\u00b0</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03b1')">\u03b1</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03b2')">\u03b2</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03b8')">\u03b8</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u03bb')">\u03bb</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u0394')">\u0394</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00bd')">\u00bd</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00bc')">\u00bc</button>
-            <button class="math-btn" onclick="insertMath('subQuestion','\u00be')">\u00be</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03c0')">π</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00f7')">÷</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00d7')">×</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b1')">±</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2260')">≠</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2264')">≤</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2265')">≥</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u221e')">∞</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u2211')">Σ</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u222b')">∫</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00b0')">°</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03b1')">α</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03b2')">β</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03b8')">θ</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u03bb')">λ</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u0394')">Δ</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00bd')">½</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00bc')">¼</button>
+            <button class="math-btn" onclick="insertMath('subQuestion','\u00be')">¾</button>
           </div>
-          <textarea id="subQuestion" rows="3" placeholder="Question likhein..." onfocus="setMathTarget('subQuestion')" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
+          <textarea id="subQuestion" rows="3" placeholder="Type your question..." onfocus="setMathTarget('subQuestion')" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
         </div>
 
         <!-- Shared Math Toolbar for Options -->
         <div style="margin-bottom:.65rem;background:rgba(245,184,0,.04);border:1px solid rgba(245,184,0,.12);border-radius:10px;padding:.65rem .75rem;">
           <div style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;">&#9998; Math Calculator — Options ke liye <span id="optToolbarLabel" style="color:var(--gold);font-weight:600;">(neeche wala option click karein)</span></div>
           <div class="math-toolbar" id="optMathToolbar" style="opacity:.45;pointer-events:none;transition:opacity .2s;">
-            <button class="math-btn" onclick="insertMathToActive('\u00b2')">x\u00b2</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00b3')">x\u00b3</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2074')">x\u2074</button>
-            <button class="math-btn" onclick="insertMathToActive('\u207b\u00b9')">x\u207b\u00b9</button>
-            <button class="math-btn" onclick="insertMathToActive('\u221a')">\u221a</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00b2')">x²</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00b3')">x³</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2074')">x⁴</button>
+            <button class="math-btn" onclick="insertMathToActive('\u207b\u00b9')">x⁻¹</button>
+            <button class="math-btn" onclick="insertMathToActive('\u221a')">√</button>
             <button class="math-btn" onclick="insertMathToActive('\u221b')">\u221b</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03c0')">\u03c0</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00f7')">\u00f7</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00d7')">\u00d7</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00b1')">\u00b1</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2260')">\u2260</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2264')">\u2264</button>
-            <button class="math-btn" onclick="insertMathToActive('\u2265')">\u2265</button>
-            <button class="math-btn" onclick="insertMathToActive('\u221e')">\u221e</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00b0')">\u00b0</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03b1')">\u03b1</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03b2')">\u03b2</button>
-            <button class="math-btn" onclick="insertMathToActive('\u03b8')">\u03b8</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00bd')">\u00bd</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00bc')">\u00bc</button>
-            <button class="math-btn" onclick="insertMathToActive('\u00be')">\u00be</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03c0')">π</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00f7')">÷</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00d7')">×</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00b1')">±</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2260')">≠</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2264')">≤</button>
+            <button class="math-btn" onclick="insertMathToActive('\u2265')">≥</button>
+            <button class="math-btn" onclick="insertMathToActive('\u221e')">∞</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00b0')">°</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03b1')">α</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03b2')">β</button>
+            <button class="math-btn" onclick="insertMathToActive('\u03b8')">θ</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00bd')">½</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00bc')">¼</button>
+            <button class="math-btn" onclick="insertMathToActive('\u00be')">¾</button>
           </div>
         </div>
 
@@ -2091,7 +2091,7 @@ function renderMCQList() {
   const pageMCQs = mcqState.allMCQs.slice(start, start+MCQ_PER_PAGE);
   const list = document.getElementById('mcqList');
   if(!pageMCQs.length){
-    list.innerHTML='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.3);">Is subject mein abhi MCQs nahi hain.</div>';
+    list.innerHTML='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,.3);">No MCQs available in this subject yet.</div>';
     return;
   }
   list.innerHTML = pageMCQs.map((m,i)=>{
@@ -2106,7 +2106,7 @@ function renderMCQList() {
         </button>`).join('')}
       </div>
       <div class="mcq-ans-area" id="ans-${globalNum}">
-        <div class="mcq-ans-label">✅ Sahi Jawab: ${m.correct}</div>
+        <div class="mcq-ans-label">✅ Correct Answer: ${m.correct}</div>
         ${m.description?`<div class="mcq-desc">${formatMath(m.description)}</div>`:''}
       </div>
     </div>`;
@@ -2394,7 +2394,7 @@ function loadMCQRanking(period) {
 function populateSubjectDropdown() {
   const sel = document.getElementById('subSubject');
   if(!sel) return;
-  sel.innerHTML = '<option value="">-- Subject Choose Karein --</option>' +
+  sel.innerHTML = '<option value="">-- Choose Subject --</option>' +
     MCQ_SUBJECTS.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('');
 }
 
