@@ -1093,9 +1093,6 @@ body{padding-bottom:70px;}
   <div class="modal"><div class="modal-head"><h2 id="modalTitle">Past Papers</h2><button class="modal-close" onclick="closeModal('papersModal')">✕</button></div><div id="modalBody"></div></div>
 </div>
 
-<div class="modal-overlay" id="papersModal">
-  <div class="modal"><div class="modal-head"><h2 id="modalTitle">Past Papers</h2><button class="modal-close" onclick="closeModal('papersModal')">✕</button></div><div id="modalBody"></div></div>
-</div>
 
 <!-- ══════════ SECTION 3: MCQ BANK ══════════ -->
 <section id="mcqbank" style="background:linear-gradient(135deg,#060E1C,#0B1829,#0F1E35);padding:4rem 1.5rem;">
@@ -1919,6 +1916,34 @@ function showToast(msg){
 }
 function sendContact(){ showToast('✅ Message sent! We\'ll reply on WhatsApp soon.'); }
 
+// ── CALCULATOR MODAL ──
+let calcTargetField = null;
+function openCalcModal(fieldId, label) {
+  calcTargetField = fieldId;
+  const overlay = document.getElementById('calcModal');
+  const title = document.getElementById('calcModalTitle');
+  if(title) title.textContent = 'Insert Symbol → ' + label;
+  if(overlay) overlay.style.display = 'flex';
+}
+function closeCalcModal(e) {
+  if(e && e.target !== document.getElementById('calcModal')) return;
+  document.getElementById('calcModal').style.display = 'none';
+}
+function closeCalcModalBtn() {
+  document.getElementById('calcModal').style.display = 'none';
+}
+function calcInsert(symbol) {
+  if(!calcTargetField) return;
+  const el = document.getElementById(calcTargetField);
+  if(!el) return;
+  const start = el.selectionStart || el.value.length;
+  const end = el.selectionEnd || el.value.length;
+  el.value = el.value.substring(0, start) + symbol + el.value.substring(end);
+  el.selectionStart = el.selectionEnd = start + symbol.length;
+  el.focus();
+  closeCalcModalBtn();
+}
+
 
 // Fade observer
 const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
@@ -2344,7 +2369,7 @@ function endQuiz() {
   document.getElementById('quiz-result-screen').style.display='block';
   document.getElementById('quizFinalScore').textContent = `${score}/${total}`;
   document.getElementById('quizResultSubject').textContent = mcqState.subjectName+' — Page '+mcqState.currentPage;
-  const msgs = pct>=90?'🏆 Excellent! Outstanding result!':pct>=70?'👍 Great result! Keep pushing.':pct>=50?'📚 Not bad. Try again!':'💪 Don't give up — keep practicing!';
+  const msgs = pct>=90?'🏆 Excellent! Outstanding result!':pct>=70?'👍 Great result! Keep pushing.':pct>=50?'📚 Not bad. Try again!':"💪 Don't give up — keep practicing!";
   document.getElementById('quizResultMsg').textContent = msgs;
   document.getElementById('quizResultEmoji').textContent = pct>=90?'🏆':pct>=70?'🎓':pct>=50?'📚':'💪';
   // Show history
