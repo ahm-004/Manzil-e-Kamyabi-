@@ -266,7 +266,16 @@ body.theme-dark .mcq-opt-letter,body.theme-midnight .mcq-opt-letter{background:#
 /* ══════════════════════════════════════
    MCQ SUBJECT GRID
 ══════════════════════════════════════ */
-.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.85rem;margin-bottom:1.5rem;}
+.subject-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.85rem;margin-bottom:1.5rem;}
+@media(min-width:480px){.subject-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:768px){.subject-grid{grid-template-columns:repeat(4,1fr);}}
+.subj-card{background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:1.25rem 1rem;cursor:pointer;transition:all .22s;text-align:center;position:relative;overflow:hidden;}
+.subj-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,184,0,.06),transparent);opacity:0;transition:opacity .22s;}
+.subj-card:hover{transform:translateY(-4px);border-color:rgba(245,184,0,.35);box-shadow:0 8px 28px rgba(0,0,0,.35);}
+.subj-card:hover::before{opacity:1;}
+.sc-icon{font-size:2rem;margin-bottom:.55rem;display:block;line-height:1;}
+.sc-name{font-family:var(--font-d);font-size:.88rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
+.sc-count{font-size:.72rem;font-weight:600;color:var(--gold);background:rgba(245,184,0,.1);border:1px solid rgba(245,184,0,.18);border-radius:20px;display:inline-block;padding:.15rem .6rem;}
 
 /* ══════════════════════════════════════
    MCQ BROWSE/QUIZ HEADER
@@ -1093,6 +1102,9 @@ body{padding-bottom:70px;}
   <div class="modal"><div class="modal-head"><h2 id="modalTitle">Past Papers</h2><button class="modal-close" onclick="closeModal('papersModal')">✕</button></div><div id="modalBody"></div></div>
 </div>
 
+<div class="modal-overlay" id="papersModal">
+  <div class="modal"><div class="modal-head"><h2 id="modalTitle">Past Papers</h2><button class="modal-close" onclick="closeModal('papersModal')">✕</button></div><div id="modalBody"></div></div>
+</div>
 
 <!-- ══════════ SECTION 3: MCQ BANK ══════════ -->
 <section id="mcqbank" style="background:linear-gradient(135deg,#060E1C,#0B1829,#0F1E35);padding:4rem 1.5rem;">
@@ -1242,24 +1254,20 @@ body{padding-bottom:70px;}
           </select>
         </div>
         <div class="fi" style="margin-bottom:.5rem;">
-          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Question * <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(Math symbols supported)</span></label>
-          <button class="calc-trigger" onclick="openCalcModal('subQuestion','Question')">🧮 Open Math Calculator</button>
-          <textarea id="subQuestion" rows="3" placeholder="Type your question..." onfocus="setMathTarget('subQuestion')" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
+          <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Question * <span style="color:rgba(255,255,255,.25);font-weight:400;text-transform:none;">(click 🧮 after clicking in a field)</span></label>
+          <textarea id="subQuestion" rows="3" placeholder="Type your question..." onfocus="setMathTarget('subQuestion','Question')" style="width:100%;padding:.65rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;font-family:var(--font-b);box-sizing:border-box;resize:vertical;"></textarea>
         </div>
 
-        <!-- Options Math Calculator Buttons -->
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.65rem;">
-          <button class="calc-trigger" onclick="openCalcModal('subA','Option A')">🧮 Option A</button>
-          <button class="calc-trigger" onclick="openCalcModal('subB','Option B')">🧮 Option B</button>
-          <button class="calc-trigger" onclick="openCalcModal('subC','Option C')">🧮 Option C</button>
-          <button class="calc-trigger" onclick="openCalcModal('subD','Option D')">🧮 Option D</button>
+        <!-- ONE shared calculator button -->
+        <div style="margin-bottom:.65rem;">
+          <button class="calc-trigger" onclick="openCalcModal()">🧮 Math Symbols — Insert into focused field</button>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.85rem;">
-          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option A *</label><input type="text" id="subA" placeholder="Option A" onfocus="setMathTarget('subA')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
-          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option B *</label><input type="text" id="subB" placeholder="Option B" onfocus="setMathTarget('subB')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
-          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option C *</label><input type="text" id="subC" placeholder="Option C" onfocus="setMathTarget('subC')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
-          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option D *</label><input type="text" id="subD" placeholder="Option D" onfocus="setMathTarget('subD')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option A *</label><input type="text" id="subA" placeholder="Option A" onfocus="setMathTarget('subA','Option A')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option B *</label><input type="text" id="subB" placeholder="Option B" onfocus="setMathTarget('subB','Option B')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option C *</label><input type="text" id="subC" placeholder="Option C" onfocus="setMathTarget('subC','Option C')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
+          <div class="fi"><label style="font-size:.7rem;color:rgba(255,255,255,.4);display:block;margin-bottom:.3rem;">Option D *</label><input type="text" id="subD" placeholder="Option D" onfocus="setMathTarget('subD','Option D')" style="width:100%;padding:.6rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.82rem;font-family:var(--font-b);box-sizing:border-box;"></div>
         </div>
         <div class="fi" style="margin-bottom:.85rem;">
           <label style="font-size:.72rem;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.4rem;">Correct Answer *</label>
@@ -1916,34 +1924,6 @@ function showToast(msg){
 }
 function sendContact(){ showToast('✅ Message sent! We\'ll reply on WhatsApp soon.'); }
 
-// ── CALCULATOR MODAL ──
-let calcTargetField = null;
-function openCalcModal(fieldId, label) {
-  calcTargetField = fieldId;
-  const overlay = document.getElementById('calcModal');
-  const title = document.getElementById('calcModalTitle');
-  if(title) title.textContent = 'Insert Symbol → ' + label;
-  if(overlay) overlay.style.display = 'flex';
-}
-function closeCalcModal(e) {
-  if(e && e.target !== document.getElementById('calcModal')) return;
-  document.getElementById('calcModal').style.display = 'none';
-}
-function closeCalcModalBtn() {
-  document.getElementById('calcModal').style.display = 'none';
-}
-function calcInsert(symbol) {
-  if(!calcTargetField) return;
-  const el = document.getElementById(calcTargetField);
-  if(!el) return;
-  const start = el.selectionStart || el.value.length;
-  const end = el.selectionEnd || el.value.length;
-  el.value = el.value.substring(0, start) + symbol + el.value.substring(end);
-  el.selectionStart = el.selectionEnd = start + symbol.length;
-  el.focus();
-  closeCalcModalBtn();
-}
-
 
 // Fade observer
 const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
@@ -2508,22 +2488,59 @@ function initMCQBank() {
 
 
 
-// ── MATH TARGET (for options toolbar) ──
-let _mathActiveTarget = null;
-function setMathTarget(id) {
-  _mathActiveTarget = id;
-  const toolbar = document.getElementById('optMathToolbar');
-  const lbl = document.getElementById('optToolbarLabel');
-  if(toolbar) { toolbar.style.opacity='1'; toolbar.style.pointerEvents='auto'; }
-  if(lbl) {
-    const labels = {subA:'Option A',subB:'Option B',subC:'Option C',subD:'Option D',subQuestion:'Question'};
-    lbl.textContent = '→ ' + (labels[id]||id) + ' ke liye active';
+// ── CALCULATOR MODAL — Smart cursor-aware ──
+let calcTargetField = null;
+let calcTargetLabel = '';
+let calcCursorPos = null;
+
+function setMathTarget(fieldId, label) {
+  calcTargetField = fieldId;
+  calcTargetLabel = label || fieldId;
+  // Save cursor pos immediately on focus
+  const el = document.getElementById(fieldId);
+  if(el) {
+    el.addEventListener('keyup', ()=>{ calcCursorPos = el.selectionStart; }, {once:false});
+    el.addEventListener('click', ()=>{ calcCursorPos = el.selectionStart; }, {once:false});
+    calcCursorPos = el.selectionStart ?? el.value.length;
   }
 }
-function insertMathToActive(sym) {
-  if(!_mathActiveTarget) return;
-  insertMath(_mathActiveTarget, sym);
+
+function openCalcModal() {
+  const labelEl = document.getElementById('calcTargetLabel');
+  if(labelEl) labelEl.textContent = calcTargetField ? ('→ ' + calcTargetLabel) : 'Pehle kisi field mein click karein';
+  const overlay = document.getElementById('calcModal');
+  if(overlay) { overlay.style.display = 'flex'; overlay.classList.add('open'); }
+  // Snapshot cursor pos
+  if(calcTargetField) {
+    const el = document.getElementById(calcTargetField);
+    if(el) calcCursorPos = el.selectionStart ?? el.value.length;
+  }
 }
+function closeCalcModal(e) {
+  if(e && e.target !== document.getElementById('calcModal')) return;
+  document.getElementById('calcModal').style.display='none';
+  document.getElementById('calcModal').classList.remove('open');
+}
+function closeCalcModalBtn() {
+  document.getElementById('calcModal').style.display='none';
+  document.getElementById('calcModal').classList.remove('open');
+}
+function calcInsert(symbol) {
+  if(!calcTargetField) { showToast('⚠️ Pehle kisi field mein click/tap karein'); return; }
+  const el = document.getElementById(calcTargetField);
+  if(!el) return;
+  const pos = (calcCursorPos !== null) ? calcCursorPos : el.value.length;
+  el.value = el.value.substring(0, pos) + symbol + el.value.substring(pos);
+  calcCursorPos = pos + symbol.length;
+  const labelEl = document.getElementById('calcTargetLabel');
+  if(labelEl) labelEl.textContent = '→ ' + calcTargetLabel;
+  showToast('✅ ' + symbol + ' → ' + calcTargetLabel);
+}
+
+// Legacy compat
+let _mathActiveTarget = null;
+function insertMathToActive(sym) { calcInsert(sym); }
+
 
 // ── BOTTOM NAV ──
 function setActiveNav(el) {
