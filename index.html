@@ -234,6 +234,34 @@ body.theme-saffron .hero-badge{background:rgba(249,115,22,.15)!important;border-
 .theme-option.active .theme-dot{border-color:var(--gold);}
 .theme-option.active span{color:#fff!important;}
 
+
+/* ══════════════════════════════════════
+   MCQ BANK CARDS
+══════════════════════════════════════ */
+.mcq-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:1.35rem;margin-bottom:.85rem;box-shadow:0 2px 12px rgba(11,24,41,.06);transition:box-shadow .2s;}
+.mcq-card:hover{box-shadow:0 4px 20px rgba(11,24,41,.1);}
+.mcq-num{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);background:var(--sky);padding:.2rem .55rem;border-radius:20px;display:inline-block;margin-bottom:.65rem;}
+.mcq-q{font-size:.92rem;font-weight:600;color:var(--text);line-height:1.6;margin-bottom:1rem;}
+.mcq-options{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.85rem;}
+.mcq-opt{padding:.65rem .9rem;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:.85rem;color:var(--text);transition:all .18s;display:flex;align-items:center;gap:.65rem;background:var(--white);font-family:var(--font-b);text-align:left;width:100%;}
+.mcq-opt:hover{border-color:var(--blue);background:var(--sky);color:var(--blue);}
+.mcq-opt.correct{border-color:var(--green)!important;background:#ECFDF5!important;color:#065F46!important;}
+.mcq-opt.wrong{border-color:var(--red)!important;background:#FEF2F2!important;color:#991B1B!important;}
+.mcq-opt-letter{width:26px;height:26px;border-radius:50%;background:var(--off);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+.mcq-opt.correct .mcq-opt-letter{background:#D1FAE5;border-color:var(--green);color:#065F46;}
+.mcq-opt.wrong .mcq-opt-letter{background:#FEE2E2;border-color:var(--red);color:#991B1B;}
+.mcq-ans-area{display:none;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:9px;padding:.75rem 1rem;margin-top:.5rem;}
+.mcq-ans-area.show{display:block;}
+.mcq-ans-label{font-size:.82rem;font-weight:600;color:var(--green);}
+.mcq-exp{font-size:.75rem;color:var(--muted);margin-top:.3rem;line-height:1.55;}
+
+/* Dark theme MCQ */
+body.theme-dark .mcq-card,body.theme-midnight .mcq-card{background:#0F1E35!important;border-color:#1A3158!important;}
+body.theme-dark .mcq-q,body.theme-midnight .mcq-q{color:#E2EAF8!important;}
+body.theme-dark .mcq-opt,body.theme-midnight .mcq-opt{background:#0B1829!important;border-color:#1A3158!important;color:#E2EAF8!important;}
+body.theme-dark .mcq-opt:hover,body.theme-midnight .mcq-opt:hover{background:#0F1E35!important;border-color:var(--blue)!important;}
+body.theme-dark .mcq-opt-letter,body.theme-midnight .mcq-opt-letter{background:#1A3158!important;border-color:#243B5E!important;}
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--font-b);color:var(--text);background:var(--white);overflow-x:hidden;}
