@@ -8,6 +8,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 // Firebase load check
 window.addEventListener('load', function() {
@@ -63,6 +65,15 @@ body{font-family:var(--font-b);background:#060E1A;color:#E2EAF8;min-height:100vh
 .btn-green:hover{background:rgba(16,185,129,.2);}
 .btn-outline{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.65);padding:.5rem 1rem;}
 .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── TOGGLE SWITCH ── */
+.switch{position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch-track{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);border-radius:30px;transition:.25s;}
+.switch-track::before{content:"";position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s;}
+.switch input:checked + .switch-track{background:var(--gold);border-color:var(--gold);}
+.switch input:checked + .switch-track::before{transform:translateX(20px);background:var(--navy);}
+
 .btn-sm{padding:.42rem .85rem;font-size:.75rem;}
 .btn-full{width:100%;justify-content:center;}
 
@@ -142,6 +153,23 @@ body{font-family:var(--font-b);background:#060E1A;color:#E2EAF8;min-height:100vh
 
 /* ── RESULTS TABLE ── */
 .results-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem;}
+
+/* ── PER-TEST RESULT CARDS ── */
+.rtc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem;margin-bottom:1.5rem;}
+.rtc-card{background:rgba(255,255,255,.035);border:1.5px solid rgba(255,255,255,.08);border-radius:14px;padding:1.1rem;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;}
+.rtc-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(245,184,0,.06),transparent 60%);opacity:0;transition:opacity .22s;}
+.rtc-card:hover{border-color:rgba(245,184,0,.35);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.35);}
+.rtc-card:hover::before{opacity:1;}
+.rtc-card.active{border-color:var(--gold);background:rgba(245,184,0,.07);box-shadow:0 0 0 1px var(--gold),0 10px 28px rgba(245,184,0,.12);}
+.rtc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;}
+.rtc-count{font-family:var(--font-m);font-size:.68rem;font-weight:700;color:var(--gold);background:rgba(245,184,0,.12);padding:.2rem .55rem;border-radius:6px;}
+.rtc-title{font-family:var(--font-d);font-size:.88rem;font-weight:700;color:#fff;margin-bottom:.45rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.4em;}
+.rtc-stats{display:flex;gap:.9rem;font-size:.7rem;color:rgba(255,255,255,.4);}
+.rtc-stats b{color:rgba(255,255,255,.75);font-family:var(--font-m);}
+.rtc-pdf-btn{position:absolute;top:.8rem;right:.8rem;width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:.78rem;cursor:pointer;transition:all .2s;}
+.rtc-pdf-btn:hover{background:var(--gold);border-color:var(--gold);}
+.rtc-all-card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,rgba(245,184,0,.08),rgba(245,184,0,.02));border:1.5px dashed rgba(245,184,0,.3);}
+.rtc-all-card .rtc-icon{font-size:1.4rem;margin-bottom:.35rem;}
 .res-search{padding:.48rem .9rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:8px;color:#fff;font-size:.82rem;font-family:var(--font-b);outline:none;width:210px;transition:border-color .2s;}
 .res-search:focus{border-color:var(--gold);}
 .res-search::placeholder{color:rgba(255,255,255,.2);}
@@ -361,6 +389,34 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
             </div>
           </div>
           <div class="fi"><label>Instructions (optional)</label><textarea id="testInstr" rows="2" placeholder="Students ke liye koi special instructions..."></textarea></div>
+
+          <div style="border-top:1px solid rgba(255,255,255,.08);margin:1.25rem 0;padding-top:1.1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;">
+              <div>
+                <div style="font-size:.85rem;font-weight:700;color:#fff;">🔒 One Attempt Per Student</div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.15rem;">On = har student sirf 1 dafa test de sakega. Off = jitni baar chahe de sakta hai.</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="testOneTime" checked>
+                <span class="switch-track"></span>
+              </label>
+            </div>
+
+            <div class="fi"><label>Deadline (optional — khali chhoro to koi deadline nahi)</label>
+              <input type="datetime-local" id="testDeadline">
+            </div>
+
+            <div class="form-row">
+              <div class="fi">
+                <label>✅ Message After Submission</label>
+                <textarea id="testMsgSubmit" rows="2" placeholder="e.g. Shabash! Aapka result jaldi hi WhatsApp group mein post hoga."></textarea>
+              </div>
+              <div class="fi">
+                <label>⏰ Message After Deadline</label>
+                <textarea id="testMsgDeadline" rows="2" placeholder="e.g. Yeh test ki deadline guzar chuki hai. Agla test jaldi aayega!"></textarea>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card">
           <div class="card-title">
@@ -425,14 +481,19 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
       <div class="tab-pane" id="tab-results">
         <div class="page-head">
           <h1>Results 🏆</h1>
-          <p>Students ke sare submissions dekhein</p>
+          <p>Students ke sare submissions dekhein — test card par click karke uske results dekhein</p>
         </div>
+
+        <!-- Per-test cards (shown only when 1+ live/active tests have results) -->
+        <div class="rtc-grid" id="resTestCards" style="display:none;"></div>
+
         <div class="card">
           <div class="results-top">
             <select class="res-filter" id="resFilter" onchange="loadResults()">
               <option value="all">All Tests</option>
             </select>
             <input type="text" class="res-search" id="resSearch" placeholder="Student name search..." oninput="filterResults()">
+            <button class="btn btn-outline btn-sm" id="exportAllBtn" onclick="exportAllResultsPDF()">📄 Export All (PDF)</button>
           </div>
           <div style="overflow-x:auto;">
             <table>
@@ -848,7 +909,10 @@ const firebaseConfig = {
   <div class="modal">
     <div class="modal-head">
       <h2>Submission Detail</h2>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <button class="btn btn-gold btn-sm" onclick="exportSingleResultPDF(currentDetailTid,currentDetailSid)">📄 Export PDF</button>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
     </div>
     <div id="resDetail"></div>
   </div>
@@ -896,6 +960,7 @@ const SITE_URL = window.location.origin;
 
 let db=null, auth=null, currentUser=null;
 let allResults=[], currentTestId=null;
+let currentDetailTid=null, currentDetailSid=null;
 let qCount=0;
 
 // Init Firebase
@@ -1150,6 +1215,10 @@ async function saveTest() {
     negMarking:parseFloat(document.getElementById('testNeg').value)||0,
     showAnswer:document.getElementById('testShowAns').value==='yes',
     instructions:document.getElementById('testInstr').value.trim(),
+    oneTimeOnly:document.getElementById('testOneTime').checked,
+    deadline:document.getElementById('testDeadline').value ? new Date(document.getElementById('testDeadline').value).getTime() : null,
+    msgSubmit:document.getElementById('testMsgSubmit').value.trim(),
+    msgDeadline:document.getElementById('testMsgDeadline').value.trim(),
     questions, createdAt:Date.now(), createdBy:currentUser.email
   };
   try {
@@ -1164,7 +1233,8 @@ async function saveTest() {
 }
 
 function resetCreateForm(){
-  ['testTitle','testSubject','testTime','testPass','testInstr'].forEach(id=>document.getElementById(id).value='');
+  ['testTitle','testSubject','testTime','testPass','testInstr','testDeadline','testMsgSubmit','testMsgDeadline'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('testOneTime').checked=true;
   document.getElementById('qList').innerHTML='<p id="qEmpty" style="font-size:.8rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Koi question nahi. Upar se add karein.</p>';
   qCount=0;
 }
@@ -1231,8 +1301,54 @@ async function loadResults() {
       Object.entries(subs).forEach(([sid,sub])=>allResults.push({...sub,testTitle:tests[tid].title,passPercent:tests[tid].passPercent||50,tid,sid}));
     });
     allResults.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));
+    renderResultTestCards(tests);
     filterResults();
   } catch(e){console.error(e);}
+}
+
+// ── PER-TEST RESULT CARDS GRID ──
+function renderResultTestCards(tests) {
+  const wrap = document.getElementById('resTestCards');
+  if(!wrap) return;
+  // Build per-test stats from allResults
+  const statsByTid = {};
+  allResults.forEach(r=>{
+    if(!statsByTid[r.tid]) statsByTid[r.tid] = {count:0,totalPct:0,title:r.testTitle};
+    statsByTid[r.tid].count++;
+    statsByTid[r.tid].totalPct += (r.pct||0);
+  });
+  const tidsWithResults = Object.keys(statsByTid);
+  if(tidsWithResults.length < 2) { wrap.style.display='none'; return; }
+
+  wrap.style.display = 'grid';
+  const currentFilter = document.getElementById('resFilter').value;
+
+  let html = `<div class="rtc-card rtc-all-card ${currentFilter==='all'?'active':''}" onclick="selectResultTestCard('all')">
+    <div class="rtc-icon">📋</div>
+    <div class="rtc-title" style="-webkit-line-clamp:1;min-height:auto;">All Tests</div>
+    <div class="rtc-stats"><span><b>${allResults.length}</b> total submissions</div>
+  </div>`;
+
+  html += tidsWithResults.map(tid=>{
+    const s = statsByTid[tid];
+    const avgPct = s.count ? Math.round(s.totalPct/s.count) : 0;
+    const isActive = currentFilter===tid;
+    return `<div class="rtc-card ${isActive?'active':''}" onclick="selectResultTestCard('${tid}')">
+      <button class="rtc-pdf-btn" onclick="event.stopPropagation();exportAllResultsPDF('${tid}')" title="Export this test's results">📄</button>
+      <div class="rtc-top"><span class="rtc-count">${s.count} submission${s.count!==1?'s':''}</span></div>
+      <div class="rtc-title">${s.title||'Untitled Test'}</div>
+      <div class="rtc-stats">Avg Score: <b>${avgPct}%</b></div>
+    </div>`;
+  }).join('');
+
+  wrap.innerHTML = html;
+}
+
+function selectResultTestCard(tid) {
+  document.getElementById('resFilter').value = tid;
+  document.querySelectorAll('#resTestCards .rtc-card').forEach(c=>c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  filterResults();
 }
 
 function filterResults() {
@@ -1241,6 +1357,13 @@ function filterResults() {
   let data=allResults;
   if(filter!=='all') data=data.filter(r=>r.tid===filter);
   if(search) data=data.filter(r=>r.name?.toLowerCase().includes(search));
+  // sync card active states
+  document.querySelectorAll('#resTestCards .rtc-card').forEach(c=>c.classList.remove('active'));
+  const cards=document.querySelectorAll('#resTestCards .rtc-card');
+  cards.forEach(c=>{
+    const onclickAttr=c.getAttribute('onclick')||'';
+    if((filter==='all' && onclickAttr.includes("'all'")) || (filter!=='all' && onclickAttr.includes(`'${filter}'`))) c.classList.add('active');
+  });
   const body=document.getElementById('resBody');
   if(!data.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;padding:2rem;color:rgba(255,255,255,.25);">No results.</td></tr>';return;}
   body.innerHTML=data.map(r=>`
@@ -1252,7 +1375,7 @@ function filterResults() {
       <td><span class="pass-tag ${r.pct>=r.passPercent?'pt-pass':'pt-fail'}">${r.pct>=r.passPercent?'PASS':'FAIL'}</span></td>
       <td style="font-family:'JetBrains Mono';font-size:.72rem;">${r.timeTaken||'—'}</td>
       <td style="font-family:'JetBrains Mono';font-size:.68rem;color:rgba(255,255,255,.35);">${r.submittedAt?new Date(r.submittedAt).toLocaleString():''}</td>
-      <td><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showResDetail('${r.tid}','${r.sid}')">Detail</button></td>
+      <td><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();showResDetail('${r.tid}','${r.sid}')">Detail</button> <button class="btn btn-gold btn-sm" style="padding:.5rem .65rem;" onclick="event.stopPropagation();exportSingleResultPDF('${r.tid}','${r.sid}')" title="Download PDF">📄</button></td>
     </tr>`).join('');
 }
 
@@ -1261,6 +1384,7 @@ async function showResDetail(tid,sid) {
     const [s,t]=await Promise.all([db.ref(`results/${tid}/${sid}`).once('value'),db.ref(`tests/${tid}`).once('value')]);
     const sub=s.val(); const test=t.val();
     if(!sub||!test) return;
+    currentDetailTid=tid; currentDetailSid=sid;
     document.getElementById('resDetail').innerHTML=`
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
         <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem;">Student</div><div style="font-weight:600;">${sub.name||'Anonymous'}</div></div>
@@ -1286,6 +1410,190 @@ async function showResDetail(tid,sid) {
 function viewTestResults(tid) {
   showTab('results', document.querySelector('.nav-btn[onclick*="results"]'));
   setTimeout(()=>{ document.getElementById('resFilter').value=tid; filterResults(); }, 300);
+}
+
+// ── PDF EXPORT — SINGLE STUDENT RESULT ──
+async function exportSingleResultPDF(tid,sid) {
+  if(!tid||!sid){showToast('Result data missing!','error');return;}
+  try {
+    const [s,t]=await Promise.all([db.ref(`results/${tid}/${sid}`).once('value'),db.ref(`tests/${tid}`).once('value')]);
+    const sub=s.val(); const test=t.val();
+    if(!sub||!test){showToast('Result nahi mila!','error');return;}
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'pt',format:'a4'});
+    const pageW = doc.internal.pageSize.getWidth();
+    const gold=[245,184,0], navy=[6,14,26], green=[16,185,129], red=[239,68,68], gray=[110,120,140];
+
+    // ── Header band ──
+    doc.setFillColor(...navy);
+    doc.rect(0,0,pageW,90,'F');
+    doc.setFillColor(...gold);
+    doc.roundedRect(40,22,46,46,8,8,'F');
+    doc.setTextColor(...navy);
+    doc.setFont('helvetica','bold'); doc.setFontSize(20);
+    doc.text('M', 63, 53, {align:'center'});
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(16);
+    doc.text('Manzil-e-Kamyabi', 100, 42);
+    doc.setTextColor(...gold);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    doc.text('Student Test Result', 100, 58);
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(8);
+    doc.text(new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}), pageW-40, 42, {align:'right'});
+    doc.text('Generated Report', pageW-40, 55, {align:'right'});
+
+    let y = 125;
+    // ── Student Info Card ──
+    doc.setFillColor(247,248,250);
+    doc.roundedRect(40, y, pageW-80, 70, 8, 8, 'F');
+    doc.setTextColor(...gray); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+    doc.text('STUDENT NAME', 56, y+18);
+    doc.text('TEST', 56, y+42);
+    doc.text('SUBMITTED ON', pageW/2+10, y+18);
+    doc.text('TIME TAKEN', pageW/2+10, y+42);
+    doc.setTextColor(20,20,30); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text(sub.name||'Anonymous', 56, y+30);
+    doc.text(test.title||'—', 56, y+54);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    doc.text(sub.submittedAt?new Date(sub.submittedAt).toLocaleString('en-GB'):'—', pageW/2+10, y+30);
+    doc.text(sub.timeTaken||'—', pageW/2+10, y+54);
+    y += 95;
+
+    // ── Score box ──
+    const passPercent = test.passPercent||50;
+    const passed = sub.pct>=passPercent;
+    const boxColor = passed?green:red;
+    doc.setDrawColor(...boxColor);
+    doc.setFillColor(passed?245:255, passed?250:241, passed?248:241);
+    doc.roundedRect(40, y, pageW-80, 60, 8, 8, 'FD');
+    doc.setTextColor(...navy); doc.setFont('helvetica','bold'); doc.setFontSize(22);
+    doc.text(`${sub.score} / ${sub.total}`, 56, y+38);
+    doc.setFontSize(10); doc.setTextColor(...gray); doc.setFont('helvetica','normal');
+    doc.text(`(${sub.pct}%)`, 56+doc.getTextWidth(`${sub.score} / ${sub.total}  `)+0, y+38);
+    doc.setTextColor(...boxColor); doc.setFont('helvetica','bold'); doc.setFontSize(14);
+    doc.text(passed?'✓ PASSED':'✗ FAILED', pageW-56, y+38, {align:'right'});
+    y += 85;
+
+    // ── Answer table ──
+    const rows = (test.questions||[]).map((q,i)=>{
+      const ans = sub.answers?.[i];
+      let given='—', correct='—', status='—';
+      if(q.type==='mcq'){ given=q.options?.[ans]??'Skipped'; correct=q.options?.[q.correct]??'—'; status=ans===q.correct?'Correct':'Wrong'; }
+      else if(q.type==='tf'){ given=ans===undefined?'Skipped':String(ans); correct=String(q.correct); status=String(ans)===String(q.correct)?'Correct':'Wrong'; }
+      else if(q.type==='short'){ given=ans||'Skipped'; correct='Manual check'; status='Review'; }
+      return [`Q${i+1}`, q.text||'', given, correct, status];
+    });
+
+    doc.autoTable({
+      startY: y,
+      head: [['#','Question','Given Answer','Correct Answer','Result']],
+      body: rows,
+      theme: 'grid',
+      headStyles: { fillColor: navy, textColor: 255, fontStyle:'bold', fontSize:9 },
+      bodyStyles: { fontSize: 8.5, textColor: [30,30,30], cellPadding: 6 },
+      alternateRowStyles: { fillColor: [248,249,251] },
+      columnStyles: {
+        0:{cellWidth:24, halign:'center'},
+        1:{cellWidth:'auto'},
+        2:{cellWidth:85},
+        3:{cellWidth:85},
+        4:{cellWidth:55, halign:'center'}
+      },
+      didParseCell: function(data){
+        if(data.section==='body' && data.column.index===4){
+          const v=data.cell.raw;
+          if(v==='Correct'){ data.cell.styles.textColor=green; data.cell.styles.fontStyle='bold'; }
+          else if(v==='Wrong'){ data.cell.styles.textColor=red; data.cell.styles.fontStyle='bold'; }
+          else { data.cell.styles.textColor=gray; }
+        }
+      },
+      margin:{left:40,right:40},
+      didDrawPage: function(data){
+        const pc = doc.internal.getCurrentPageInfo().pageNumber;
+        doc.setFontSize(7.5); doc.setTextColor(...gray);
+        doc.text(`Manzil-e-Kamyabi — Test Preparation Platform | Page ${pc}`, pageW/2, doc.internal.pageSize.getHeight()-20, {align:'center'});
+      }
+    });
+
+    const fname = `${(sub.name||'Student').replace(/[^a-z0-9]+/gi,'_')}_${(test.title||'Result').replace(/[^a-z0-9]+/gi,'_')}.pdf`;
+    doc.save(fname);
+    showToast('PDF download ho gayi!','success');
+  } catch(e){ console.error(e); showToast('PDF banane mein masla hua!','error'); }
+}
+
+// ── PDF EXPORT — BULK / ALL FILTERED RESULTS (or a specific test if tidOverride given) ──
+function exportAllResultsPDF(tidOverride) {
+  const filter = tidOverride || document.getElementById('resFilter').value;
+  const search = tidOverride ? '' : document.getElementById('resSearch').value.toLowerCase();
+  let data=allResults;
+  if(filter!=='all') data=data.filter(r=>r.tid===filter);
+  if(search) data=data.filter(r=>r.name?.toLowerCase().includes(search));
+  if(!data.length){ showToast('Export karne ke liye koi result nahi!','error'); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt',format:'a4',orientation:'landscape'});
+  const pageW = doc.internal.pageSize.getWidth();
+  const gold=[245,184,0], navy=[6,14,26], green=[16,185,129], red=[239,68,68], gray=[110,120,140];
+
+  // Header
+  doc.setFillColor(...navy);
+  doc.rect(0,0,pageW,80,'F');
+  doc.setFillColor(...gold);
+  doc.roundedRect(35,18,42,42,8,8,'F');
+  doc.setTextColor(...navy); doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.text('M', 56, 46, {align:'center'});
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(15);
+  doc.text('Manzil-e-Kamyabi', 90, 38);
+  doc.setTextColor(...gold); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  const testLabel = filter==='all' ? 'All Tests' : (data[0]?.testTitle||'Test');
+  doc.text(`Results Report — ${testLabel}`, 90, 53);
+  doc.setTextColor(255,255,255); doc.setFontSize(8);
+  doc.text(new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}), pageW-35, 35, {align:'right'});
+  doc.text(`Total: ${data.length} students`, pageW-35, 48, {align:'right'});
+
+  const rows = data.map((r,i)=>[
+    i+1,
+    r.name||'Anonymous',
+    r.testTitle||'—',
+    `${r.score}/${r.total}`,
+    `${r.pct}%`,
+    r.pct>=r.passPercent?'PASS':'FAIL',
+    r.timeTaken||'—',
+    r.submittedAt?new Date(r.submittedAt).toLocaleDateString('en-GB'):'—'
+  ]);
+
+  doc.autoTable({
+    startY: 100,
+    head: [['#','Student Name','Test','Score','%','Status','Time','Date']],
+    body: rows,
+    theme: 'grid',
+    headStyles: { fillColor: navy, textColor: 255, fontStyle:'bold', fontSize:9.5 },
+    bodyStyles: { fontSize: 9, textColor:[30,30,30], cellPadding: 6 },
+    alternateRowStyles: { fillColor: [248,249,251] },
+    columnStyles: {
+      0:{cellWidth:30, halign:'center'},
+      3:{halign:'center'}, 4:{halign:'center'}, 5:{halign:'center'}, 6:{halign:'center'}, 7:{halign:'center'}
+    },
+    didParseCell: function(data){
+      if(data.section==='body' && data.column.index===5){
+        const v=data.cell.raw;
+        if(v==='PASS'){ data.cell.styles.textColor=green; data.cell.styles.fontStyle='bold'; }
+        else { data.cell.styles.textColor=red; data.cell.styles.fontStyle='bold'; }
+      }
+    },
+    margin:{left:35,right:35},
+    didDrawPage: function(d){
+      const pc = doc.internal.getCurrentPageInfo().pageNumber;
+      doc.setFontSize(7.5); doc.setTextColor(...gray);
+      doc.text(`Manzil-e-Kamyabi — Test Preparation Platform | Page ${pc}`, pageW/2, doc.internal.pageSize.getHeight()-18, {align:'center'});
+    }
+  });
+
+  const fname = `Results_${testLabel.replace(/[^a-z0-9]+/gi,'_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+  doc.save(fname);
+  showToast('PDF download ho gayi!','success');
 }
 
 // ── PAST PAPERS ──

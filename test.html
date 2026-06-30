@@ -242,7 +242,19 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
     <div class="already-box">
       <div style="font-size:2.5rem;margin-bottom:1rem;">✅</div>
       <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Already Submitted!</h2>
-      <p style="font-size:.84rem;color:var(--muted);line-height:1.6;">You have already taken this test. Each test can only be submitted once.</p>
+      <p id="alreadyMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">You have already taken this test. Each test can only be submitted once.</p>
+      <a href="/" style="color:var(--blue);font-size:.85rem;font-weight:600;">← Go Back</a>
+    </div>
+  </div>
+</div>
+
+<!-- DEADLINE PASSED -->
+<div class="screen" id="deadlineScreen">
+  <div class="already-screen">
+    <div class="already-box">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">⏰</div>
+      <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test Deadline Has Passed</h2>
+      <p id="deadlineMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">This test is no longer accepting submissions.</p>
       <a href="/" style="color:var(--blue);font-size:.85rem;font-weight:600;">← Go Back</a>
     </div>
   </div>
@@ -369,9 +381,10 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
         <div class="rcb"><div class="rcb-num" id="rcSkip" style="color:var(--muted)">0</div><div class="rcb-lbl">Skipped</div></div>
         <div class="rcb"><div class="rcb-num" id="rcTime" style="color:var(--blue)">—</div><div class="rcb-lbl">Time</div></div>
       </div>
+      <div id="rcCustomMsg" style="display:none;background:rgba(21,101,216,.06);border:1px solid rgba(21,101,216,.18);border-radius:12px;padding:1rem 1.1rem;margin:1.1rem 0;font-size:.84rem;color:var(--navy);line-height:1.6;text-align:left;"></div>
       <div class="review-section" id="reviewSection"></div>
       <div class="result-btns">
-        <button class="btn btn-outline btn-sm" onclick="location.reload()">Try Again</button>
+        <button class="btn btn-outline btn-sm" id="tryAgainBtn" onclick="location.reload()">Try Again</button>
         <button class="btn btn-wa btn-sm" onclick="shareWA()">💬 Share Result</button>
         <a href="/" class="btn btn-gold btn-sm">🏠 Home</a>
       </div>
@@ -409,6 +422,15 @@ let timerInterval = null;
 let timeLeft = 0;
 let startTime = null;
 let submissionId = null;
+let studentKey = null;
+let isSubmitting = false;
+
+// Simple, fast string hash for deterministic per-student key (no external deps)
+function hashKey(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) { h = ((h << 5) + h) + str.charCodeAt(i); h = h & h; }
+  return 'u' + Math.abs(h).toString(36);
+}
 
 // ════════════════════════════════════════
 // INIT
@@ -417,13 +439,28 @@ window.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   testId = params.get('id');
   if (!testId) { showError('Test ID not found. Please check your link.'); return; }
-  if (localStorage.getItem('mek_submitted_' + testId)) { showScreen('alreadyScreen'); return; }
+
   try {
     const snap = await db.ref('tests/' + testId).once('value');
     testData = snap.val();
     if (!testData) { showError('This test does not exist. Contact admin.'); return; }
+
+    // Deadline check (server data, not user-editable)
+    if (testData.deadline && Date.now() > testData.deadline) {
+      document.getElementById('deadlineMsg').textContent = testData.msgDeadline || 'This test is no longer accepting submissions.';
+      showScreen('deadlineScreen');
+      return;
+    }
+
+    // Quick localStorage check (fast path, avoids extra DB read most of the time)
+    if (testData.oneTimeOnly !== false && localStorage.getItem('mek_submitted_' + testId)) {
+      document.getElementById('alreadyMsg').textContent = testData.msgSubmit || 'You have already taken this test. Each test can only be submitted once.';
+      showScreen('alreadyScreen');
+      return;
+    }
+
     showNameScreen();
-  } catch(e) { showError('Connection error. Please check your internet.'); }
+  } catch(e) { console.error(e); showError('Connection error. Please check your internet and reload.'); }
 });
 
 function showNameScreen() {
@@ -433,7 +470,8 @@ function showNameScreen() {
     `❓ ${testData.questions.length} Questions`,
     `⏱ ${testData.timeLimit || 30} min`,
     `✅ Pass: ${testData.passPercent || 50}%`,
-    ...(testData.negMarking > 0 ? [`➖ -${testData.negMarking} Negative`] : [])
+    ...(testData.negMarking > 0 ? [`➖ -${testData.negMarking} Negative`] : []),
+    ...(testData.deadline ? [`📅 Deadline: ${new Date(testData.deadline).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}`] : [])
   ];
   document.getElementById('testMeta').innerHTML = meta.map(m => `<span class="tm-tag">${m}</span>`).join('');
   if (testData.instructions) {
@@ -444,10 +482,38 @@ function showNameScreen() {
   showScreen('nameScreen');
 }
 
-function startTest() {
+async function startTest() {
   studentName = document.getElementById('studentName').value.trim();
   studentPhone = document.getElementById('studentPhone').value.trim();
   if (!studentName) { showToast('Please enter your name!'); return; }
+
+  const startBtn = document.querySelector('.name-box .btn-gold');
+  if(startBtn){ startBtn.disabled = true; startBtn.textContent = 'Checking...'; }
+
+  // Build a stable per-student key (name+phone). This enforces one-attempt at the
+  // database level, not just localStorage, so it can't be bypassed by clearing
+  // browser data or switching devices with the same details.
+  studentKey = hashKey((studentName + '|' + studentPhone).toLowerCase().replace(/\s+/g,''));
+
+  if (testData.oneTimeOnly !== false) {
+    try {
+      const existing = await db.ref(`results/${testId}/${studentKey}`).once('value');
+      if (existing.exists()) {
+        localStorage.setItem('mek_submitted_'+testId,'1');
+        document.getElementById('alreadyMsg').textContent = testData.msgSubmit || 'You have already taken this test. Each test can only be submitted once.';
+        showScreen('alreadyScreen');
+        return;
+      }
+    } catch(e) {
+      console.error(e);
+      showToast('Connection error — please check internet and try again.');
+      if(startBtn){ startBtn.disabled = false; startBtn.textContent = 'Start Test →'; }
+      return;
+    }
+  }
+
+  if(startBtn){ startBtn.disabled = false; startBtn.textContent = 'Start Test →'; }
+
   const total = testData.questions.length;
   answers = new Array(total).fill(null);
   flagged = new Array(total).fill(false);
@@ -599,6 +665,7 @@ function nextQ() {
 }
 
 function confirmSubmit() {
+  if (isSubmitting) return;
   const total = testData.questions.length;
   const answered = answers.filter(a => a !== null && a !== undefined && a !== '').length;
   const skipped = total - answered;
@@ -640,7 +707,13 @@ function startTimer() {
 // SUBMIT
 // ════════════════════════════════════════
 async function submitTest() {
+  if (isSubmitting) return;
+  isSubmitting = true;
+
   clearInterval(timerInterval);
+  // Disable submit buttons immediately to prevent double-clicks/double-writes
+  document.querySelectorAll('.submit-btn-panel, #nextBtn').forEach(b=>{ if(b) b.disabled = true; });
+
   const elapsed = Math.floor((Date.now()-startTime)/1000);
   const em = Math.floor(elapsed/60).toString().padStart(2,'0');
   const es = (elapsed%60).toString().padStart(2,'0');
@@ -661,17 +734,54 @@ async function submitTest() {
   const pct = Math.round((score/total)*100);
   const pass = pct>=(testData.passPercent||50);
 
-  try {
-    const ref = await db.ref(`results/${testId}`).push({
-      name:studentName, phone:studentPhone,
-      score, total, pct, correct, wrong, skipped,
-      timeTaken:`${em}:${es}`,
-      passPercent:testData.passPercent||50,
-      answers, submittedAt:Date.now()
-    });
-    submissionId = ref.key;
-    localStorage.setItem('mek_submitted_'+testId,'1');
-  } catch(e){ console.error(e); }
+  const resultPayload = {
+    name:studentName, phone:studentPhone,
+    score, total, pct, correct, wrong, skipped,
+    timeTaken:`${em}:${es}`,
+    passPercent:testData.passPercent||50,
+    answers, submittedAt:Date.now()
+  };
+
+  const oneTime = testData.oneTimeOnly !== false;
+  const key = studentKey || hashKey((studentName+'|'+studentPhone).toLowerCase().replace(/\s+/g,''));
+
+  // Retry up to 3 times on network failure so a result is never silently lost
+  let saved = false, lastErr = null;
+  for (let attempt=0; attempt<3 && !saved; attempt++) {
+    try {
+      if (oneTime) {
+        // Atomic: only writes if this key doesn't already exist — prevents
+        // double submissions even under concurrent/duplicate requests.
+        const ref = db.ref(`results/${testId}/${key}`);
+        const txResult = await ref.transaction(curr => {
+          if (curr !== null) return; // abort — already submitted, don't overwrite
+          return resultPayload;
+        });
+        if (!txResult.committed) {
+          // Someone already submitted with this key
+          localStorage.setItem('mek_submitted_'+testId,'1');
+          showToast('This test was already submitted.');
+        }
+        submissionId = key;
+      } else {
+        const ref = await db.ref(`results/${testId}`).push(resultPayload);
+        submissionId = ref.key;
+      }
+      saved = true;
+      localStorage.setItem('mek_submitted_'+testId,'1');
+    } catch(e) {
+      lastErr = e;
+      console.error('Submit attempt', attempt+1, 'failed:', e);
+      if (attempt < 2) await new Promise(r=>setTimeout(r, 1200));
+    }
+  }
+
+  if (!saved) {
+    showToast('⚠️ Result save nahi ho saka. Internet check karein aur dobara try karein.');
+    document.querySelectorAll('.submit-btn-panel, #nextBtn').forEach(b=>{ if(b) b.disabled = false; });
+    isSubmitting = false;
+    return;
+  }
 
   showResult(score,total,pct,pass,correct,wrong,skipped,`${em}:${es}`);
 }
@@ -694,6 +804,17 @@ function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
   document.getElementById('rcWrong').textContent = wrong;
   document.getElementById('rcSkip').textContent = skipped;
   document.getElementById('rcTime').textContent = time;
+
+  const customMsgEl = document.getElementById('rcCustomMsg');
+  if (testData.msgSubmit) {
+    customMsgEl.textContent = testData.msgSubmit;
+    customMsgEl.style.display = 'block';
+  } else {
+    customMsgEl.style.display = 'none';
+  }
+
+  const tryAgainBtn = document.getElementById('tryAgainBtn');
+  if (tryAgainBtn) tryAgainBtn.style.display = (testData.oneTimeOnly !== false) ? 'none' : 'inline-flex';
 
   if(testData.showAnswer){
     document.getElementById('reviewSection').innerHTML = `<div class="rev-title">Answer Review</div>` +
