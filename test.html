@@ -7,6 +7,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root{
   --navy:#0B1829;--navy2:#122240;--gold:#F5B800;--gold2:#FFD040;
@@ -22,7 +24,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 /* ── HEADER ── */
 .header{background:var(--navy);padding:0 1.25rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,.3);}
 .h-brand{display:flex;align-items:center;gap:10px;}
-.h-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:.85rem;color:var(--navy);}
+.h-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;font-size:.85rem;color:var(--navy);flex-shrink:0;}
 .h-title{font-family:var(--font-d);font-size:.85rem;font-weight:700;color:#fff;}
 .h-title span{color:var(--gold);}
 .h-right{display:flex;align-items:center;gap:.75rem;}
@@ -237,7 +239,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 <!-- HEADER -->
 <div class="header">
   <div class="h-brand">
-    <div class="h-logo">M</div>
+    <img src="images/logo.png" alt="Manzil-e-Kamyabi" class="h-logo" style="object-fit:cover;" onerror="this.outerHTML='<div class=\'h-logo\'>M</div>'">
     <div class="h-title"><span>Manzil-e-</span>Kamyabi</div>
   </div>
   <div class="h-right">
@@ -415,6 +417,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
       <div class="result-btns">
         <button class="btn btn-outline btn-sm" id="tryAgainBtn" onclick="location.reload()">Try Again</button>
         <button class="btn btn-wa btn-sm" onclick="shareWA()">💬 Share Result</button>
+        <button class="btn btn-gold btn-sm" onclick="downloadResultPDF()">⬇️ Download PDF</button>
       </div>
     </div>
   </div>
@@ -886,7 +889,10 @@ async function submitTest() {
 // ════════════════════════════════════════
 // RESULT
 // ════════════════════════════════════════
+let lastResultData = null; // saved for PDF download
+
 function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
+  lastResultData = { score,total,pct,pass,correct,wrong,skipped,time };
   document.getElementById('rcEmoji').textContent = pct>=80?'🏆':pct>=50?'🎓':'📚';
   document.getElementById('rcName').textContent = studentName + "'s Result";
   const color = pct>=70?'var(--green)':pct>=40?'var(--gold)':'var(--red)';
@@ -953,6 +959,167 @@ function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
 function shareWA() {
   const txt = encodeURIComponent(`🎓 Manzil-e-Kamyabi Test Result\n👤 ${studentName}\n📝 ${testData.title}\n🏆 ${document.getElementById('scNum').textContent}/${document.getElementById('scDen').textContent.replace('/ ','')}\n📊 ${document.getElementById('rcPct').textContent}\n\nTake the test: ${window.location.href}`);
   window.open(`https://wa.me/?text=${txt}`,'_blank');
+}
+
+// ════════════════════════════════════════
+// DOWNLOAD RESULT AS PDF (student-side)
+// ════════════════════════════════════════
+// Strips any HTML tags (e.g. <mark>, <b> from admin formatting) so the PDF
+// table never breaks/overlaps — converts <mark> to [..] and removes the rest.
+function stripHtmlForPDF(str) {
+  if(!str) return '';
+  return String(str)
+    .replace(/<mark>/gi,'[').replace(/<\/mark>/gi,']')
+    .replace(/<b>/gi,'').replace(/<\/b>/gi,'')
+    .replace(/<i>/gi,'').replace(/<\/i>/gi,'')
+    .replace(/<u>/gi,'').replace(/<\/u>/gi,'')
+    .replace(/<[^>]+>/g,'')
+    .trim();
+}
+
+function downloadResultPDF() {
+  if(!lastResultData || !testData) { showToast('Result data not ready yet.'); return; }
+  if(!window.jspdf) { showToast('PDF library loading... try again in a moment.'); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt',format:'a4'});
+  const pageW = doc.internal.pageSize.getWidth();
+  const gold=[245,184,0], navy=[6,14,26], green=[16,185,129], red=[239,68,68], gray=[110,120,140];
+  const { score,total,pct,pass,correct,wrong,skipped,time } = lastResultData;
+
+  // ── Header band ──
+  doc.setFillColor(...navy);
+  doc.rect(0,0,pageW,90,'F');
+  doc.setFillColor(...gold);
+  doc.roundedRect(40,22,46,46,8,8,'F');
+  doc.setTextColor(...navy);
+  doc.setFont('helvetica','bold'); doc.setFontSize(20);
+  doc.text('M', 63, 53, {align:'center'});
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold'); doc.setFontSize(16);
+  doc.text('Manzil-e-Kamyabi', 100, 42);
+  doc.setTextColor(...gold);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  doc.text('Student Test Result', 100, 58);
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(8);
+  doc.text(new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}), pageW-40, 42, {align:'right'});
+  doc.text('Conducted by: Ahmed Jamali', pageW-40, 55, {align:'right'});
+
+  let y = 125;
+  // ── Student Info Card ──
+  doc.setFillColor(247,248,250);
+  doc.roundedRect(40, y, pageW-80, 70, 8, 8, 'F');
+  doc.setTextColor(...gray); doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  doc.text('STUDENT NAME', 56, y+18);
+  doc.text('TEST', 56, y+42);
+  doc.text('SUBMITTED ON', pageW/2+10, y+18);
+  doc.text('TIME TAKEN', pageW/2+10, y+42);
+  doc.setTextColor(20,20,30); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.text(doc.splitTextToSize(stripHtmlForPDF(studentName)||'Anonymous', pageW/2-70)[0]||'Anonymous', 56, y+30);
+  doc.text(doc.splitTextToSize(stripHtmlForPDF(testData.title)||'—', pageW/2-70)[0]||'—', 56, y+54);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  doc.text(new Date().toLocaleString('en-GB'), pageW/2+10, y+30);
+  doc.text(time||'—', pageW/2+10, y+54);
+  y += 95;
+
+  // ── Score box ──
+  const boxColor = pass?green:red;
+  doc.setDrawColor(...boxColor);
+  doc.setFillColor(pass?245:255, pass?250:241, pass?248:241);
+  doc.roundedRect(40, y, pageW-80, 60, 8, 8, 'FD');
+
+  // Score (left side) — stacked score + percentage so it never collides
+  // with the PASS/FAIL badge on the right, even for long numbers (e.g. 9/102).
+  doc.setTextColor(...navy); doc.setFont('helvetica','bold'); doc.setFontSize(20);
+  doc.text(`${score} / ${total}`, 56, y+28);
+  doc.setFontSize(9); doc.setTextColor(...gray); doc.setFont('helvetica','normal');
+  doc.text(`${pct}% score`, 56, y+45);
+
+  // PASS/FAIL badge (right side) — own pill so it can't visually overlap
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  const badgeText = pass?'✓ PASSED':'✗ FAILED';
+  const badgeW = doc.getTextWidth(badgeText) + 24;
+  const badgeX = (pageW-40) - badgeW - 12;
+  const badgeY = y + 16;
+  doc.setFillColor(...boxColor);
+  doc.roundedRect(badgeX, badgeY, badgeW, 28, 6, 6, 'F');
+  doc.setTextColor(255,255,255);
+  doc.text(badgeText, badgeX + badgeW/2, badgeY + 18, {align:'center'});
+  y += 85;
+
+  // ── Breakdown strip ──
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.setTextColor(...green); doc.text(`✓ Correct: ${correct}`, 56, y);
+  doc.setTextColor(...red); doc.text(`✗ Wrong: ${wrong}`, 200, y);
+  doc.setTextColor(...gray); doc.text(`— Skipped: ${skipped}`, 330, y);
+  y += 25;
+
+  // ── Answer table (only if test allows showing answers) ──
+  if(testData.showAnswer && testData.questions) {
+    const rows = testData.questions.map((q,i)=>{
+      const ans = answers[i];
+      const isSkipped = ans===null||ans===undefined||ans==='';
+      let given='—', correctAns='—', status='—';
+      if(q.type==='mcq'){
+        given = isSkipped ? 'Skipped' : stripHtmlForPDF(q.options?.[ans]);
+        correctAns = stripHtmlForPDF(q.options?.[q.correct]);
+        status = isSkipped ? 'Skipped' : (ans===q.correct?'Correct':'Wrong');
+      } else if(q.type==='tf'){
+        given = isSkipped ? 'Skipped' : String(ans);
+        correctAns = String(q.correct);
+        status = isSkipped ? 'Skipped' : (String(ans)===String(q.correct)?'Correct':'Wrong');
+      } else {
+        given = isSkipped ? 'Skipped' : stripHtmlForPDF(ans);
+        correctAns = 'Manual check';
+        status = 'Review';
+      }
+      return [`Q${i+1}`, stripHtmlForPDF(q.text), given, correctAns, status];
+    });
+
+    doc.autoTable({
+      startY: y,
+      head: [['#','Question','Given Answer','Correct Answer','Result']],
+      body: rows,
+      theme: 'grid',
+      headStyles: { fillColor: navy, textColor: 255, fontStyle:'bold', fontSize:9 },
+      bodyStyles: { fontSize: 8.5, textColor: [30,30,30], cellPadding: 6 },
+      alternateRowStyles: { fillColor: [248,249,251] },
+      columnStyles: {
+        0:{cellWidth:24, halign:'center'},
+        1:{cellWidth:'auto'},
+        2:{cellWidth:85},
+        3:{cellWidth:85},
+        4:{cellWidth:55, halign:'center'}
+      },
+      didParseCell: function(data){
+        if(data.section==='body' && data.column.index===4){
+          const v=data.cell.raw;
+          if(v==='Correct'){ data.cell.styles.textColor=green; data.cell.styles.fontStyle='bold'; }
+          else if(v==='Wrong'){ data.cell.styles.textColor=red; data.cell.styles.fontStyle='bold'; }
+          else { data.cell.styles.textColor=gray; }
+        }
+      },
+      margin:{left:40,right:40},
+      didDrawPage: function(){
+        const pc = doc.internal.getCurrentPageInfo().pageNumber;
+        doc.setFontSize(7.5); doc.setTextColor(...gray);
+        doc.text(`Manzil-e-Kamyabi — Test Preparation Platform | Page ${pc}`, pageW/2, doc.internal.pageSize.getHeight()-20, {align:'center'});
+        doc.text(`Conducted by: Ahmed Jamali`, pageW/2, doc.internal.pageSize.getHeight()-10, {align:'center'});
+      }
+    });
+  } else {
+    // No answer review allowed — just footer
+    doc.setFontSize(8.5); doc.setTextColor(...gray); doc.setFont('helvetica','italic');
+    doc.text('Detailed answer review is not available for this test.', 56, y+15);
+    doc.setFontSize(7.5);
+    doc.text(`Manzil-e-Kamyabi — Test Preparation Platform`, pageW/2, doc.internal.pageSize.getHeight()-20, {align:'center'});
+    doc.text(`Conducted by: Ahmed Jamali`, pageW/2, doc.internal.pageSize.getHeight()-10, {align:'center'});
+  }
+
+  const fname = `${(studentName||'Student').replace(/[^a-z0-9]+/gi,'_')}_${(testData.title||'Result').replace(/[^a-z0-9]+/gi,'_')}_${Date.now().toString().slice(-6)}.pdf`;
+  doc.save(fname);
+  showToast('✅ PDF downloaded!');
 }
 
 // ════════════════════════════════════════
