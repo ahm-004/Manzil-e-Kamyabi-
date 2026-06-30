@@ -171,8 +171,36 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 .already-box{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2.5rem;max-width:380px;text-align:center;box-shadow:0 8px 40px rgba(11,24,41,.08);}
 
 /* ── PROGRESS BAR (top of center card) ── */
-.q-progress-bar{height:5px;background:var(--border);border-radius:3px;margin-bottom:1.1rem;overflow:hidden;}
-.q-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--blue2));border-radius:3px;transition:width .4s;}
+.q-progress-bar{height:6px;background:var(--border);border-radius:3px;margin-bottom:1.1rem;overflow:hidden;}
+.q-progress-fill{height:100%;border-radius:3px;transition:width .4s ease,background .4s ease;background:linear-gradient(90deg,var(--red),#F87171);}
+.q-progress-fill.p25{background:linear-gradient(90deg,var(--orange),#FB923C);}
+.q-progress-fill.p50{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.q-progress-fill.p75{background:linear-gradient(90deg,var(--blue),var(--blue2));}
+.q-progress-fill.p100{background:linear-gradient(90deg,var(--green),#34D399);}
+
+/* ── QUESTION TRANSITION ── */
+.q-card{animation:qIn .28s ease;}
+@keyframes qIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.q-opt{transition:all .15s ease, transform .12s ease;}
+.q-opt:active{transform:scale(.98);}
+.q-opt.selected{animation:optPop .25s ease;}
+@keyframes optPop{0%{transform:scale(.96);}60%{transform:scale(1.015);}100%{transform:scale(1);}}
+.btn,.prev-btn,.q-flag-btn,.nav-jump,.submit-btn-panel{transition:all .15s ease, transform .12s ease;}
+.btn:active,.prev-btn:active,.q-flag-btn:active,.nav-jump:active,.submit-btn-panel:active{transform:scale(.96);}
+.q-bubble{transition:all .15s ease, transform .12s ease;}
+.q-bubble:active{transform:scale(.92);}
+
+/* ── RESUME BANNER ── */
+.resume-banner{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:.75rem 1rem;margin-bottom:1.1rem;font-size:.78rem;color:#065F46;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;}
+.resume-banner b{color:var(--green);}
+.resume-banner button{background:var(--green);color:#fff;border:none;border-radius:7px;padding:.35rem .8rem;font-size:.72rem;font-weight:700;cursor:pointer;font-family:var(--font-b);}
+
+/* ── NETWORK STATUS ── */
+.net-status{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:500;background:var(--red);color:#fff;font-size:.75rem;font-weight:600;padding:.4rem 1rem;border-radius:0 0 10px 10px;display:none;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+.net-status.show{display:flex;}
+
+/* ── CONFETTI ── */
+.confetti-piece{position:fixed;top:-10px;z-index:9998;pointer-events:none;border-radius:2px;}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);z-index:9999;background:var(--navy);color:#fff;padding:.75rem 1.5rem;border-radius:10px;font-size:.82rem;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;}
@@ -218,6 +246,8 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
   </div>
 </div>
 
+<div class="net-status" id="netStatus">📡 Connection lost — reconnecting...</div>
+
 <!-- LOADING -->
 <div class="screen active" id="loadingScreen">
   <div class="loading-screen">
@@ -243,7 +273,6 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
       <div style="font-size:2.5rem;margin-bottom:1rem;">✅</div>
       <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Already Submitted!</h2>
       <p id="alreadyMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">You have already taken this test. Each test can only be submitted once.</p>
-      <a href="/" style="color:var(--blue);font-size:.85rem;font-weight:600;">← Go Back</a>
     </div>
   </div>
 </div>
@@ -255,7 +284,6 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
       <div style="font-size:2.5rem;margin-bottom:1rem;">⏰</div>
       <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test Deadline Has Passed</h2>
       <p id="deadlineMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">This test is no longer accepting submissions.</p>
-      <a href="/" style="color:var(--blue);font-size:.85rem;font-weight:600;">← Go Back</a>
     </div>
   </div>
 </div>
@@ -268,7 +296,8 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
       <h1 id="testTitle">Test</h1>
       <div class="test-name" id="testSubject"></div>
       <div class="test-meta" id="testMeta"></div>
-      <div class="instructions" id="testInstr" style="display:none;"></div>
+      <div class="resume-banner" id="resumeBanner" style="display:none;"></div>
+      <div class="instructions" id="testInstr" style="display:none;"></div></div>
       <div class="fi">
         <label>Your Name *</label>
         <input type="text" id="studentName" placeholder="Enter your full name" autocomplete="off">
@@ -386,7 +415,6 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
       <div class="result-btns">
         <button class="btn btn-outline btn-sm" id="tryAgainBtn" onclick="location.reload()">Try Again</button>
         <button class="btn btn-wa btn-sm" onclick="shareWA()">💬 Share Result</button>
-        <a href="/" class="btn btn-gold btn-sm">🏠 Home</a>
       </div>
     </div>
   </div>
@@ -424,6 +452,68 @@ let startTime = null;
 let submissionId = null;
 let studentKey = null;
 let isSubmitting = false;
+let lastSaveTime = 0;
+
+function progressKey(){ return 'mek_progress_' + testId; }
+
+function saveProgress(){
+  if(!testId || !testData) return;
+  const now = Date.now();
+  if(now - lastSaveTime < 800) return; // throttle writes
+  lastSaveTime = now;
+  try {
+    localStorage.setItem(progressKey(), JSON.stringify({
+      studentName, studentPhone, studentKey,
+      currentQ, answers, flagged, timeLeft, startTime,
+      savedAt: now
+    }));
+  } catch(e){}
+}
+
+function clearProgress(){
+  try { localStorage.removeItem(progressKey()); } catch(e){}
+}
+
+function checkResumeAvailable(){
+  try {
+    const raw = localStorage.getItem(progressKey());
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    if(!data || data.timeLeft<=0) { clearProgress(); return null; }
+    return data;
+  } catch(e){ return null; }
+}
+
+function offerResume(){
+  const saved = checkResumeAvailable();
+  const banner = document.getElementById('resumeBanner');
+  if(!saved){ banner.style.display='none'; return; }
+  const total = testData.questions.length;
+  const answeredCount = saved.answers.filter(a=>a!==null&&a!==undefined&&a!=='').length;
+  banner.style.display = 'flex';
+  banner.innerHTML = `<span>🔖 <b>Unfinished attempt found</b> — ${saved.studentName||'Student'}, Q${saved.currentQ+1}/${total}, ${answeredCount} answered.</span>
+    <span style="display:flex;gap:.5rem;">
+      <button onclick="resumeProgress()">Resume Test</button>
+      <button style="background:var(--muted);" onclick="discardResume()">Start Fresh</button>
+    </span>`;
+}
+
+function resumeProgress(){
+  const saved = checkResumeAvailable();
+  if(!saved) return;
+  studentName = saved.studentName; studentPhone = saved.studentPhone; studentKey = saved.studentKey;
+  currentQ = saved.currentQ; answers = saved.answers; flagged = saved.flagged;
+  timeLeft = saved.timeLeft; startTime = saved.startTime;
+  showScreen('quizScreen');
+  startTimer();
+  buildNavGrid();
+  renderQ();
+}
+
+function discardResume(){
+  clearProgress();
+  document.getElementById('resumeBanner').style.display='none';
+}
 
 // Simple, fast string hash for deterministic per-student key (no external deps)
 function hashKey(str) {
@@ -454,6 +544,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     // Quick localStorage check (fast path, avoids extra DB read most of the time)
     if (testData.oneTimeOnly !== false && localStorage.getItem('mek_submitted_' + testId)) {
+      clearProgress();
       document.getElementById('alreadyMsg').textContent = testData.msgSubmit || 'You have already taken this test. Each test can only be submitted once.';
       showScreen('alreadyScreen');
       return;
@@ -480,6 +571,7 @@ function showNameScreen() {
     el.innerHTML = `<b>📋 Instructions:</b> ${testData.instructions}`;
   }
   showScreen('nameScreen');
+  offerResume();
 }
 
 async function startTest() {
@@ -601,7 +693,10 @@ function renderQ() {
   const total = testData.questions.length;
   const pct = Math.round(((currentQ) / total) * 100);
 
-  document.getElementById('qProgressFill').style.width = ((currentQ+1)/total*100) + '%';
+  const fillPct = ((currentQ+1)/total*100);
+  const fillEl = document.getElementById('qProgressFill');
+  fillEl.style.width = fillPct + '%';
+  fillEl.className = 'q-progress-fill' + (fillPct>=100?' p100':fillPct>=75?' p75':fillPct>=50?' p50':fillPct>=25?' p25':'');
   document.getElementById('qNum').textContent = `Question ${currentQ + 1} of ${total}`;
 
   // Flag button
@@ -609,7 +704,7 @@ function renderQ() {
   fb.className = 'q-flag-btn' + (flagged[currentQ] ? ' flagged' : '');
   fb.innerHTML = `<span class="flag-icon">${flagged[currentQ]?'🚩':'⚑'}</span> ${flagged[currentQ]?'Flagged':'Flag'}`;
 
-  document.getElementById('qText').textContent = q.text;
+  document.getElementById('qText').innerHTML = q.text;
 
   // Neg marking
   const nw = document.getElementById('negWarn');
@@ -631,7 +726,7 @@ function renderQ() {
       <div class="q-opt ${answers[currentQ]===false?'selected':''}" onclick="selectTF(false)"><span class="opt-letter">B</span>False ✗</div>
     </div>`;
   } else if (q.type === 'short') {
-    body.innerHTML = `<div class="q-short"><input type="text" placeholder="Write your answer here..." value="${answers[currentQ]||''}" oninput="answers[${currentQ}]=this.value" id="shortInput"></div>`;
+    body.innerHTML = `<div class="q-short"><input type="text" placeholder="Write your answer here..." value="${answers[currentQ]||''}" oninput="answers[${currentQ}]=this.value;saveProgress()" id="shortInput"></div>`;
   } else {
     body.innerHTML = `<div class="q-opts">${q.options.map((opt,i)=>`
       <div class="q-opt ${answers[currentQ]===i?'selected':''}" onclick="selectAns(${i})">
@@ -641,6 +736,7 @@ function renderQ() {
 
   updateNavGrid();
   window.scrollTo({top:0,behavior:'smooth'});
+  saveProgress();
 }
 
 function selectAns(i) { answers[currentQ]=i; renderQ(); }
@@ -769,6 +865,7 @@ async function submitTest() {
       }
       saved = true;
       localStorage.setItem('mek_submitted_'+testId,'1');
+      clearProgress();
     } catch(e) {
       lastErr = e;
       console.error('Submit attempt', attempt+1, 'failed:', e);
@@ -850,6 +947,7 @@ function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
       }).join('');
   }
   showScreen('resultScreen');
+  if(pass) setTimeout(launchConfetti, 250);
 }
 
 function shareWA() {
@@ -869,6 +967,50 @@ function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ════════════════════════════════════════
+// LEAVE WARNING + NETWORK STATUS
+// ════════════════════════════════════════
+window.addEventListener('beforeunload', (e) => {
+  const quizActive = document.getElementById('quizScreen').classList.contains('active') && !isSubmitting;
+  if(quizActive){
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
+
+window.addEventListener('online', () => {
+  document.getElementById('netStatus').classList.remove('show');
+});
+window.addEventListener('offline', () => {
+  document.getElementById('netStatus').classList.add('show');
+});
+
+// ════════════════════════════════════════
+// CONFETTI
+// ════════════════════════════════════════
+function launchConfetti(){
+  const colors = ['#F5B800','#FFD040','#10B981','#1565D8','#8B5CF6','#F97316'];
+  for(let i=0;i<60;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    const size = 6 + Math.random()*6;
+    piece.style.width = size+'px';
+    piece.style.height = (size*0.4)+'px';
+    piece.style.left = Math.random()*100+'vw';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(piece);
+    const duration = 2200 + Math.random()*1800;
+    const drift = (Math.random()-0.5)*200;
+    piece.animate([
+      { transform: piece.style.transform + ' translate(0,0)', opacity:1 },
+      { transform: `rotate(${Math.random()*720}deg) translate(${drift}px, 100vh)`, opacity:0.9 }
+    ], { duration, easing:'cubic-bezier(.25,.46,.45,.94)', fill:'forwards' });
+    setTimeout(()=>piece.remove(), duration+200);
+  }
 }
 </script>
 </body>
