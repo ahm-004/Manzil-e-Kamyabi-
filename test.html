@@ -204,6 +204,10 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 /* ── CONFETTI ── */
 .confetti-piece{position:fixed;top:-10px;z-index:9998;pointer-events:none;border-radius:2px;}
 
+/* ── COPY PROTECTION (during live test) ── */
+.q-card, .q-card *, .nav-panel, .timer-panel{user-select:none;-webkit-user-select:none;-moz-user-select:none;}
+.q-short input{user-select:text;-webkit-user-select:text;}
+
 /* ── TOAST ── */
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);z-index:9999;background:var(--navy);color:#fff;padding:.75rem 1.5rem;border-radius:10px;font-size:.82rem;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
@@ -286,6 +290,18 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
       <div style="font-size:2.5rem;margin-bottom:1rem;">⏰</div>
       <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test Deadline Has Passed</h2>
       <p id="deadlineMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">This test is no longer accepting submissions.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TEST PAUSED -->
+<div class="screen" id="pausedScreen">
+  <div class="already-screen">
+    <div class="already-box">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">⏸️</div>
+      <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test is Temporarily Paused</h2>
+      <p id="pausedMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">The admin has paused this test. Please wait — it will resume automatically.</p>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem;">Do not close this page.</p>
     </div>
   </div>
 </div>
@@ -511,11 +527,24 @@ function resumeProgress(){
   startTimer();
   buildNavGrid();
   renderQ();
+  startTabWatch();
 }
 
 function discardResume(){
   clearProgress();
   document.getElementById('resumeBanner').style.display='none';
+}
+
+// Escapes stray HTML chars in question/option text so "x<5" or "A>B" never
+// breaks the card structure — while still rendering admin Bold/Italic/Underline/
+// Highlight tags correctly.
+function safeQHTML(text) {
+  if (text === undefined || text === null) return '';
+  let s = String(text);
+  s = s.replace(/<=/g, '≤').replace(/>=/g, '≥');
+  s = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  s = s.replace(/&lt;(\/?)(b|i|u|mark|sup)&gt;/gi, '<$1$2>');
+  return s;
 }
 
 // Simple, fast string hash for deterministic per-student key (no external deps)
@@ -538,14 +567,24 @@ window.addEventListener('DOMContentLoaded', async () => {
     testData = snap.val();
     if (!testData) { showError('This test does not exist. Contact admin.'); return; }
 
-    // Deadline check (server data, not user-editable)
+    // ── PAUSED CHECK ──
+    if (testData.paused === true) {
+      showPausedScreen();
+      // Listen for resume in real-time
+      db.ref(`tests/${testId}/paused`).on('value', snap => {
+        if(snap.val() === false) { location.reload(); }
+      });
+      return;
+    }
+
+    // Deadline check
     if (testData.deadline && Date.now() > testData.deadline) {
       document.getElementById('deadlineMsg').textContent = testData.msgDeadline || 'This test is no longer accepting submissions.';
       showScreen('deadlineScreen');
       return;
     }
 
-    // Quick localStorage check (fast path, avoids extra DB read most of the time)
+    // Quick localStorage check
     if (testData.oneTimeOnly !== false && localStorage.getItem('mek_submitted_' + testId)) {
       clearProgress();
       document.getElementById('alreadyMsg').textContent = testData.msgSubmit || 'You have already taken this test. Each test can only be submitted once.';
@@ -554,6 +593,25 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
     showNameScreen();
+
+    // Real-time pause listener (if admin pauses DURING test)
+    db.ref(`tests/${testId}/paused`).on('value', snap => {
+      if(snap.val() === true) {
+        // Only interrupt if quiz is currently active
+        const quizActive = document.getElementById('quizScreen')?.classList.contains('active');
+        if(quizActive) {
+          clearInterval(timerInterval);
+          stopTabWatch();
+          showPausedScreen();
+          // Resume when admin unpauses
+          const ref = db.ref(`tests/${testId}/paused`);
+          const handler = ref.on('value', s => {
+            if(s.val()===false) { ref.off('value', handler); location.reload(); }
+          });
+        }
+      }
+    });
+
   } catch(e) { console.error(e); showError('Connection error. Please check your internet and reload.'); }
 });
 
@@ -619,6 +677,7 @@ async function startTest() {
   startTimer();
   buildNavGrid();
   renderQ();
+  startTabWatch();
 }
 
 // ════════════════════════════════════════
@@ -707,7 +766,7 @@ function renderQ() {
   fb.className = 'q-flag-btn' + (flagged[currentQ] ? ' flagged' : '');
   fb.innerHTML = `<span class="flag-icon">${flagged[currentQ]?'🚩':'⚑'}</span> ${flagged[currentQ]?'Flagged':'Flag'}`;
 
-  document.getElementById('qText').innerHTML = q.text;
+  document.getElementById('qText').innerHTML = safeQHTML(q.text);
 
   // Neg marking
   const nw = document.getElementById('negWarn');
@@ -729,11 +788,11 @@ function renderQ() {
       <div class="q-opt ${answers[currentQ]===false?'selected':''}" onclick="selectTF(false)"><span class="opt-letter">B</span>False ✗</div>
     </div>`;
   } else if (q.type === 'short') {
-    body.innerHTML = `<div class="q-short"><input type="text" placeholder="Write your answer here..." value="${answers[currentQ]||''}" oninput="answers[${currentQ}]=this.value;saveProgress()" id="shortInput"></div>`;
+    body.innerHTML = `<div class="q-short"><input type="text" placeholder="Write your answer here..." value="${(answers[currentQ]||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}" oninput="answers[${currentQ}]=this.value;saveProgress()" id="shortInput"></div>`;
   } else {
     body.innerHTML = `<div class="q-opts">${q.options.map((opt,i)=>`
       <div class="q-opt ${answers[currentQ]===i?'selected':''}" onclick="selectAns(${i})">
-        <span class="opt-letter">${String.fromCharCode(65+i)}</span>${opt}
+        <span class="opt-letter">${String.fromCharCode(65+i)}</span>${safeQHTML(opt)}
       </div>`).join('')}</div>`;
   }
 
@@ -776,8 +835,70 @@ function confirmSubmit() {
 }
 
 // ════════════════════════════════════════
-// TIMER
+// TAB-SWITCH / ANTI-CHEAT (silent — student never sees this)
 // ════════════════════════════════════════
+let tabSwitchLog = [];
+let tabHiddenAt = null;
+
+function startTabWatch() {
+  const mode = testData?.tabWatchMode || 'warn';
+  if(mode === 'off') return;
+  document.addEventListener('visibilitychange', handleTabVisibility);
+  window.addEventListener('blur', handleWindowBlur);
+}
+
+function stopTabWatch() {
+  document.removeEventListener('visibilitychange', handleTabVisibility);
+  window.removeEventListener('blur', handleWindowBlur);
+}
+
+function handleTabVisibility() {
+  if(document.hidden) {
+    tabHiddenAt = Date.now();
+  } else if(tabHiddenAt) {
+    recordTabSwitch(Date.now() - tabHiddenAt);
+    tabHiddenAt = null;
+  }
+}
+
+let _blurLogged = false;
+function handleWindowBlur() {
+  if(_blurLogged) return;
+  _blurLogged = true;
+  setTimeout(()=>{ _blurLogged = false; }, 1000);
+  if(!document.hidden) return;
+  recordTabSwitch(0);
+}
+
+function recordTabSwitch(awayMs) {
+  if(isSubmitting) return;
+  const mode = testData?.tabWatchMode || 'warn';
+  if(mode === 'off') return;
+  tabSwitchLog.push({ at: Date.now(), awayMs: awayMs||0 });
+  if(mode === 'instant') { stopTabWatch(); submitTest(); return; }
+  if(mode === '3strike' && tabSwitchLog.length >= 3) { stopTabWatch(); submitTest(); return; }
+}
+
+
+// ════════════════════════════════════════
+// COPY PROTECTION (right-click + copy + text-select disabled during quiz)
+// ════════════════════════════════════════
+function isQuizLive(){
+  return document.getElementById('quizScreen').classList.contains('active') && !isSubmitting;
+}
+document.addEventListener('contextmenu', (e) => {
+  if(isQuizLive() && !e.target.closest('.q-short')) e.preventDefault();
+});
+document.addEventListener('copy', (e) => {
+  if(isQuizLive() && !e.target.closest('.q-short')){
+    e.preventDefault();
+    showToast('📵 Copy disabled during the test');
+  }
+});
+document.addEventListener('selectstart', (e) => {
+  if(isQuizLive() && !e.target.closest('.q-short')) e.preventDefault();
+});
+
 function startTimer() {
   document.getElementById('timerMob').style.display = 'block';
   clearInterval(timerInterval);
@@ -810,7 +931,7 @@ async function submitTest() {
   isSubmitting = true;
 
   clearInterval(timerInterval);
-  // Disable submit buttons immediately to prevent double-clicks/double-writes
+  stopTabWatch();
   document.querySelectorAll('.submit-btn-panel, #nextBtn').forEach(b=>{ if(b) b.disabled = true; });
 
   const elapsed = Math.floor((Date.now()-startTime)/1000);
@@ -838,7 +959,9 @@ async function submitTest() {
     score, total, pct, correct, wrong, skipped,
     timeTaken:`${em}:${es}`,
     passPercent:testData.passPercent||50,
-    answers, submittedAt:Date.now()
+    answers, submittedAt:Date.now(),
+    tabSwitchCount: tabSwitchLog.length,
+    tabSwitchLog: tabSwitchLog
   };
 
   const oneTime = testData.oneTimeOnly !== false;
@@ -936,19 +1059,19 @@ function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
           const sa=isSkipped?'Skipped':q.options[ans];
           const ca=q.options[q.correct];
           ansText=isSkipped?`<span style="color:var(--muted)">Skipped</span>`:
-            isCorrect?`<span class="correct-ans">✓ ${sa}</span>`:
-            `<span class="wrong-ans">${sa}</span> → <span class="correct-ans">${ca}</span>`;
+            isCorrect?`<span class="correct-ans">✓ ${safeQHTML(sa)}</span>`:
+            `<span class="wrong-ans">${safeQHTML(sa)}</span> → <span class="correct-ans">${safeQHTML(ca)}</span>`;
         } else if(q.type==='tf'){
           ansText=isSkipped?'<span style="color:var(--muted)">Skipped</span>':
             isCorrect?`<span class="correct-ans">✓ ${ans}</span>`:
             `<span class="wrong-ans">${ans}</span> → <span class="correct-ans">${q.correct}</span>`;
         } else {
-          ansText=`<span style="color:var(--blue);">${ans||'Skipped'}</span>`;
+          ansText=`<span style="color:var(--blue);">${safeQHTML(ans)||'Skipped'}</span>`;
         }
         return `<div class="rev-item ${cls}">
-          <div class="rev-q">Q${i+1}. ${q.text}</div>
+          <div class="rev-q">Q${i+1}. ${safeQHTML(q.text)}</div>
           <div class="rev-a">${ansText}</div>
-          ${q.exp?`<div class="rev-exp">💡 ${q.exp}</div>`:''}
+          ${q.exp?`<div class="rev-exp">💡 ${safeQHTML(q.exp)}</div>`:''}
         </div>`;
       }).join('');
   }
@@ -1130,6 +1253,12 @@ function showScreen(id){
   document.getElementById(id).classList.add('active');
 }
 function showError(msg){ document.getElementById('errorMsg').textContent=msg; showScreen('errorScreen'); }
+function showPausedScreen(){
+  const msg = testData?.msgPaused || 'The admin has paused this test. Please wait — it will resume automatically.';
+  const el = document.getElementById('pausedMsg');
+  if(el) el.textContent = msg;
+  showScreen('pausedScreen');
+}
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
