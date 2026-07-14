@@ -1378,6 +1378,7 @@ async function editTestPrompt(id) {
   if(!t){ showToast('Test nahi mila!','error'); return; }
   const esc = s => (s||'').toString().replace(/"/g,'&quot;');
   const overlay = document.createElement('div');
+  overlay.id = '_editTestOverlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
   overlay.innerHTML = `
     <div style="background:#0F1E35;border:1px solid rgba(245,184,0,.2);border-radius:16px;padding:1.5rem;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;box-sizing:border-box;">
@@ -1422,7 +1423,7 @@ async function editTestPrompt(id) {
 
       <div style="display:flex;gap:.5rem;">
         <button onclick="saveEditTest('${id}')" style="flex:1;padding:.6rem;border-radius:8px;background:var(--gold);color:var(--navy);font-weight:700;font-size:.85rem;border:none;cursor:pointer;">💾 Save Changes</button>
-        <button onclick="this.closest('div[style*=fixed]').remove()" style="padding:.6rem .9rem;border-radius:8px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:.85rem;border:none;cursor:pointer;">Cancel</button>
+        <button onclick="document.getElementById('_editTestOverlay').remove()" style="padding:.6rem .9rem;border-radius:8px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:.85rem;border:none;cursor:pointer;">Cancel</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -1444,7 +1445,8 @@ async function saveEditTest(id) {
   };
   try {
     await db.ref('tests/'+id).update(updates);
-    document.querySelector('div[style*="position:fixed"][style*="9999"]').remove();
+    const ov = document.getElementById('_editTestOverlay');
+    if(ov) ov.remove();
     showToast('✅ Test update ho gaya!','success');
     loadTests();
   } catch(e){ showToast('Error: '+e.message,'error'); }
