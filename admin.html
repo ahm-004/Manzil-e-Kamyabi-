@@ -1297,6 +1297,7 @@ async function loadTests() {
           <button class="btn btn-green btn-sm" onclick="viewTestResults('${id}')">Results</button>
           <button class="btn btn-sm" style="background:${isPaused?'rgba(16,185,129,.15);color:#10B981':'rgba(239,68,68,.15);color:#EF4444'};border:1px solid ${isPaused?'rgba(16,185,129,.3)':'rgba(239,68,68,.3)'};" id="pause-btn-${id}" onclick="togglePauseTest('${id}',${isPaused})">${isPaused?'▶ Resume':'⏸ Pause'}</button>
           <button class="btn btn-outline btn-sm" onclick="setDeadlinePrompt('${id}')">📅 Deadline</button>
+          <button class="btn btn-sm" style="background:rgba(21,101,216,.15);color:#60A5FA;border:1px solid rgba(21,101,216,.3);" onclick="editTestPrompt('${id}')">✏️ Edit</button>
           <button class="btn btn-red btn-sm" onclick="deleteTest('${id}')">Delete</button>
         </div>
       </div>`;
@@ -1366,6 +1367,85 @@ async function applyDeadline(id, remove=false) {
       showToast('✅ Deadline set: ' + new Date(val).toLocaleString('en-GB'),'success');
     }
     if(overlay) overlay.remove();
+    loadTests();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+// ── EDIT TEST (Title, Duration, Pass%, Neg Marking, Instructions, Messages) ──
+async function editTestPrompt(id) {
+  const snap = await db.ref('tests/'+id).once('value');
+  const t = snap.val();
+  if(!t){ showToast('Test nahi mila!','error'); return; }
+  const esc = s => (s||'').toString().replace(/"/g,'&quot;');
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+  overlay.innerHTML = `
+    <div style="background:#0F1E35;border:1px solid rgba(245,184,0,.2);border-radius:16px;padding:1.5rem;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;box-sizing:border-box;">
+      <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:1rem;">✏️ Edit Test</div>
+
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Test Title</div>
+      <input id="_etTitle" value="${esc(t.title)}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Subject / Category</div>
+      <input id="_etSubject" value="${esc(t.subject)}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+
+      <div style="display:flex;gap:.6rem;margin-bottom:.75rem;">
+        <div style="flex:1;">
+          <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Time Limit (min)</div>
+          <input id="_etTime" type="number" min="1" max="180" value="${t.timeLimit||30}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Pass %</div>
+          <input id="_etPass" type="number" min="0" max="100" value="${t.passPercent||50}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Negative Marking</div>
+      <select id="_etNeg" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+        <option value="0" ${(!t.negMarking)?'selected':''}>No Negative Marking</option>
+        <option value="0.25" ${t.negMarking==0.25?'selected':''}>-0.25 per wrong</option>
+        <option value="0.5" ${t.negMarking==0.5?'selected':''}>-0.5 per wrong</option>
+        <option value="1" ${t.negMarking==1?'selected':''}>-1 per wrong</option>
+      </select>
+
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Instructions</div>
+      <textarea id="_etInstr" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(t.instructions)}</textarea>
+
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">✅ Message After Submission</div>
+      <textarea id="_etMsgSubmit" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(t.msgSubmit)}</textarea>
+
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">⏰ Message After Deadline</div>
+      <textarea id="_etMsgDeadline" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(t.msgDeadline)}</textarea>
+
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">⏸ Message When Paused</div>
+      <textarea id="_etMsgPaused" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:1rem;resize:vertical;">${esc(t.msgPaused)}</textarea>
+
+      <div style="display:flex;gap:.5rem;">
+        <button onclick="saveEditTest('${id}')" style="flex:1;padding:.6rem;border-radius:8px;background:var(--gold);color:var(--navy);font-weight:700;font-size:.85rem;border:none;cursor:pointer;">💾 Save Changes</button>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="padding:.6rem .9rem;border-radius:8px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:.85rem;border:none;cursor:pointer;">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function saveEditTest(id) {
+  const title = document.getElementById('_etTitle').value.trim();
+  if(!title){ showToast('Test title khali nahi ho sakta!','error'); return; }
+  const updates = {
+    title,
+    subject: document.getElementById('_etSubject').value.trim(),
+    timeLimit: parseInt(document.getElementById('_etTime').value)||30,
+    passPercent: parseInt(document.getElementById('_etPass').value)||50,
+    negMarking: parseFloat(document.getElementById('_etNeg').value)||0,
+    instructions: document.getElementById('_etInstr').value.trim(),
+    msgSubmit: document.getElementById('_etMsgSubmit').value.trim(),
+    msgDeadline: document.getElementById('_etMsgDeadline').value.trim(),
+    msgPaused: document.getElementById('_etMsgPaused').value.trim()
+  };
+  try {
+    await db.ref('tests/'+id).update(updates);
+    document.querySelector('div[style*="position:fixed"][style*="9999"]').remove();
+    showToast('✅ Test update ho gaya!','success');
     loadTests();
   } catch(e){ showToast('Error: '+e.message,'error'); }
 }
