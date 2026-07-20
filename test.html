@@ -50,7 +50,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 .fi input{width:100%;padding:.7rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-size:.88rem;font-family:var(--font-b);color:var(--navy);outline:none;transition:border-color .2s;}
 .fi input:focus{border-color:var(--blue);}
 .fi input::placeholder{color:#CBD5E1;}
-.instructions{background:rgba(21,101,216,.05);border:1px solid rgba(21,101,216,.15);border-radius:10px;padding:.9rem 1rem;margin-bottom:1.1rem;font-size:.8rem;color:var(--muted);line-height:1.65;}
+.instructions{background:rgba(21,101,216,.05);border:1px solid rgba(21,101,216,.15);border-radius:10px;padding:.9rem 1rem;margin-bottom:1.1rem;font-size:.9rem;color:var(--muted);line-height:1.7;}
 .instructions b{color:var(--navy);display:block;margin-bottom:.3rem;}
 
 /* ── BUTTONS ── */
@@ -93,6 +93,24 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 .leg-item{display:flex;align-items:center;gap:.5rem;font-size:.65rem;color:var(--muted);}
 .leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
 .nav-jump{width:100%;padding:.5rem;border-radius:8px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:var(--red);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--font-b);transition:all .15s;}
+.nav-jump.unanswered{background:rgba(245,184,0,.08);border-color:rgba(245,184,0,.25);color:#B8860B;margin-top:.5rem;}
+
+/* ── SUBMIT WARNING MODAL ── */
+.sw-overlay{display:none;position:fixed;inset:0;background:rgba(11,24,41,.6);z-index:500;align-items:center;justify-content:center;padding:1.25rem;}
+.sw-overlay.open{display:flex;}
+.sw-card{background:#fff;border-radius:16px;padding:1.5rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.sw-icon{width:48px;height:48px;border-radius:50%;background:rgba(245,184,0,.12);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto .8rem;}
+.sw-title{font-family:var(--font-d);font-weight:700;font-size:1rem;color:var(--navy);text-align:center;margin-bottom:.4rem;}
+.sw-body{font-size:.85rem;color:var(--muted);text-align:center;line-height:1.6;margin-bottom:.9rem;}
+.sw-body b{color:var(--navy);}
+.sw-qlist{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1.1rem;max-height:110px;overflow-y:auto;}
+.sw-qchip{background:rgba(245,184,0,.1);border:1px solid rgba(245,184,0,.3);color:#B8860B;font-size:.75rem;font-weight:700;padding:.25rem .55rem;border-radius:6px;cursor:pointer;transition:all .15s;}
+.sw-qchip:hover{background:rgba(245,184,0,.22);transform:translateY(-1px);}
+.sw-btns{display:flex;flex-direction:column;gap:.55rem;}
+
+/* ── REVIEW TOGGLE ── */
+.review-toggle-btn{display:none;width:100%;margin-top:.9rem;padding:.7rem;border-radius:10px;background:rgba(21,101,216,.06);border:1.5px solid rgba(21,101,216,.2);color:var(--blue);font-weight:600;font-size:.85rem;cursor:pointer;font-family:var(--font-b);}
+.review-toggle-btn:hover{background:rgba(21,101,216,.1);}
 .nav-jump:hover{background:rgba(239,68,68,.12);}
 
 /* ── QUESTION CARD (Center) ── */
@@ -278,7 +296,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
     <div class="already-box">
       <div style="font-size:2.5rem;margin-bottom:1rem;">✅</div>
       <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Already Submitted!</h2>
-      <p id="alreadyMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">You have already taken this test. Each test can only be submitted once.</p>
+      <p id="alreadyMsg" style="font-size:.92rem;color:var(--muted);line-height:1.7;white-space:pre-wrap;">You have already taken this test. Each test can only be submitted once.</p>
     </div>
   </div>
 </div>
@@ -289,7 +307,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
     <div class="already-box">
       <div style="font-size:2.5rem;margin-bottom:1rem;">⏰</div>
       <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test Deadline Has Passed</h2>
-      <p id="deadlineMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">This test is no longer accepting submissions.</p>
+      <p id="deadlineMsg" style="font-size:.92rem;color:var(--muted);line-height:1.7;white-space:pre-wrap;">This test is no longer accepting submissions.</p>
     </div>
   </div>
 </div>
@@ -300,7 +318,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
     <div class="already-box">
       <div style="font-size:2.5rem;margin-bottom:1rem;">⏸️</div>
       <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test is Temporarily Paused</h2>
-      <p id="pausedMsg" style="font-size:.84rem;color:var(--muted);line-height:1.6;">The admin has paused this test. Please wait — it will resume automatically.</p>
+      <p id="pausedMsg" style="font-size:.92rem;color:var(--muted);line-height:1.7;white-space:pre-wrap;">The admin has paused this test. Please wait — it will resume automatically.</p>
       <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem;">Do not close this page.</p>
     </div>
   </div>
@@ -353,6 +371,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
       <div class="leg-item"><div class="leg-dot" style="background:rgba(249,115,22,.1);border:1.5px solid var(--orange);"></div>Flagged</div>
       <div class="leg-item"><div class="leg-dot" style="background:var(--off);border:1.5px solid var(--border);"></div>Not Visited</div>
     </div>
+    <button class="nav-jump unanswered" style="margin-top:.65rem;" onclick="jumpToFirstUnanswered()">◯ Jump to First Unanswered</button>
   </div>
 
   <div class="quiz-layout">
@@ -371,6 +390,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
         <div class="leg-item"><div class="leg-dot" style="background:var(--blue);border:1.5px solid var(--blue);"></div>Current</div>
       </div>
       <button class="nav-jump" id="jumpFlaggedBtn" onclick="jumpToFirstFlagged()">⚑ Jump to First Flagged</button>
+      <button class="nav-jump unanswered" id="jumpUnansweredBtn" onclick="jumpToFirstUnanswered()">◯ Jump to First Unanswered</button>
     </div>
 
     <!-- CENTER: Question -->
@@ -428,7 +448,8 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
         <div class="rcb"><div class="rcb-num" id="rcSkip" style="color:var(--muted)">0</div><div class="rcb-lbl">Skipped</div></div>
         <div class="rcb"><div class="rcb-num" id="rcTime" style="color:var(--blue)">—</div><div class="rcb-lbl">Time</div></div>
       </div>
-      <div id="rcCustomMsg" style="display:none;background:rgba(21,101,216,.06);border:1px solid rgba(21,101,216,.18);border-radius:12px;padding:1rem 1.1rem;margin:1.1rem 0;font-size:.84rem;color:var(--navy);line-height:1.6;text-align:left;"></div>
+      <div id="rcCustomMsg" style="display:none;background:rgba(21,101,216,.06);border:1px solid rgba(21,101,216,.18);border-radius:12px;padding:1rem 1.1rem;margin:1.1rem 0;font-size:.92rem;color:var(--navy);line-height:1.7;text-align:left;white-space:pre-wrap;"></div>
+      <button class="review-toggle-btn" id="reviewToggleBtn" onclick="toggleReview()">📋 Show Answer Review</button>
       <div class="review-section" id="reviewSection"></div>
       <div class="result-btns">
         <button class="btn btn-outline btn-sm" id="tryAgainBtn" onclick="location.reload()">Try Again</button>
@@ -629,7 +650,7 @@ function showNameScreen() {
   if (testData.instructions) {
     const el = document.getElementById('testInstr');
     el.style.display = 'block';
-    el.innerHTML = `<b>📋 Instructions:</b> ${testData.instructions}`;
+    el.innerHTML = `<b>📋 Instructions:</b> ${safeQHTML(testData.instructions).replace(/\n/g,'<br>')}`;
   }
   showScreen('nameScreen');
   offerResume();
@@ -743,6 +764,14 @@ function jumpToFirstFlagged() {
   jumpTo(idx);
 }
 
+function jumpToFirstUnanswered() {
+  const idx = answers.findIndex(a => a===null||a===undefined||a==='');
+  if(idx === -1) { showToast('All questions answered! 🎉'); return; }
+  jumpTo(idx);
+  const mg = document.getElementById('mobNavGrid');
+  if(mg) mg.classList.remove('open');
+}
+
 function toggleMobNav() {
   document.getElementById('mobNavGrid').classList.toggle('open');
 }
@@ -824,13 +853,33 @@ function nextQ() {
 
 function confirmSubmit() {
   if (isSubmitting) return;
-  const total = testData.questions.length;
-  const answered = answers.filter(a => a !== null && a !== undefined && a !== '').length;
-  const skipped = total - answered;
-  if(skipped > 0) {
-    const ok = confirm(`You have ${skipped} unanswered question(s). Submit anyway?`);
-    if(!ok) return;
+  const unansweredIdx = [];
+  answers.forEach((a,i) => { if(a===null||a===undefined||a==='') unansweredIdx.push(i); });
+  if(unansweredIdx.length > 0) {
+    document.getElementById('swCount').textContent = unansweredIdx.length;
+    document.getElementById('swQList').innerHTML = unansweredIdx.map(i=>`<span class="sw-qchip" onclick="swJumpTo(${i})">Q${i+1}</span>`).join('');
+    document.getElementById('swOverlay').classList.add('open');
+    return;
   }
+  submitTest();
+}
+
+function swCancel() {
+  document.getElementById('swOverlay').classList.remove('open');
+}
+
+function swJumpTo(i) {
+  document.getElementById('swOverlay').classList.remove('open');
+  jumpTo(i);
+}
+
+function swJumpToUnanswered() {
+  document.getElementById('swOverlay').classList.remove('open');
+  jumpToFirstUnanswered();
+}
+
+function swSubmitAnyway() {
+  document.getElementById('swOverlay').classList.remove('open');
   submitTest();
 }
 
@@ -1016,6 +1065,8 @@ let lastResultData = null; // saved for PDF download
 
 function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
   lastResultData = { score,total,pct,pass,correct,wrong,skipped,time };
+  reviewShown = false;
+  document.getElementById('reviewSection').innerHTML = '';
   document.getElementById('rcEmoji').textContent = pct>=80?'🏆':pct>=50?'🎓':'📚';
   document.getElementById('rcName').textContent = studentName + "'s Result";
   const color = pct>=70?'var(--green)':pct>=40?'var(--gold)':'var(--red)';
@@ -1042,8 +1093,10 @@ function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
   const tryAgainBtn = document.getElementById('tryAgainBtn');
   if (tryAgainBtn) tryAgainBtn.style.display = (testData.oneTimeOnly !== false) ? 'none' : 'inline-flex';
 
+  const reviewBtn = document.getElementById('reviewToggleBtn');
+  if(reviewBtn) reviewBtn.textContent = '📋 Show Answer Review';
   if(testData.showAnswer){
-    document.getElementById('reviewSection').innerHTML = `<div class="rev-title">Answer Review</div>` +
+    lastReviewHTML = `<div class="rev-title">Answer Review</div>` +
       testData.questions.map((q,i)=>{
         const ans = answers[i];
         const isSkipped = ans===null||ans===undefined||ans==='';
@@ -1074,9 +1127,28 @@ function showResult(score,total,pct,pass,correct,wrong,skipped,time) {
           ${q.exp?`<div class="rev-exp">💡 ${safeQHTML(q.exp)}</div>`:''}
         </div>`;
       }).join('');
+    if(reviewBtn) reviewBtn.style.display = 'block';
+  } else if(reviewBtn) {
+    reviewBtn.style.display = 'none';
   }
   showScreen('resultScreen');
   if(pass) setTimeout(launchConfetti, 250);
+}
+
+let lastReviewHTML = '';
+let reviewShown = false;
+function toggleReview() {
+  const sec = document.getElementById('reviewSection');
+  const btn = document.getElementById('reviewToggleBtn');
+  reviewShown = !reviewShown;
+  if(reviewShown){
+    sec.innerHTML = lastReviewHTML;
+    btn.textContent = '🙈 Hide Answer Review';
+    sec.scrollIntoView({behavior:'smooth', block:'nearest'});
+  } else {
+    sec.innerHTML = '';
+    btn.textContent = '📋 Show Answer Review';
+  }
 }
 
 function shareWA() {
@@ -1309,5 +1381,20 @@ function launchConfetti(){
   }
 }
 </script>
+<!-- Submit warning modal (unanswered questions) -->
+<div class="sw-overlay" id="swOverlay">
+  <div class="sw-card">
+    <div class="sw-icon">⚠️</div>
+    <div class="sw-title">Unanswered Questions</div>
+    <div class="sw-body" id="swBody">You have <b id="swCount">0</b> unanswered question(s). Submit anyway?</div>
+    <div class="sw-qlist" id="swQList"></div>
+    <div class="sw-btns">
+      <button class="btn nav-jump unanswered" style="padding:.65rem;" onclick="swJumpToUnanswered()">◯ Jump to Unanswered</button>
+      <button class="btn btn-gold" onclick="swSubmitAnyway()">Submit Anyway ✓</button>
+      <button class="btn btn-outline" onclick="swCancel()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -277,7 +277,7 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
 <div id="loginScreen" class="login-screen">
   <div class="login-box">
     <div class="login-logo">
-      <div class="ll-mark">M</div>
+      <img src="images/logo.png" alt="Manzil-e-Kamyabi" class="ll-mark" style="object-fit:cover;" onerror="this.outerHTML='<div class=\'ll-mark\'>M</div>'">
       <div>
         <h1>Manzil-e-Kamyabi</h1>
         <span>Admin Control Panel</span>
@@ -304,7 +304,7 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="tb-brand">
-      <div class="tb-mark">M</div>
+      <img src="images/logo.png" alt="Manzil-e-Kamyabi" class="tb-mark" style="object-fit:cover;" onerror="this.outerHTML='<div class=\'tb-mark\'>M</div>'">
       <div class="tb-title"><span>MEK</span> Admin Panel</div>
     </div>
     <div class="tb-right">
@@ -1007,11 +1007,35 @@ if(auth) {
       document.getElementById('dashboard').style.display='block';
       document.getElementById('tbUser').textContent=u.email;
       loadAll();
+      startInactivityWatch();
     } else {
       document.getElementById('loginScreen').style.display='flex';
       document.getElementById('dashboard').style.display='none';
+      stopInactivityWatch();
     }
   });
+}
+
+// ── SECURITY: Auto-logout after inactivity ──
+const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 minutes
+let _inactivityTimer = null;
+function resetInactivityTimer() {
+  clearTimeout(_inactivityTimer);
+  _inactivityTimer = setTimeout(() => {
+    if(auth && auth.currentUser) {
+      auth.signOut();
+      showToast('🔒 15 min inactivity — aap logout ho gaye hain.','error');
+    }
+  }, INACTIVITY_LIMIT_MS);
+}
+const _activityEvents = ['mousemove','keydown','click','touchstart','scroll'];
+function startInactivityWatch() {
+  _activityEvents.forEach(ev => document.addEventListener(ev, resetInactivityTimer));
+  resetInactivityTimer();
+}
+function stopInactivityWatch() {
+  clearTimeout(_inactivityTimer);
+  _activityEvents.forEach(ev => document.removeEventListener(ev, resetInactivityTimer));
 }
 
 // ── AUTH ──
