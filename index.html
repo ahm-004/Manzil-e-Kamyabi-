@@ -1548,30 +1548,6 @@ const QUIZ_TYPES = [
   {id:'cs',title:'IQ Speed Test',icon:'🧩',desc:'Logical reasoning under time pressure',qs:8,time:8,neg:true,tags:['IQ','Speed']},
 ];
 
-const LEADERBOARD_DATA = {
-  weekly:[
-    {rank:1,name:'Ali Hassan',sub:'Engineering Mock',score:98,total:100,pct:98,badge:'Champion',bc:'b-gold'},
-    {rank:2,name:'Fatima Malik',sub:'MDCAT Prep',score:96,total:100,pct:96,badge:'Top 2%',bc:'b-blue'},
-    {rank:3,name:'Zaid Ahmed',sub:'CS Entry Test',score:94,total:100,pct:94,badge:'Rising',bc:'b-green'},
-    {rank:4,name:'Amna Raza',sub:'MUET Mock',score:92,total:100,pct:92,badge:'Active',bc:'b-blue'},
-    {rank:5,name:'Hamza Siddiqui',sub:'ECAT Full Test',score:91,total:100,pct:91,badge:'Active',bc:'b-green'},
-  ],
-  monthly:[
-    {rank:1,name:'Sara Khan',sub:'Full Mock Test',score:97,total:100,pct:97,badge:'Champion',bc:'b-gold'},
-    {rank:2,name:'Bilal Mehmood',sub:'Engineering Mock',score:95,total:100,pct:95,badge:'Elite',bc:'b-blue'},
-    {rank:3,name:'Hina Baig',sub:'MDCAT Mock',score:93,total:100,pct:93,badge:'Rising',bc:'b-green'},
-    {rank:4,name:'Usman Ali',sub:'CS Test',score:90,total:100,pct:90,badge:'Active',bc:'b-blue'},
-    {rank:5,name:'Rabia Noor',sub:'English Mock',score:89,total:100,pct:89,badge:'Active',bc:'b-green'},
-  ],
-  all:[
-    {rank:1,name:'Ahmed Raza',sub:'All Tests',score:99,total:100,pct:99,badge:'Legend',bc:'b-gold'},
-    {rank:2,name:'Kiran Fatima',sub:'Engineering',score:97,total:100,pct:97,badge:'Master',bc:'b-gold'},
-    {rank:3,name:'Omar Sheikh',sub:'MDCAT',score:96,total:100,pct:96,badge:'Elite',bc:'b-blue'},
-    {rank:4,name:'Nadia Malik',sub:'CS Tests',score:94,total:100,pct:94,badge:'Rising',bc:'b-green'},
-    {rank:5,name:'Faisal Khan',sub:'Mixed Tests',score:93,total:100,pct:93,badge:'Active',bc:'b-green'},
-  ]
-};
-
 const PAPERS_DATA = [
   {title:'QUEST Past Papers',icon:'⚙️',cls:'c1',desc:'Engineering Entry Test',tags:['PDF','Year-wise','Solved'],years:[2024,2023,2022,2021,2020,2019]},
   {title:'MUET Jamshoro',icon:'🏛️',cls:'c2',desc:'Engineering Papers',tags:['PDF','MCQ Bank','Solved'],years:[2024,2023,2022,2021,2020]},
@@ -1643,33 +1619,96 @@ function renderPrep(){
 function renderQuizTypes(){
   const el = document.getElementById('quizTypesGrid');
   if(!el) return;
-  el.innerHTML = QUIZ_TYPES.map((qt,i)=>`
-    <div class="qt-card fade" onclick="startQuiz(${i})">
-      <div class="qt-icon">${qt.icon}</div>
-      <h3>${qt.title}</h3>
-      <p>${qt.desc}</p>
-      <div class="qt-meta">
-        ${qt.tags.map(t=>`<span class="qt-tag qt-tag-blue">${t}</span>`).join('')}
-        <span class="qt-tag qt-tag-gold">${qt.qs} Qs</span>
-        <span class="qt-tag qt-tag-green">${qt.time} min</span>
-        ${qt.neg?'<span class="qt-tag" style="background:rgba(239,68,68,.12);color:#FC8181;">-ve marking</span>':''}
-      </div>
-    </div>`).join('');
+  el.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Loading tests…</p>`;
+  loadLiveTests();
 }
 
-function renderLB(key){
+// ── Live tests created from the Admin Panel (Firebase) ──
+async function loadLiveTests(){
+  const el = document.getElementById('quizTypesGrid');
+  if(!el || !db) return;
+  try{
+    const snap = await db.ref('tests').once('value');
+    const data = snap.val();
+    if(!data){
+      el.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Koi test abhi available nahi hai. Jald hi naye tests add honge!</p>`;
+      return;
+    }
+    const cards = Object.keys(data).map(id=>{
+      const t = data[id];
+      if(!t || !t.title) return '';
+      const qCount = t.questions ? t.questions.length : 0;
+      return `
+      <div class="qt-card fade" onclick="location.href='test.html?id=${id}'">
+        <div class="qt-icon">📝</div>
+        <h3>${t.title}</h3>
+        <p>${t.subject||'Official Test'}</p>
+        <div class="qt-meta">
+          <span class="qt-tag" style="background:rgba(16,185,129,.12);color:#34D399;">🔴 Live</span>
+          <span class="qt-tag qt-tag-gold">${qCount} Qs</span>
+          <span class="qt-tag qt-tag-green">${t.timeLimit||30} min</span>
+          ${t.negMarking>0?'<span class="qt-tag" style="background:rgba(239,68,68,.12);color:#FC8181;">-ve marking</span>':''}
+        </div>
+      </div>`;
+    }).join('');
+    el.innerHTML = cards || `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Koi test abhi available nahi hai. Jald hi naye tests add honge!</p>`;
+  }catch(e){
+    console.error('Live tests load failed:', e);
+    el.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Tests load nahi ho sakay. Dubara try karein.</p>`;
+  }
+}
+
+async function renderLB(key){
   const el = document.getElementById('lbBody');
-  if(!el) return;
-  el.innerHTML = LEADERBOARD_DATA[key].map(r=>{
-    const medal = r.rank===1?'🥇 ':r.rank===2?'🥈 ':r.rank===3?'🥉 ':r.rank;
-    const cls = r.rank===1?'g':r.rank===2?'s':r.rank===3?'b':'';
-    return `<div class="lb-row">
-      <div class="lb-rank ${cls}">${r.rank<=3?medal:r.rank}</div>
-      <div><div class="lb-name">${r.name}</div><div class="lb-name lb-sub">${r.sub}</div></div>
-      <div class="lb-score-col"><div class="lb-score-num">${r.score}/${r.total}</div><div class="lb-score-pct">${r.pct}%</div></div>
-      <div class="lb-badge-col"><span class="badge ${r.bc}">${r.badge}</span></div>
-    </div>`;
-  }).join('');
+  if(!el || !db) return;
+  el.innerHTML = `<p style="text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Loading results…</p>`;
+  try{
+    const [resultsSnap, testsSnap] = await Promise.all([
+      db.ref('results').once('value'),
+      db.ref('tests').once('value')
+    ]);
+    const resultsData = resultsSnap.val() || {};
+    const testsData = testsSnap.val() || {};
+    const now = Date.now();
+    const cutoff = key==='weekly' ? now - 7*24*60*60*1000 : key==='monthly' ? now - 30*24*60*60*1000 : 0;
+
+    let rows = [];
+    Object.keys(resultsData).forEach(testId=>{
+      const testTitle = testsData[testId]?.title || 'Test';
+      const entries = resultsData[testId] || {};
+      Object.keys(entries).forEach(studentKey=>{
+        const r = entries[studentKey];
+        if(!r || typeof r.pct !== 'number') return;
+        if(cutoff && (!r.submittedAt || r.submittedAt < cutoff)) return;
+        rows.push({ name: r.name||'Anonymous', sub: testTitle, score: r.score, total: r.total, pct: r.pct, submittedAt: r.submittedAt||0 });
+      });
+    });
+
+    rows.sort((a,b)=> b.pct - a.pct || b.submittedAt - a.submittedAt);
+    rows = rows.slice(0, 20);
+
+    if(rows.length===0){
+      el.innerHTML = `<p style="text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Abhi is period me koi result nahi hai.</p>`;
+      return;
+    }
+
+    el.innerHTML = rows.map((r,i)=>{
+      const rank = i+1;
+      const medal = rank===1?'🥇 ':rank===2?'🥈 ':rank===3?'🥉 ':rank;
+      const cls = rank===1?'g':rank===2?'s':rank===3?'b':'';
+      const badge = rank===1?'Champion':rank===2?'Top Scorer':rank===3?'Rising':'Active';
+      const bc = rank===1?'b-gold':rank===2?'b-blue':rank===3?'b-green':'b-blue';
+      return `<div class="lb-row">
+        <div class="lb-rank ${cls}">${rank<=3?medal:rank}</div>
+        <div><div class="lb-name">${r.name}</div><div class="lb-name lb-sub">${r.sub}</div></div>
+        <div class="lb-score-col"><div class="lb-score-num">${r.score}/${r.total}</div><div class="lb-score-pct">${r.pct}%</div></div>
+        <div class="lb-badge-col"><span class="badge ${bc}">${badge}</span></div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error('Leaderboard load failed:', e);
+    el.innerHTML = `<p style="text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Results load nahi ho sakay.</p>`;
+  }
 }
 
 // renderUnis defined below with logos
