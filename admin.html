@@ -394,6 +394,11 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
               <select id="testShowAns"><option value="yes">Yes — Show correct answers</option><option value="no">No — Result only</option></select>
             </div>
           </div>
+          <div class="form-row">
+            <div class="fi"><label>Show on Leaderboard</label>
+              <select id="testShowLB"><option value="yes">Yes — Include results</option><option value="no">No — Hide from leaderboard</option></select>
+            </div>
+          </div>
           <div class="fi"><label>Instructions (optional)</label><textarea id="testInstr" rows="2" placeholder="Students ke liye koi special instructions..."></textarea></div>
 
           <div style="border-top:1px solid rgba(255,255,255,.08);margin:1.25rem 0;padding-top:1.1rem;">
@@ -1263,6 +1268,7 @@ async function saveTest() {
     passPercent:parseInt(document.getElementById('testPass').value)||50,
     negMarking:parseFloat(document.getElementById('testNeg').value)||0,
     showAnswer:document.getElementById('testShowAns').value==='yes',
+    showOnLeaderboard:document.getElementById('testShowLB').value==='yes',
     instructions:document.getElementById('testInstr').value.trim(),
     oneTimeOnly:document.getElementById('testOneTime').checked,
     deadline:document.getElementById('testDeadline').value ? new Date(document.getElementById('testDeadline').value).getTime() : null,
@@ -1433,6 +1439,12 @@ async function editTestPrompt(id) {
         <option value="1" ${t.negMarking==1?'selected':''}>-1 per wrong</option>
       </select>
 
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Show on Leaderboard</div>
+      <select id="_etShowLB" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+        <option value="yes" ${t.showOnLeaderboard!==false?'selected':''}>Yes — Include results</option>
+        <option value="no" ${t.showOnLeaderboard===false?'selected':''}>No — Hide from leaderboard</option>
+      </select>
+
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Instructions</div>
       <textarea id="_etInstr" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(t.instructions)}</textarea>
 
@@ -1462,6 +1474,7 @@ async function saveEditTest(id) {
     timeLimit: parseInt(document.getElementById('_etTime').value)||30,
     passPercent: parseInt(document.getElementById('_etPass').value)||50,
     negMarking: parseFloat(document.getElementById('_etNeg').value)||0,
+    showOnLeaderboard: document.getElementById('_etShowLB').value==='yes',
     instructions: document.getElementById('_etInstr').value.trim(),
     msgSubmit: document.getElementById('_etMsgSubmit').value.trim(),
     msgDeadline: document.getElementById('_etMsgDeadline').value.trim(),

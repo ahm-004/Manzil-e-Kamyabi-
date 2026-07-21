@@ -550,6 +550,24 @@ body.dark .ptab.active{background:var(--blue);}
 /* Quiz selector */
 .quiz-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;}
 .qt-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:1.4rem;cursor:pointer;transition:all .25s;}
+
+/* ── SKELETON LOADERS ── */
+@keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+.skel{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.09) 37%,rgba(255,255,255,.04) 63%);background-size:800px 100%;animation:shimmer 1.4s linear infinite;border-radius:6px;}
+.skel-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:1.4rem;}
+.skel-icon{width:38px;height:38px;border-radius:9px;margin-bottom:.9rem;}
+.skel-line{height:13px;margin-bottom:.55rem;}
+.skel-line.w60{width:60%;}
+.skel-line.w85{width:85%;}
+.skel-line.w40{width:40%;}
+.skel-row{display:grid;grid-template-columns:46px 1fr 90px 70px;gap:.75rem;align-items:center;padding:.85rem .9rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:.45rem;}
+.skel-circle{width:26px;height:26px;border-radius:50%;}
+
+/* ── EMPTY STATE ── */
+.empty-state{grid-column:1/-1;text-align:center;padding:2.75rem 1.5rem;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.12);border-radius:var(--r);}
+.empty-state .es-icon{font-size:2.4rem;margin-bottom:.75rem;opacity:.7;}
+.empty-state .es-title{font-family:var(--font-d,inherit);font-weight:700;color:#fff;font-size:1rem;margin-bottom:.35rem;}
+.empty-state .es-sub{color:var(--muted,#94A3B8);font-size:.85rem;line-height:1.6;}
 .qt-card:hover{background:rgba(255,255,255,.09);border-color:rgba(245,184,0,.3);transform:translateY(-3px);}
 .qt-icon{font-size:1.7rem;margin-bottom:.65rem;}
 .qt-card h3{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:.25rem;}
@@ -1619,7 +1637,13 @@ function renderPrep(){
 function renderQuizTypes(){
   const el = document.getElementById('quizTypesGrid');
   if(!el) return;
-  el.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Loading tests…</p>`;
+  el.innerHTML = Array(3).fill(`
+    <div class="skel-card">
+      <div class="skel skel-icon"></div>
+      <div class="skel skel-line w85"></div>
+      <div class="skel skel-line w60"></div>
+      <div class="skel skel-line w40"></div>
+    </div>`).join('');
   loadLiveTests();
 }
 
@@ -1631,7 +1655,7 @@ async function loadLiveTests(){
     const snap = await db.ref('tests').once('value');
     const data = snap.val();
     if(!data){
-      el.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Koi test abhi available nahi hai. Jald hi naye tests add honge!</p>`;
+      el.innerHTML = `<div class="empty-state"><div class="es-icon">📝</div><div class="es-title">Koi test abhi available nahi hai</div><div class="es-sub">Jald hi naye tests add honge — check karte rahein!</div></div>`;
       return;
     }
     const cards = Object.keys(data).map(id=>{
@@ -1651,17 +1675,23 @@ async function loadLiveTests(){
         </div>
       </div>`;
     }).join('');
-    el.innerHTML = cards || `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Koi test abhi available nahi hai. Jald hi naye tests add honge!</p>`;
+    el.innerHTML = cards || `<div class="empty-state"><div class="es-icon">📝</div><div class="es-title">Koi test abhi available nahi hai</div><div class="es-sub">Jald hi naye tests add honge — check karte rahein!</div></div>`;
   }catch(e){
     console.error('Live tests load failed:', e);
-    el.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Tests load nahi ho sakay. Dubara try karein.</p>`;
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">⚠️</div><div class="es-title">Tests load nahi ho sakay</div><div class="es-sub">Internet check karein aur page refresh karein.</div></div>`;
   }
 }
 
 async function renderLB(key){
   const el = document.getElementById('lbBody');
   if(!el || !db) return;
-  el.innerHTML = `<p style="text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Loading results…</p>`;
+  el.innerHTML = Array(4).fill(`
+    <div class="skel-row">
+      <div class="skel skel-circle"></div>
+      <div><div class="skel skel-line w85" style="height:11px;margin-bottom:.4rem;"></div><div class="skel skel-line w40" style="height:9px;margin-bottom:0;"></div></div>
+      <div class="skel skel-line w60" style="margin-bottom:0;"></div>
+      <div class="skel skel-line w60" style="margin-bottom:0;"></div>
+    </div>`).join('');
   try{
     const [resultsSnap, testsSnap] = await Promise.all([
       db.ref('results').once('value'),
@@ -1674,6 +1704,7 @@ async function renderLB(key){
 
     let rows = [];
     Object.keys(resultsData).forEach(testId=>{
+      if(testsData[testId]?.showOnLeaderboard === false) return;
       const testTitle = testsData[testId]?.title || 'Test';
       const entries = resultsData[testId] || {};
       Object.keys(entries).forEach(studentKey=>{
@@ -1688,7 +1719,7 @@ async function renderLB(key){
     rows = rows.slice(0, 20);
 
     if(rows.length===0){
-      el.innerHTML = `<p style="text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Abhi is period me koi result nahi hai.</p>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:unset;"><div class="es-icon">🏆</div><div class="es-title">Abhi is period me koi result nahi hai</div><div class="es-sub">Test dein aur sabse pehle leaderboard pe aayein!</div></div>`;
       return;
     }
 
@@ -1707,7 +1738,7 @@ async function renderLB(key){
     }).join('');
   }catch(e){
     console.error('Leaderboard load failed:', e);
-    el.innerHTML = `<p style="text-align:center;color:var(--muted,#888);padding:1.5rem;font-size:.85rem;">Results load nahi ho sakay.</p>`;
+    el.innerHTML = `<div class="empty-state" style="grid-column:unset;"><div class="es-icon">⚠️</div><div class="es-title">Results load nahi ho sakay</div><div class="es-sub">Internet check karein aur page refresh karein.</div></div>`;
   }
 }
 
