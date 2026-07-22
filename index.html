@@ -2665,7 +2665,53 @@ function switchTest(tab, btn) {
   document.querySelectorAll('.test-pane').forEach(p=>p.style.display='none');
   if(btn) btn.classList.add('active');
   document.getElementById('test-'+tab).style.display='block';
+  if(tab==='comp') loadCompetitionsList();
   setTimeout(observeFade, 100);
+}
+
+// ══ COMPETITIONS LIST ══
+async function loadCompetitionsList() {
+  const el = document.getElementById('compList');
+  if(!el || !db) return;
+  el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">⏳</div><div class="es-title">Loading competitions…</div></div>`;
+  try{
+    const snap = await db.ref('competitions').once('value');
+    const data = snap.val();
+    if(!data){
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">🏆</div><div class="es-title">Koi competition abhi available nahi hai</div><div class="es-sub">Jald hi naye competitions add honge!</div></div>`;
+      return;
+    }
+    const now = Date.now();
+    const upcoming = Object.entries(data).filter(([id,c])=>{
+      if(!c || !c.title || !c.startTime) return false;
+      const qCount = c.questions?.length||0;
+      const endTime = c.startTime + qCount*((c.perQuestionTime||10)+(c.gapTime||5))*1000;
+      return now < endTime; // hide fully-ended competitions
+    }).sort((a,b)=>a[1].startTime-b[1].startTime);
+
+    if(!upcoming.length){
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">🏆</div><div class="es-title">Koi competition abhi available nahi hai</div><div class="es-sub">Jald hi naye competitions add honge!</div></div>`;
+      return;
+    }
+
+    el.innerHTML = upcoming.map(([id,c])=>{
+      const qCount = c.questions?.length||0;
+      const isLive = now >= c.startTime;
+      const startStr = new Date(c.startTime).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      return `<div class="live-test-card fade">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${isLive?'#EF4444':'#F5B800'};${isLive?'animation:blink 1s infinite;':''}display:inline-block;"></span>
+          <span style="font-size:.65rem;font-weight:800;color:${isLive?'#EF4444':'#F5B800'};text-transform:uppercase;letter-spacing:.08em;">${isLive?'Live Now':'Starts '+startStr}</span>
+        </div>
+        <h3 style="font-family:var(--font-d);font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.4rem;">${c.title}</h3>
+        <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:.9rem;">${c.description||`${qCount} questions — sab ke liye ek hi waqt pe`}</p>
+        <a href="competition.html?id=${id}" class="btn btn-gold" style="display:block;text-align:center;text-decoration:none;">${isLive?'Join Now →':'Join Waiting Room →'}</a>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error('Competitions load failed:', e);
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">⚠️</div><div class="es-title">Load nahi ho saka</div><div class="es-sub">Internet check karein aur refresh karein.</div></div>`;
+  }
 }
 
 // ══ LIVE TEST POPUP ══

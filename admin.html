@@ -322,6 +322,7 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
     <button class="mn-btn" onclick="showTabMob('papers',this)"><span style="font-size:1.1rem;">📄</span><span>Papers</span></button>
     <button class="mn-btn" onclick="showTabMob('announce',this)"><span style="font-size:1.1rem;">📢</span><span>Notice</span></button>
     <button class="mn-btn" onclick="showTabMob('livetest',this)"><span style="font-size:1.1rem;">🔴</span><span>Live</span></button>
+    <button class="mn-btn" onclick="showTabMob('competitions',this)"><span style="font-size:1.1rem;">🏆</span><span>Compete</span></button>
     <button class="mn-btn" onclick="showTabMob('mcqadmin',this)"><span style="font-size:1.1rem;">🧠</span><span>MCQs</span></button>
   </div>
 
@@ -340,6 +341,7 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
         <button class="nav-btn" onclick="showTab('papers',this)"><span class="ni">📄</span> Past Papers</button>
         <button class="nav-btn" onclick="showTab('announce',this)"><span class="ni">📢</span> Announcements</button>
         <button class="nav-btn" onclick="showTab('livetest',this)"><span class="ni">🔴</span> Live Tests</button>
+        <button class="nav-btn" onclick="showTab('competitions',this)"><span class="ni">🏆</span> Competitions</button>
         <button class="nav-btn" onclick="showTab('mcqadmin',this)"><span class="ni">🧠</span> MCQ Bank</button>
         <button class="nav-btn" onclick="showTab('leaderboard',this)"><span class="ni">🥇</span> Leaderboard</button>
       </div>
@@ -612,7 +614,34 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
         </div>
       </div>
 
-<!-- MCQ ADMIN TAB — Add inside admin.html tabs -->
+      <div class="tab-pane" id="tab-competitions">
+        <div class="page-head">
+          <h1>Competitions 🏆</h1>
+          <p>Live synchronized competition banayein — sab students ko ek hi waqt pe sawal milega, jawab dene ke liye limited seconds</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Create New Competition</div>
+          <div class="form-row">
+            <div class="fi"><label>Competition Title *</label><input type="text" id="compTitle" placeholder="e.g. QUEST Speed Round"></div>
+            <div class="fi"><label>Start Date &amp; Time *</label><input type="datetime-local" id="compStart"></div>
+          </div>
+          <div class="fi"><label>Description (optional)</label><textarea id="compDesc" rows="2" placeholder="Students ke liye short description..."></textarea></div>
+          <div class="form-row">
+            <div class="fi"><label>Time Per Question (seconds)</label><input type="number" id="compPerQ" min="3" max="120" value="10"></div>
+            <div class="fi"><label>Gap Between Questions (seconds)</label><input type="number" id="compGap" min="1" max="60" value="5"></div>
+          </div>
+          <div class="card-title" style="margin-top:1.25rem;">Questions (MCQ only)</div>
+          <div id="compQContainer"></div>
+          <button class="btn btn-outline btn-sm" onclick="addCompQ()" style="margin-bottom:1rem;">➕ Add Question</button>
+          <div>
+            <button class="btn btn-gold" onclick="saveCompetition()">🏆 Create Competition</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">My Competitions</div>
+          <div id="compAdminList"><p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">Loading...</p></div>
+        </div>
+      </div>
 
 <!-- SIDEBAR BUTTON (add after livetest button) -->
 <!-- <button class="nav-btn" onclick="showTab('mcqadmin',this)"><span class="ni">🧠</span> MCQ Bank</button> -->
@@ -1068,6 +1097,7 @@ function showTabMob(name, btn) {
   if(name==='papers') loadPapers();
   if(name==='announce') loadAnnouncements();
   if(name==='livetest') loadLiveTests();
+  if(name==='competitions') loadCompetitions();
   if(name==='mcqadmin') {loadPendingMCQs();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1083,6 +1113,7 @@ function showTab(name, btn) {
   if(name==='papers') loadPapers();
   if(name==='announce') loadAnnouncements();
   if(name==='livetest') loadLiveTests();
+  if(name==='competitions') loadCompetitions();
   if(name==='mcqadmin') {loadPendingMCQs();}
   if(name==='leaderboard') loadLeaderboard();
 }
@@ -1342,6 +1373,223 @@ async function deleteTest(id) {
     loadTests(); loadOverview();
     showToast('Test delete ho gaya.','success');
   } catch(e){showToast('Error: '+e.message,'error');}
+}
+
+// ════════════════════════════════════════
+// COMPETITIONS
+// ════════════════════════════════════════
+function addCompQ() {
+  const container = document.getElementById('compQContainer');
+  const id = 'cq'+Date.now()+Math.floor(Math.random()*10000);
+  const div = document.createElement('div');
+  div.className = 'q-item';
+  div.id = id;
+  div.innerHTML = `
+    <div class="q-item-head"><span class="q-badge">Q${container.children.length+1}</span><button class="q-del" onclick="this.closest('.q-item').remove();renumberCompQ()">🗑</button></div>
+    <div class="fi"><label>Question</label><textarea rows="2" data-cqtext placeholder="Question likhein..."></textarea></div>
+    <div class="opts-wrap">
+      <label style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);display:block;margin-bottom:.4rem;">Options — Correct ◉</label>
+      ${[0,1,2,3].map(i=>`<div class="opt-row"><input type="radio" name="cor_${id}" value="${i}" class="opt-radio" ${i===0?'checked':''}><span class="opt-lbl">${String.fromCharCode(65+i)}.</span><input type="text" placeholder="Option ${String.fromCharCode(65+i)}" data-copt="${i}"></div>`).join('')}
+    </div>`;
+  container.appendChild(div);
+}
+function renumberCompQ() {
+  document.querySelectorAll('#compQContainer .q-item .q-badge').forEach((b,i)=>b.textContent='Q'+(i+1));
+}
+function resetCompForm() {
+  document.getElementById('compTitle').value='';
+  document.getElementById('compDesc').value='';
+  document.getElementById('compStart').value='';
+  document.getElementById('compPerQ').value='10';
+  document.getElementById('compGap').value='5';
+  document.getElementById('compQContainer').innerHTML='';
+}
+
+async function saveCompetition() {
+  const title = document.getElementById('compTitle').value.trim();
+  const startVal = document.getElementById('compStart').value;
+  if(!title){ showToast('Competition title likhein!','error'); return; }
+  if(!startVal){ showToast('Start date/time select karein!','error'); return; }
+  const startTime = new Date(startVal).getTime();
+  if(startTime <= Date.now()){ showToast('Start time future me hona chahiye!','error'); return; }
+  const perQ = parseInt(document.getElementById('compPerQ').value)||10;
+  const gap = parseInt(document.getElementById('compGap').value)||5;
+  const items = document.querySelectorAll('#compQContainer .q-item');
+  if(items.length===0){ showToast('Kam az kam ek question add karein!','error'); return; }
+  const questions = []; let valid = true;
+  items.forEach(q=>{
+    const text = q.querySelector('[data-cqtext]').value.trim();
+    const options = [0,1,2,3].map(i=>q.querySelector(`[data-copt="${i}"]`).value.trim());
+    if(!text || options.some(o=>!o)) valid=false;
+    const correct = parseInt(q.querySelector('.opt-radio:checked')?.value||0);
+    questions.push({text, options, correct});
+  });
+  if(!valid){ showToast('Sare questions aur 4 options fill karein!','error'); return; }
+  const compData = {
+    title, description: document.getElementById('compDesc').value.trim(),
+    startTime, perQuestionTime: perQ, gapTime: gap,
+    questions, createdAt: Date.now(), createdBy: currentUser.email
+  };
+  try {
+    const ref = await db.ref('competitions').push(compData);
+    const link = `${SITE_URL}/competition.html?id=${ref.key}`;
+    document.getElementById('genLink').textContent = link;
+    document.getElementById('linkModal').classList.add('open');
+    resetCompForm();
+    loadCompetitions();
+    showToast('✅ Competition create ho gayi!','success');
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function loadCompetitions() {
+  if(!db) return;
+  const el = document.getElementById('compAdminList');
+  if(!el) return;
+  try {
+    const snap = await db.ref('competitions').orderByChild('createdBy').equalTo(currentUser.email).once('value');
+    const comps = snap.val()||{};
+    if(!Object.keys(comps).length){ el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:2rem;">Koi competition nahi. Upar se banayein.</p>'; return; }
+    el.innerHTML = Object.entries(comps).sort((a,b)=>b[1].createdAt-a[1].createdAt).map(([id,c])=>{
+      const link = `${SITE_URL}/competition.html?id=${id}`;
+      const qCount = c.questions?.length||0;
+      const perQ = c.perQuestionTime||10, gap = c.gapTime||5;
+      const endTime = c.startTime + qCount*(perQ+gap)*1000;
+      const now = Date.now();
+      const status = now < c.startTime ? `<span style="background:rgba(21,101,216,.15);color:#60A5FA;font-size:.65rem;padding:.15rem .5rem;border-radius:8px;font-weight:700;">⏳ SCHEDULED</span>`
+        : now < endTime ? `<span style="background:rgba(239,68,68,.15);color:#EF4444;font-size:.65rem;padding:.15rem .5rem;border-radius:8px;font-weight:700;">🔴 LIVE NOW</span>`
+        : `<span style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);font-size:.65rem;padding:.15rem .5rem;border-radius:8px;font-weight:700;">✅ ENDED</span>`;
+      const startStr = new Date(c.startTime).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      return `<div class="test-item" id="citem-${id}">
+        <div class="ti-info">
+          <h3>${c.title} ${status}</h3>
+          <div class="ti-meta">
+            <span class="ti-tag">📅 ${startStr}</span>
+            <span class="ti-tag">❓ ${qCount} Qs</span>
+            <span class="ti-tag">⏱ ${perQ}s/Q + ${gap}s gap</span>
+          </div>
+          <div class="link-row" style="margin-top:.65rem;">
+            <span class="link-text">${link}</span>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('${link}').then(()=>showToast('✅ Link copied!'))">Copy</button>
+          </div>
+        </div>
+        <div class="ti-actions">
+          <button class="btn btn-green btn-sm" onclick="viewCompResults('${id}','${(c.title||'').replace(/'/g,"\\'")}')">Results</button>
+          <button class="btn btn-sm" style="background:rgba(21,101,216,.15);color:#60A5FA;border:1px solid rgba(21,101,216,.3);" onclick="editCompPrompt('${id}')">✏️ Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deleteCompetition('${id}')">Delete</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){ console.error(e); el.innerHTML='<p style="color:#EF4444;font-size:.8rem;text-align:center;padding:1.5rem;">Load error: '+e.message+'</p>'; }
+}
+
+async function deleteCompetition(id) {
+  if(!confirm('Is competition ko aur iske sare results ko delete karein?')) return;
+  try {
+    await Promise.all([db.ref('competitions/'+id).remove(), db.ref('compResults/'+id).remove()]);
+    loadCompetitions();
+    showToast('Competition delete ho gayi.','success');
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function editCompPrompt(id) {
+  const snap = await db.ref('competitions/'+id).once('value');
+  const c = snap.val();
+  if(!c){ showToast('Competition nahi mili!','error'); return; }
+  const esc = s => (s||'').toString().replace(/"/g,'&quot;');
+  const startLocal = new Date(c.startTime - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const overlay = document.createElement('div');
+  overlay.id = '_editCompOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+  overlay.innerHTML = `
+    <div style="background:#0F1E35;border:1px solid rgba(245,184,0,.2);border-radius:16px;padding:1.5rem;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;box-sizing:border-box;">
+      <div style="font-size:.9rem;font-weight:700;color:#fff;margin-bottom:1rem;">✏️ Edit Competition</div>
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Title</div>
+      <input id="_ecTitle" value="${esc(c.title)}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Description</div>
+      <textarea id="_ecDesc" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(c.description)}</textarea>
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Start Date &amp; Time</div>
+      <input id="_ecStart" type="datetime-local" value="${startLocal}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+      <div style="display:flex;gap:.6rem;margin-bottom:1rem;">
+        <div style="flex:1;">
+          <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Sec/Question</div>
+          <input id="_ecPerQ" type="number" min="3" max="120" value="${c.perQuestionTime||10}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;">
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Gap (sec)</div>
+          <input id="_ecGap" type="number" min="1" max="60" value="${c.gapTime||5}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;">
+        </div>
+      </div>
+      <p style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:1rem;">ℹ️ Questions edit karne ke liye filhal ye competition delete karke nayi banayein.</p>
+      <div style="display:flex;gap:.5rem;">
+        <button onclick="saveEditComp('${id}')" style="flex:1;padding:.6rem;border-radius:8px;background:var(--gold);color:var(--navy);font-weight:700;font-size:.85rem;border:none;cursor:pointer;">💾 Save Changes</button>
+        <button onclick="document.getElementById('_editCompOverlay').remove()" style="padding:.6rem .9rem;border-radius:8px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:.85rem;border:none;cursor:pointer;">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function saveEditComp(id) {
+  const title = document.getElementById('_ecTitle').value.trim();
+  const startVal = document.getElementById('_ecStart').value;
+  if(!title || !startVal){ showToast('Title aur start time zaroori hai!','error'); return; }
+  const updates = {
+    title,
+    description: document.getElementById('_ecDesc').value.trim(),
+    startTime: new Date(startVal).getTime(),
+    perQuestionTime: parseInt(document.getElementById('_ecPerQ').value)||10,
+    gapTime: parseInt(document.getElementById('_ecGap').value)||5
+  };
+  try {
+    await db.ref('competitions/'+id).update(updates);
+    const ov = document.getElementById('_editCompOverlay');
+    if(ov) ov.remove();
+    showToast('✅ Competition update ho gayi!','success');
+    loadCompetitions();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function viewCompResults(id, title) {
+  const overlay = document.createElement('div');
+  overlay.id = '_compResultsOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
+  overlay.innerHTML = `
+    <div style="background:#0F1E35;border:1px solid rgba(245,184,0,.2);border-radius:16px;padding:1.5rem;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;box-sizing:border-box;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div style="font-size:.9rem;font-weight:700;color:#fff;">🏆 ${title} — Results</div>
+        <button onclick="document.getElementById('_compResultsOverlay').remove()" style="background:rgba(255,255,255,.08);border:none;color:#fff;width:26px;height:26px;border-radius:6px;cursor:pointer;">✕</button>
+      </div>
+      <div id="_compResultsBody"><p style="color:rgba(255,255,255,.4);font-size:.8rem;text-align:center;padding:1.5rem;">Loading...</p></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  try {
+    const snap = await db.ref('compResults/'+id).once('value');
+    const data = snap.val()||{};
+    const rows = Object.keys(data).map(k=>({...data[k], key:k}));
+    rows.sort((a,b)=> b.score-a.score || (a.submittedAt||0)-(b.submittedAt||0));
+    const body = document.getElementById('_compResultsBody');
+    if(!rows.length){ body.innerHTML = '<p style="color:rgba(255,255,255,.4);font-size:.8rem;text-align:center;padding:1.5rem;">Abhi koi result nahi hai.</p>'; return; }
+    body.innerHTML = rows.map((r,i)=>`
+      <div style="display:flex;align-items:center;gap:.7rem;padding:.65rem .5rem;border-bottom:1px solid rgba(255,255,255,.06);">
+        <div style="font-family:var(--font-d);font-weight:800;color:var(--gold);width:24px;text-align:center;font-size:.85rem;">${i+1}</div>
+        <div style="flex:1;">
+          <div style="font-size:.85rem;font-weight:600;color:#fff;">${r.name||'Anonymous'}</div>
+          <div style="font-size:.7rem;color:rgba(255,255,255,.4);">${r.phone||''}</div>
+        </div>
+        <div style="font-weight:700;color:var(--gold);font-size:.85rem;">${r.score}/${r.total}</div>
+        <button onclick="deleteCompResult('${id}','${r.key}','${title.replace(/'/g,"\\'")}')" style="background:rgba(239,68,68,.12);color:#EF4444;border:1px solid rgba(239,68,68,.25);border-radius:6px;padding:.3rem .5rem;font-size:.75rem;cursor:pointer;">🗑️</button>
+      </div>`).join('');
+  } catch(e){
+    document.getElementById('_compResultsBody').innerHTML = '<p style="color:#EF4444;font-size:.8rem;text-align:center;padding:1.5rem;">Load error.</p>';
+  }
+}
+
+async function deleteCompResult(compId, key, title) {
+  if(!confirm('Ye result delete karein?')) return;
+  try {
+    await db.ref(`compResults/${compId}/${key}`).remove();
+    showToast('Result delete ho gaya.','success');
+    viewCompResults(compId, title);
+  } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
 // ── PAUSE / RESUME TEST ──
