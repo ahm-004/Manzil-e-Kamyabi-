@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manzil-e-Kamyabi — Live Competition</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<style>
+:root{
+  --navy:#0B1829;--navy2:#122240;--gold:#F5B800;--gold2:#FFD040;
+  --blue:#1565D8;--blue2:#2979F5;--green:#10B981;--red:#EF4444;
+  --white:#fff;--off:#F5F7FA;--border:#E4E9F2;--muted:#64748B;
+  --font-d:'Poppins',sans-serif;--font-b:'Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--font-b);background:var(--navy);color:#fff;min-height:100vh;}
+.wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;text-align:center;}
+.hidden{display:none !important;}
+
+.card{background:var(--navy2);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:2rem 1.5rem;width:100%;max-width:420px;}
+.logo-row{display:flex;align-items:center;gap:.6rem;justify-content:center;margin-bottom:1.5rem;}
+.logo-mark{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;color:var(--navy);}
+.logo-title{font-family:var(--font-d);font-weight:700;font-size:.95rem;}
+.logo-title span{color:var(--gold);}
+
+h1{font-family:var(--font-d);font-size:1.3rem;font-weight:800;margin-bottom:.4rem;}
+.sub{color:rgba(255,255,255,.55);font-size:.85rem;margin-bottom:1.5rem;line-height:1.6;}
+
+input{width:100%;padding:.8rem 1rem;border-radius:10px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-size:.9rem;margin-bottom:.85rem;outline:none;}
+input::placeholder{color:rgba(255,255,255,.35);}
+.btn{width:100%;padding:.85rem;border-radius:10px;border:none;font-weight:700;font-size:.92rem;cursor:pointer;font-family:var(--font-b);}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;}
+
+/* ── WAITING ROOM ── */
+.wr-badge{display:inline-block;background:rgba(245,184,0,.12);color:var(--gold);border:1px solid rgba(245,184,0,.3);font-size:.72rem;font-weight:700;padding:.3rem .8rem;border-radius:20px;margin-bottom:1rem;letter-spacing:.03em;}
+.wr-count{font-family:var(--font-d);font-size:3rem;font-weight:800;color:var(--gold);letter-spacing:.02em;margin:1rem 0;}
+.wr-players{color:rgba(255,255,255,.5);font-size:.82rem;}
+
+/* ── QUESTION SCREEN ── */
+.q-wrap{width:100%;max-width:520px;}
+.q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;}
+.q-num{font-size:.8rem;color:rgba(255,255,255,.5);font-weight:600;}
+.timer-ring{position:relative;width:64px;height:64px;}
+.timer-ring svg{transform:rotate(-90deg);}
+.timer-ring circle{fill:none;stroke-width:5;}
+.timer-ring .bg{stroke:rgba(255,255,255,.1);}
+.timer-ring .fg{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset .15s linear;}
+.timer-ring .fg.danger{stroke:var(--red);}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;font-size:1.1rem;}
+.q-text{font-size:1.15rem;font-weight:700;line-height:1.55;margin-bottom:1.6rem;text-align:left;}
+.opts{display:grid;gap:.7rem;}
+.opt{background:var(--navy2);border:2px solid rgba(255,255,255,.1);border-radius:12px;padding:1rem 1.1rem;text-align:left;font-size:.92rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.7rem;}
+.opt-letter{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0;}
+.opt.selected{border-color:var(--gold);background:rgba(245,184,0,.1);}
+.opt.locked{pointer-events:none;opacity:.55;}
+.opt.correct-reveal{border-color:var(--green);background:rgba(16,185,129,.15);}
+.opt.wrong-reveal{border-color:var(--red);background:rgba(239,68,68,.15);}
+.answered-tag{margin-top:1rem;font-size:.82rem;color:var(--green);font-weight:600;}
+
+/* ── GAP SCREEN ── */
+.gap-icon{font-size:2.2rem;margin-bottom:.6rem;}
+.gap-count{font-family:var(--font-d);font-size:2.2rem;font-weight:800;color:var(--gold);margin:.5rem 0;}
+
+/* ── RESULT ── */
+.rs-score{font-family:var(--font-d);font-size:2.6rem;font-weight:800;color:var(--gold);margin:.6rem 0 .2rem;}
+.rs-sub{color:rgba(255,255,255,.6);font-size:.85rem;margin-bottom:1.6rem;}
+.lb-row{display:grid;grid-template-columns:34px 1fr 60px;gap:.6rem;align-items:center;padding:.7rem .8rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:.4rem;text-align:left;}
+.lb-row.me{border-color:var(--gold);background:rgba(245,184,0,.08);}
+.lb-rank{font-weight:800;font-family:var(--font-d);font-size:.85rem;color:var(--gold);text-align:center;}
+.lb-nm{font-size:.85rem;font-weight:600;}
+.lb-sc{font-weight:700;font-size:.85rem;text-align:right;color:var(--gold);}
+
+.err-icon{font-size:2.4rem;margin-bottom:.6rem;}
+.spinner{width:38px;height:38px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:1rem auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- LOADING -->
+  <div id="loadingScreen"><div class="spinner"></div><p style="color:rgba(255,255,255,.5);font-size:.85rem;">Loading competition…</p></div>
+
+  <!-- ERROR -->
+  <div id="errorScreen" class="card hidden">
+    <div class="err-icon">⚠️</div>
+    <h1 id="errTitle">Competition Not Found</h1>
+    <p class="sub" id="errMsg">Ye link invalid hai ya competition delete ho chuki hai.</p>
+  </div>
+
+  <!-- NAME ENTRY -->
+  <div id="nameScreen" class="card hidden">
+    <div class="logo-row"><div class="logo-mark">M</div><div class="logo-title">Manzil-e-<span>Kamyabi</span></div></div>
+    <div class="wr-badge">🏆 LIVE COMPETITION</div>
+    <h1 id="compTitleName"></h1>
+    <p class="sub" id="compDescName"></p>
+    <input id="inName" placeholder="Apna poora naam likhein" maxlength="60">
+    <input id="inPhone" placeholder="Phone number (optional)" maxlength="20">
+    <button class="btn btn-gold" onclick="joinCompetition()">Join Competition →</button>
+  </div>
+
+  <!-- WAITING ROOM -->
+  <div id="waitingScreen" class="card hidden">
+    <div class="wr-badge">🏆 LIVE COMPETITION</div>
+    <h1 id="compTitleWait"></h1>
+    <p class="sub">Competition shuru hone ka intezar karein — sawal automatically screen pe aa jayega.</p>
+    <div class="wr-count" id="wrCountdown">--:--</div>
+    <div class="wr-players" id="wrJoined">Aap join ho chuke hain ✅</div>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div id="questionScreen" class="q-wrap hidden">
+    <div class="q-top">
+      <div class="q-num" id="qNumLabel">Question 1 of 30</div>
+      <div class="timer-ring">
+        <svg width="64" height="64"><circle class="bg" cx="32" cy="32" r="27"></circle><circle class="fg" id="ringFg" cx="32" cy="32" r="27"></circle></svg>
+        <div class="timer-num" id="ringNum">10</div>
+      </div>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div class="opts" id="qOpts"></div>
+    <div class="answered-tag hidden" id="answeredTag">✅ Jawab submit ho gaya — agle sawal ka intezar karein</div>
+  </div>
+
+  <!-- GAP SCREEN -->
+  <div id="gapScreen" class="card hidden">
+    <div class="gap-icon">⏭️</div>
+    <h1 id="gapTitle">Agla Sawal Aa Raha Hai</h1>
+    <div class="gap-count" id="gapCountdown">5</div>
+    <p class="sub" id="gapProgress"></p>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="resultScreen" class="card hidden">
+    <div class="wr-badge">🏁 COMPETITION KHATAM</div>
+    <h1 id="compTitleResult"></h1>
+    <div class="rs-score" id="rsScore">0/30</div>
+    <div class="rs-sub" id="rsRank">Result calculate ho raha hai…</div>
+    <div id="rsLeaderboard" style="text-align:left;"></div>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════
+// FIREBASE CONFIG
+// ════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyCRhkn4aIUz7tDp3ERmfQ6B4uwz9yuqTZ4",
+  authDomain:        "manzil-e-kamyabi-3439b.firebaseapp.com",
+  databaseURL:       "https://manzil-e-kamyabi-3439b-default-rtdb.firebaseio.com",
+  projectId:         "manzil-e-kamyabi-3439b",
+  storageBucket:     "manzil-e-kamyabi-3439b.firebasestorage.app",
+  messagingSenderId: "316807608847",
+  appId:             "1:316807608847:web:35acce169c1d00fb30017a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let compId = null, comp = null;
+let serverOffset = 0;
+let studentName = '', studentPhone = '', studentKey = '';
+let answers = []; // answers[i] = selected option index or null
+let answeredThisQ = false;
+let currentQIndex = -1;
+let currentPhase = null; // 'waiting' | 'question' | 'gap' | 'ended'
+let tickHandle = null;
+
+function safeHTML(text){
+  if(text===undefined||text===null) return '';
+  return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function hashKey(str){
+  let h=5381;
+  for(let i=0;i<str.length;i++){ h=((h<<5)+h)+str.charCodeAt(i); h=h&h; }
+  return 'u'+Math.abs(h).toString(36);
+}
+function showScreen(id){
+  ['loadingScreen','errorScreen','nameScreen','waitingScreen','questionScreen','gapScreen','resultScreen'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s!==id);
+  });
+}
+function showError(title,msg){
+  document.getElementById('errTitle').textContent = title;
+  document.getElementById('errMsg').textContent = msg;
+  showScreen('errorScreen');
+}
+function serverNow(){ return Date.now() + serverOffset; }
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async ()=>{
+  const params = new URLSearchParams(location.search);
+  compId = params.get('id');
+  if(!compId){ showError('Link Invalid','Competition ID missing hai link me.'); return; }
+
+  try{
+    const offsetSnap = await db.ref('.info/serverTimeOffset').once('value');
+    serverOffset = offsetSnap.val() || 0;
+  }catch(e){ serverOffset = 0; }
+
+  try{
+    const snap = await db.ref('competitions/'+compId).once('value');
+    comp = snap.val();
+    if(!comp || !comp.title){ showError('Competition Not Found','Ye link invalid hai ya competition delete ho chuki hai.'); return; }
+  }catch(e){ showError('Load Error','Competition load nahi ho saki. Internet check karein.'); return; }
+
+  answers = new Array((comp.questions||[]).length).fill(null);
+  document.getElementById('compTitleName').textContent = comp.title;
+  document.getElementById('compDescName').textContent = comp.description || 'Sab ke liye same waqt pe sawal aayega — ready rahein!';
+  document.getElementById('compTitleWait').textContent = comp.title;
+  document.getElementById('compTitleResult').textContent = comp.title;
+
+  const savedKey = localStorage.getItem('comp_'+compId+'_key');
+  if(savedKey){
+    // Already joined/submitted before on this device
+    const rSnap = await db.ref('compResults/'+compId+'/'+savedKey).once('value');
+    if(rSnap.exists()){
+      studentKey = savedKey;
+      renderFinalResult(rSnap.val());
+      return;
+    }
+  }
+
+  showScreen('nameScreen');
+});
+
+function joinCompetition(){
+  const name = document.getElementById('inName').value.trim();
+  if(!name){ document.getElementById('inName').style.borderColor='var(--red)'; return; }
+  studentName = name;
+  studentPhone = document.getElementById('inPhone').value.trim();
+  studentKey = hashKey(name.toLowerCase()+'|'+studentPhone);
+  localStorage.setItem('comp_'+compId+'_key', studentKey);
+  showScreen('waitingScreen');
+  startClock();
+}
+
+// ════════════════════════════════════════
+// TIMING ENGINE
+// ════════════════════════════════════════
+function schedule(){
+  const perQ = (comp.perQuestionTime||10)*1000;
+  const gap = (comp.gapTime||5)*1000;
+  const qCount = (comp.questions||[]).length;
+  const start = comp.startTime;
+  return { perQ, gap, qCount, start, cycle: perQ+gap };
+}
+
+function startClock(){
+  if(tickHandle) clearInterval(tickHandle);
+  tickHandle = setInterval(tick, 150);
+  tick();
+}
+
+function tick(){
+  if(!comp) return;
+  const s = schedule();
+  const now = serverNow();
+
+  if(now < s.start){
+    currentPhase = 'waiting';
+    if(document.getElementById('waitingScreen').classList.contains('hidden')) showScreen('waitingScreen');
+    const remain = Math.max(0, s.start - now);
+    document.getElementById('wrCountdown').textContent = fmtCountdown(remain);
+    return;
+  }
+
+  const elapsed = now - s.start;
+  const idx = Math.floor(elapsed / s.cycle);
+
+  if(idx >= s.qCount){
+    // Competition ended
+    if(currentPhase !== 'ended'){
+      currentPhase = 'ended';
+      clearInterval(tickHandle);
+      finishCompetition();
+    }
+    return;
+  }
+
+  const posInCycle = elapsed - idx*s.cycle;
+  if(posInCycle < s.perQ){
+    // question phase
+    if(currentPhase !== 'question' || currentQIndex !== idx){
+      currentPhase = 'question';
+      currentQIndex = idx;
+      answeredThisQ = false;
+      renderQuestion(idx);
+    }
+    updateRing(s.perQ - posInCycle, s.perQ);
+  } else {
+    // gap phase
+    if(currentPhase !== 'gap' || currentQIndex !== idx){
+      currentPhase = 'gap';
+      currentQIndex = idx;
+      renderGap(idx, s.qCount);
+    }
+    const gapRemain = s.cycle - posInCycle;
+    document.getElementById('gapCountdown').textContent = Math.ceil(gapRemain/1000);
+  }
+}
+
+function fmtCountdown(ms){
+  const totalSec = Math.ceil(ms/1000);
+  const h = Math.floor(totalSec/3600);
+  const m = Math.floor((totalSec%3600)/60);
+  const sec = totalSec%60;
+  if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  return `${m}:${String(sec).padStart(2,'0')}`;
+}
+
+function updateRing(remainMs, totalMs){
+  const circ = 2*Math.PI*27;
+  const pct = Math.max(0, remainMs/totalMs);
+  const fg = document.getElementById('ringFg');
+  fg.style.strokeDasharray = circ;
+  fg.style.strokeDashoffset = circ*(1-pct);
+  fg.classList.toggle('danger', remainMs < totalMs*0.3);
+  document.getElementById('ringNum').textContent = Math.ceil(remainMs/1000);
+}
+
+// ════════════════════════════════════════
+// QUESTION RENDER
+// ════════════════════════════════════════
+function renderQuestion(idx){
+  const q = comp.questions[idx];
+  showScreen('questionScreen');
+  document.getElementById('qNumLabel').textContent = `Question ${idx+1} of ${comp.questions.length}`;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('answeredTag').classList.add('hidden');
+  const letters = ['A','B','C','D'];
+  document.getElementById('qOpts').innerHTML = q.options.map((opt,i)=>`
+    <div class="opt" id="opt${i}" onclick="selectAnswer(${idx},${i})">
+      <div class="opt-letter">${letters[i]}</div>
+      <div>${safeHTML(opt)}</div>
+    </div>`).join('');
+}
+
+function selectAnswer(qIdx, optIdx){
+  if(answeredThisQ || qIdx !== currentQIndex) return;
+  answeredThisQ = true;
+  answers[qIdx] = optIdx;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.add('locked'));
+  document.getElementById('opt'+optIdx).classList.add('selected');
+  document.getElementById('answeredTag').classList.remove('hidden');
+}
+
+function renderGap(justFinishedIdx, qCount){
+  showScreen('gapScreen');
+  const nextIdx = justFinishedIdx+1;
+  document.getElementById('gapProgress').textContent = nextIdx < qCount
+    ? `Sawal ${nextIdx+1} of ${qCount} tayyar ho raha hai...`
+    : `Result tayyar ho raha hai...`;
+}
+
+// ════════════════════════════════════════
+// FINISH & SUBMIT
+// ════════════════════════════════════════
+async function finishCompetition(){
+  let score = 0;
+  comp.questions.forEach((q,i)=>{ if(answers[i]===q.correct) score++; });
+  const payload = {
+    name: studentName || 'Anonymous',
+    phone: studentPhone || '',
+    score, total: comp.questions.length,
+    answers, submittedAt: firebase.database.ServerValue.TIMESTAMP
+  };
+  try{
+    await db.ref(`compResults/${compId}/${studentKey}`).set(payload);
+  }catch(e){ console.error('Submit failed', e); }
+  const snap = await db.ref(`compResults/${compId}/${studentKey}`).once('value');
+  renderFinalResult(snap.val() || payload);
+}
+
+async function renderFinalResult(myResult){
+  showScreen('resultScreen');
+  document.getElementById('rsScore').textContent = `${myResult.score}/${myResult.total}`;
+  document.getElementById('rsRank').textContent = 'Leaderboard load ho raha hai…';
+
+  try{
+    const snap = await db.ref('compResults/'+compId).once('value');
+    const data = snap.val() || {};
+    let rows = Object.keys(data).map(k=>({...data[k], key:k}));
+    rows.sort((a,b)=> b.score-a.score || (a.submittedAt||0)-(b.submittedAt||0));
+    const myRank = rows.findIndex(r=>r.key===studentKey)+1;
+    document.getElementById('rsRank').textContent = myRank>0 ? `Aapki Rank: #${myRank} of ${rows.length}` : '';
+    document.getElementById('rsLeaderboard').innerHTML = rows.slice(0,10).map((r,i)=>`
+      <div class="lb-row ${r.key===studentKey?'me':''}">
+        <div class="lb-rank">${i+1}</div>
+        <div class="lb-nm">${safeHTML(r.name)}</div>
+        <div class="lb-sc">${r.score}/${r.total}</div>
+      </div>`).join('');
+  }catch(e){
+    document.getElementById('rsRank').textContent = '';
+  }
+}
+</script>
+</body>
+</html>
