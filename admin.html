@@ -1411,24 +1411,6 @@ async function deleteTest(id) {
 // ════════════════════════════════════════
 // COMPETITIONS
 // ════════════════════════════════════════
-function addCompQ() {
-  const container = document.getElementById('compQContainer');
-  const id = 'cq'+Date.now()+Math.floor(Math.random()*10000);
-  const div = document.createElement('div');
-  div.className = 'q-item';
-  div.id = id;
-  div.innerHTML = `
-    <div class="q-item-head"><span class="q-badge">Q${container.children.length+1}</span><button class="q-del" onclick="this.closest('.q-item').remove();renumberCompQ()">🗑</button></div>
-    <div class="fi"><label>Question</label><textarea rows="2" data-cqtext placeholder="Question likhein..."></textarea></div>
-    <div class="opts-wrap">
-      <label style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);display:block;margin-bottom:.4rem;">Options — Correct ◉</label>
-      ${[0,1,2,3].map(i=>`<div class="opt-row"><input type="radio" name="cor_${id}" value="${i}" class="opt-radio" ${i===0?'checked':''}><span class="opt-lbl">${String.fromCharCode(65+i)}.</span><input type="text" placeholder="Option ${String.fromCharCode(65+i)}" data-copt="${i}"></div>`).join('')}
-    </div>`;
-  container.appendChild(div);
-}
-function renumberCompQ() {
-  document.querySelectorAll('#compQContainer .q-item .q-badge').forEach((b,i)=>b.textContent='Q'+(i+1));
-}
 function toggleCompBulk() {
   const s = document.getElementById('compBulkSection');
   s.style.display = s.style.display === 'none' ? 'block' : 'none';
@@ -1481,6 +1463,25 @@ function parseCompBulk() {
     errEl.style.display='block';
   }
 }
+
+function addCompQ() {
+  const container = document.getElementById('compQContainer');
+  const id = 'cq'+Date.now()+Math.floor(Math.random()*10000);
+  const div = document.createElement('div');
+  div.className = 'q-item';
+  div.id = id;
+  div.innerHTML = `
+    <div class="q-item-head"><span class="q-badge">Q${container.children.length+1}</span><button class="q-del" onclick="this.closest('.q-item').remove();renumberCompQ()">🗑</button></div>
+    <div class="fi"><label>Question</label><textarea rows="2" data-cqtext placeholder="Question likhein..."></textarea></div>
+    <div class="opts-wrap">
+      <label style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);display:block;margin-bottom:.4rem;">Options — Correct ◉</label>
+      ${[0,1,2,3].map(i=>`<div class="opt-row"><input type="radio" name="cor_${id}" value="${i}" class="opt-radio" ${i===0?'checked':''}><span class="opt-lbl">${String.fromCharCode(65+i)}.</span><input type="text" placeholder="Option ${String.fromCharCode(65+i)}" data-copt="${i}"></div>`).join('')}
+    </div>`;
+  container.appendChild(div);
+}
+function renumberCompQ() {
+  document.querySelectorAll('#compQContainer .q-item .q-badge').forEach((b,i)=>b.textContent='Q'+(i+1));
+}
 function resetCompForm() {
   document.getElementById('compTitle').value='';
   document.getElementById('compDesc').value='';
@@ -1501,22 +1502,26 @@ async function saveCompetition() {
   const gap = parseInt(document.getElementById('compGap').value)||5;
   const items = document.querySelectorAll('#compQContainer .q-item');
   if(items.length===0){ showToast('Kam az kam ek question add karein!','error'); return; }
-  const questions = []; let valid = true;
-  items.forEach(q=>{
+  const questions = []; const correctAnswers = {}; let valid = true;
+  items.forEach((q,i)=>{
     const text = q.querySelector('[data-cqtext]').value.trim();
-    const options = [0,1,2,3].map(i=>q.querySelector(`[data-copt="${i}"]`).value.trim());
+    const options = [0,1,2,3].map(j=>q.querySelector(`[data-copt="${j}"]`).value.trim());
     if(!text || options.some(o=>!o)) valid=false;
     const correct = parseInt(q.querySelector('.opt-radio:checked')?.value||0);
-    questions.push({text, options, correct});
+    questions.push({text, options});
+    correctAnswers[i] = correct;
   });
   if(!valid){ showToast('Sare questions aur 4 options fill karein!','error'); return; }
+  const cycle = (perQ+gap)*1000;
+  const revealAt = questions.map((q,i)=> startTime + i*cycle + perQ*1000);
   const compData = {
     title, description: document.getElementById('compDesc').value.trim(),
     startTime, perQuestionTime: perQ, gapTime: gap,
-    questions, createdAt: Date.now(), createdBy: currentUser.email
+    questions, revealAt, createdAt: Date.now(), createdBy: currentUser.email
   };
   try {
     const ref = await db.ref('competitions').push(compData);
+    await db.ref('competitionAnswers/'+ref.key).set(correctAnswers);
     const link = `${SITE_URL}/competition.html?id=${ref.key}`;
     document.getElementById('genLink').textContent = link;
     document.getElementById('linkModal').classList.add('open');
@@ -1570,7 +1575,11 @@ async function loadCompetitions() {
 async function deleteCompetition(id) {
   if(!confirm('Is competition ko aur iske sare results ko delete karein?')) return;
   try {
-    await Promise.all([db.ref('competitions/'+id).remove(), db.ref('compResults/'+id).remove()]);
+    await Promise.all([
+      db.ref('competitions/'+id).remove(),
+      db.ref('compResults/'+id).remove(),
+      db.ref('competitionAnswers/'+id).remove()
+    ]);
     loadCompetitions();
     showToast('Competition delete ho gayi.','success');
   } catch(e){ showToast('Error: '+e.message,'error'); }
@@ -2400,7 +2409,6 @@ async function loadLeaderboard() {
     const tests=ts.val()||{}; const results=rs.val()||{};
     const students={};
     Object.entries(results).forEach(([tid,subs])=>{
-      if(tests[tid]?.showOnLeaderboard===false) return;
       Object.entries(subs).forEach(([sid,sub])=>{
         const n=sub.name||'Anonymous';
         if(!students[n]) students[n]={name:n,totalScore:0,tests:0,bestPct:0};

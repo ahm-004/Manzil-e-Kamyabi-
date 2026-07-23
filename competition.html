@@ -4,77 +4,107 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Manzil-e-Kamyabi — Live Competition</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 :root{
-  --navy:#0B1829;--navy2:#122240;--gold:#F5B800;--gold2:#FFD040;
+  --navy:#0B1829;--navy2:#132844;--navy3:#0E1F38;--gold:#F5B800;--gold2:#FFD040;
   --blue:#1565D8;--blue2:#2979F5;--green:#10B981;--red:#EF4444;
-  --white:#fff;--off:#F5F7FA;--border:#E4E9F2;--muted:#64748B;
+  --white:#fff;--muted:#8DA0BC;
   --font-d:'Poppins',sans-serif;--font-b:'Inter',sans-serif;
+  --r:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:var(--font-b);background:var(--navy);color:#fff;min-height:100vh;}
+body{
+  font-family:var(--font-b);color:#fff;min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(245,184,0,.10), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(21,101,216,.14), transparent 45%),
+    linear-gradient(160deg,#0B1829,#0E1F38 60%,#0B1829);
+  background-attachment:fixed;
+}
 .wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.25rem;text-align:center;}
 .hidden{display:none !important;}
 
-.card{background:var(--navy2);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:2rem 1.5rem;width:100%;max-width:420px;}
-.logo-row{display:flex;align-items:center;gap:.6rem;justify-content:center;margin-bottom:1.5rem;}
-.logo-mark{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;color:var(--navy);}
+.card{
+  background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:22px;padding:2.1rem 1.6rem;width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.logo-row{display:flex;align-items:center;gap:.6rem;justify-content:center;margin-bottom:1.4rem;}
+.logo-mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:900;color:var(--navy);box-shadow:0 4px 14px rgba(245,184,0,.35);}
 .logo-title{font-family:var(--font-d);font-weight:700;font-size:.95rem;}
 .logo-title span{color:var(--gold);}
 
-h1{font-family:var(--font-d);font-size:1.3rem;font-weight:800;margin-bottom:.4rem;}
-.sub{color:rgba(255,255,255,.55);font-size:.85rem;margin-bottom:1.5rem;line-height:1.6;}
+h1{font-family:var(--font-d);font-size:1.35rem;font-weight:800;margin-bottom:.45rem;letter-spacing:-.01em;}
+.sub{color:var(--muted);font-size:.87rem;margin-bottom:1.5rem;line-height:1.65;}
 
-input{width:100%;padding:.8rem 1rem;border-radius:10px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#fff;font-size:.9rem;margin-bottom:.85rem;outline:none;}
-input::placeholder{color:rgba(255,255,255,.35);}
-.btn{width:100%;padding:.85rem;border-radius:10px;border:none;font-weight:700;font-size:.92rem;cursor:pointer;font-family:var(--font-b);}
-.btn-gold{background:var(--gold);color:var(--navy);}
-.btn-gold:disabled{opacity:.5;cursor:not-allowed;}
+input{width:100%;padding:.85rem 1.05rem;border-radius:12px;border:1.5px solid rgba(255,255,255,.13);background:rgba(255,255,255,.04);color:#fff;font-size:.92rem;margin-bottom:.85rem;outline:none;transition:border-color .15s;font-family:var(--font-b);}
+input:focus{border-color:var(--gold);}
+input::placeholder{color:rgba(255,255,255,.32);}
+.btn{width:100%;padding:.9rem;border-radius:12px;border:none;font-weight:700;font-size:.94rem;cursor:pointer;font-family:var(--font-b);transition:transform .12s, box-shadow .12s;}
+.btn:active{transform:scale(.98);}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--navy);box-shadow:0 8px 22px rgba(245,184,0,.28);}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;}
+
+/* ── BADGE ── */
+.badge-pill{display:inline-flex;align-items:center;gap:.4rem;background:rgba(245,184,0,.12);color:var(--gold);border:1px solid rgba(245,184,0,.3);font-size:.7rem;font-weight:700;padding:.35rem .85rem;border-radius:20px;margin-bottom:1.1rem;letter-spacing:.04em;text-transform:uppercase;}
+.badge-pill.live{background:rgba(239,68,68,.14);color:#FF6B6B;border-color:rgba(239,68,68,.3);}
+.dot-live{width:7px;height:7px;border-radius:50%;background:#FF6B6B;display:inline-block;animation:pulse 1.1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
 
 /* ── WAITING ROOM ── */
-.wr-badge{display:inline-block;background:rgba(245,184,0,.12);color:var(--gold);border:1px solid rgba(245,184,0,.3);font-size:.72rem;font-weight:700;padding:.3rem .8rem;border-radius:20px;margin-bottom:1rem;letter-spacing:.03em;}
-.wr-count{font-family:var(--font-d);font-size:3rem;font-weight:800;color:var(--gold);letter-spacing:.02em;margin:1rem 0;}
-.wr-players{color:rgba(255,255,255,.5);font-size:.82rem;}
+.wr-ring{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:1.2rem auto;background:conic-gradient(var(--gold) 0deg,rgba(255,255,255,.06) 0deg);position:relative;}
+.wr-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--navy2);}
+.wr-count{position:relative;z-index:1;font-family:var(--font-d);font-size:1.5rem;font-weight:800;color:var(--gold);}
+.wr-players{color:var(--muted);font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.4rem;}
 
 /* ── QUESTION SCREEN ── */
 .q-wrap{width:100%;max-width:520px;}
-.q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.1rem;}
-.q-num{font-size:.8rem;color:rgba(255,255,255,.5);font-weight:600;}
-.timer-ring{position:relative;width:64px;height:64px;}
+.q-card{background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:1.6rem;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+.q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.3rem;}
+.q-num{font-size:.78rem;color:var(--muted);font-weight:700;background:rgba(255,255,255,.05);padding:.35rem .7rem;border-radius:8px;}
+.timer-ring{position:relative;width:60px;height:60px;flex-shrink:0;}
 .timer-ring svg{transform:rotate(-90deg);}
 .timer-ring circle{fill:none;stroke-width:5;}
-.timer-ring .bg{stroke:rgba(255,255,255,.1);}
-.timer-ring .fg{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset .15s linear;}
+.timer-ring .bg{stroke:rgba(255,255,255,.08);}
+.timer-ring .fg{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset .15s linear, stroke .3s;}
 .timer-ring .fg.danger{stroke:var(--red);}
-.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;font-size:1.1rem;}
-.q-text{font-size:1.15rem;font-weight:700;line-height:1.55;margin-bottom:1.6rem;text-align:left;}
-.opts{display:grid;gap:.7rem;}
-.opt{background:var(--navy2);border:2px solid rgba(255,255,255,.1);border-radius:12px;padding:1rem 1.1rem;text-align:left;font-size:.92rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.7rem;}
-.opt-letter{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0;}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;font-size:1.05rem;}
+.q-text{font-size:1.2rem;font-weight:700;line-height:1.55;margin-bottom:1.7rem;text-align:left;}
+.opts{display:grid;gap:.75rem;}
+.opt{background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.09);border-radius:13px;padding:1.05rem 1.15rem;text-align:left;font-size:.94rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.8rem;}
+.opt:active{transform:scale(.985);}
+.opt-letter{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;}
 .opt.selected{border-color:var(--gold);background:rgba(245,184,0,.1);}
-.opt.locked{pointer-events:none;opacity:.55;}
-.opt.correct-reveal{border-color:var(--green);background:rgba(16,185,129,.15);}
-.opt.wrong-reveal{border-color:var(--red);background:rgba(239,68,68,.15);}
-.answered-tag{margin-top:1rem;font-size:.82rem;color:var(--green);font-weight:600;}
+.opt.selected .opt-letter{background:var(--gold);color:var(--navy);}
+.opt.locked{pointer-events:none;opacity:.5;}
+.answered-tag{margin-top:1.2rem;font-size:.83rem;color:var(--green);font-weight:600;display:flex;align-items:center;gap:.4rem;justify-content:center;}
+.progress-dots{display:flex;gap:.3rem;justify-content:center;margin-top:1.3rem;flex-wrap:wrap;}
+.pdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);}
+.pdot.done{background:var(--gold);}
+.pdot.now{background:var(--gold);box-shadow:0 0 0 3px rgba(245,184,0,.25);}
 
 /* ── GAP SCREEN ── */
-.gap-icon{font-size:2.2rem;margin-bottom:.6rem;}
-.gap-count{font-family:var(--font-d);font-size:2.2rem;font-weight:800;color:var(--gold);margin:.5rem 0;}
+.gap-icon{font-size:2.4rem;margin-bottom:.7rem;}
+.gap-count{font-family:var(--font-d);font-size:2.4rem;font-weight:800;color:var(--gold);margin:.5rem 0;}
 
 /* ── RESULT ── */
-.rs-score{font-family:var(--font-d);font-size:2.6rem;font-weight:800;color:var(--gold);margin:.6rem 0 .2rem;}
-.rs-sub{color:rgba(255,255,255,.6);font-size:.85rem;margin-bottom:1.6rem;}
-.lb-row{display:grid;grid-template-columns:34px 1fr 60px;gap:.6rem;align-items:center;padding:.7rem .8rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:.4rem;text-align:left;}
-.lb-row.me{border-color:var(--gold);background:rgba(245,184,0,.08);}
+.rs-trophy{font-size:2.6rem;margin-bottom:.3rem;}
+.rs-score{font-family:var(--font-d);font-size:2.9rem;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;margin:.5rem 0 .2rem;}
+.rs-sub{color:var(--muted);font-size:.87rem;margin-bottom:1.7rem;font-weight:600;}
+.lb-heading{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.7rem;text-align:left;}
+.lb-row{display:grid;grid-template-columns:32px 1fr 60px;gap:.6rem;align-items:center;padding:.75rem .85rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;margin-bottom:.45rem;text-align:left;}
+.lb-row.me{border-color:var(--gold);background:rgba(245,184,0,.09);}
 .lb-rank{font-weight:800;font-family:var(--font-d);font-size:.85rem;color:var(--gold);text-align:center;}
 .lb-nm{font-size:.85rem;font-weight:600;}
 .lb-sc{font-weight:700;font-size:.85rem;text-align:right;color:var(--gold);}
 
-.err-icon{font-size:2.4rem;margin-bottom:.6rem;}
-.spinner{width:38px;height:38px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:1rem auto;}
+.err-icon{font-size:2.6rem;margin-bottom:.7rem;}
+.spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,.12);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite;margin:1rem auto;}
 @keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
@@ -83,63 +113,68 @@ input::placeholder{color:rgba(255,255,255,.35);}
 <div class="wrap">
 
   <!-- LOADING -->
-  <div id="loadingScreen"><div class="spinner"></div><p style="color:rgba(255,255,255,.5);font-size:.85rem;">Loading competition…</p></div>
+  <div id="loadingScreen"><div class="spinner"></div><p style="color:var(--muted);font-size:.85rem;">Loading competition…</p></div>
 
   <!-- ERROR -->
   <div id="errorScreen" class="card hidden">
     <div class="err-icon">⚠️</div>
     <h1 id="errTitle">Competition Not Found</h1>
-    <p class="sub" id="errMsg">Ye link invalid hai ya competition delete ho chuki hai.</p>
+    <p class="sub" id="errMsg">This link is invalid or the competition has been removed.</p>
   </div>
 
   <!-- NAME ENTRY -->
   <div id="nameScreen" class="card hidden">
     <div class="logo-row"><div class="logo-mark">M</div><div class="logo-title">Manzil-e-<span>Kamyabi</span></div></div>
-    <div class="wr-badge">🏆 LIVE COMPETITION</div>
+    <div class="badge-pill">🏆 Live Competition</div>
     <h1 id="compTitleName"></h1>
     <p class="sub" id="compDescName"></p>
-    <input id="inName" placeholder="Apna poora naam likhein" maxlength="60">
+    <input id="inName" placeholder="Enter your full name" maxlength="60">
     <input id="inPhone" placeholder="Phone number (optional)" maxlength="20">
     <button class="btn btn-gold" onclick="joinCompetition()">Join Competition →</button>
   </div>
 
   <!-- WAITING ROOM -->
   <div id="waitingScreen" class="card hidden">
-    <div class="wr-badge">🏆 LIVE COMPETITION</div>
+    <div class="badge-pill">🏆 Live Competition</div>
     <h1 id="compTitleWait"></h1>
-    <p class="sub">Competition shuru hone ka intezar karein — sawal automatically screen pe aa jayega.</p>
-    <div class="wr-count" id="wrCountdown">--:--</div>
-    <div class="wr-players" id="wrJoined">Aap join ho chuke hain ✅</div>
+    <p class="sub">Sit tight — the first question will appear automatically for everyone at the same moment.</p>
+    <div class="wr-ring"><div class="wr-count" id="wrCountdown">--:--</div></div>
+    <div class="wr-players">✅ You're in — get ready!</div>
   </div>
 
   <!-- QUESTION SCREEN -->
   <div id="questionScreen" class="q-wrap hidden">
-    <div class="q-top">
-      <div class="q-num" id="qNumLabel">Question 1 of 30</div>
-      <div class="timer-ring">
-        <svg width="64" height="64"><circle class="bg" cx="32" cy="32" r="27"></circle><circle class="fg" id="ringFg" cx="32" cy="32" r="27"></circle></svg>
-        <div class="timer-num" id="ringNum">10</div>
+    <div class="q-card">
+      <div class="q-top">
+        <div class="q-num" id="qNumLabel">Question 1 of 30</div>
+        <div class="timer-ring">
+          <svg width="60" height="60"><circle class="bg" cx="30" cy="30" r="25"></circle><circle class="fg" id="ringFg" cx="30" cy="30" r="25"></circle></svg>
+          <div class="timer-num" id="ringNum">10</div>
+        </div>
       </div>
+      <div class="q-text" id="qText"></div>
+      <div class="opts" id="qOpts"></div>
+      <div class="answered-tag hidden" id="answeredTag">✅ Answer locked in — waiting for the next question</div>
+      <div class="progress-dots" id="progressDots"></div>
     </div>
-    <div class="q-text" id="qText"></div>
-    <div class="opts" id="qOpts"></div>
-    <div class="answered-tag hidden" id="answeredTag">✅ Jawab submit ho gaya — agle sawal ka intezar karein</div>
   </div>
 
   <!-- GAP SCREEN -->
   <div id="gapScreen" class="card hidden">
     <div class="gap-icon">⏭️</div>
-    <h1 id="gapTitle">Agla Sawal Aa Raha Hai</h1>
+    <h1 id="gapTitle">Next Question Coming Up</h1>
     <div class="gap-count" id="gapCountdown">5</div>
     <p class="sub" id="gapProgress"></p>
   </div>
 
   <!-- RESULT SCREEN -->
   <div id="resultScreen" class="card hidden">
-    <div class="wr-badge">🏁 COMPETITION KHATAM</div>
+    <div class="rs-trophy">🏁</div>
+    <div class="badge-pill">Competition Finished</div>
     <h1 id="compTitleResult"></h1>
     <div class="rs-score" id="rsScore">0/30</div>
-    <div class="rs-sub" id="rsRank">Result calculate ho raha hai…</div>
+    <div class="rs-sub" id="rsRank">Calculating your result…</div>
+    <div class="lb-heading">🏆 Top Scorers</div>
     <div id="rsLeaderboard" style="text-align:left;"></div>
   </div>
 
@@ -200,7 +235,7 @@ function serverNow(){ return Date.now() + serverOffset; }
 window.addEventListener('DOMContentLoaded', async ()=>{
   const params = new URLSearchParams(location.search);
   compId = params.get('id');
-  if(!compId){ showError('Link Invalid','Competition ID missing hai link me.'); return; }
+  if(!compId){ showError('Invalid Link','No competition ID was found in this link.'); return; }
 
   try{
     const offsetSnap = await db.ref('.info/serverTimeOffset').once('value');
@@ -210,12 +245,12 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   try{
     const snap = await db.ref('competitions/'+compId).once('value');
     comp = snap.val();
-    if(!comp || !comp.title){ showError('Competition Not Found','Ye link invalid hai ya competition delete ho chuki hai.'); return; }
-  }catch(e){ showError('Load Error','Competition load nahi ho saki. Internet check karein.'); return; }
+    if(!comp || !comp.title){ showError('Competition Not Found','This link is invalid or the competition has been removed.'); return; }
+  }catch(e){ showError('Load Error','Could not load the competition. Please check your internet connection.'); return; }
 
   answers = new Array((comp.questions||[]).length).fill(null);
   document.getElementById('compTitleName').textContent = comp.title;
-  document.getElementById('compDescName').textContent = comp.description || 'Sab ke liye same waqt pe sawal aayega — ready rahein!';
+  document.getElementById('compDescName').textContent = comp.description || 'Everyone gets the same question at the same time — stay ready!';
   document.getElementById('compTitleWait').textContent = comp.title;
   document.getElementById('compTitleResult').textContent = comp.title;
 
@@ -270,7 +305,7 @@ function tick(){
     currentPhase = 'waiting';
     if(document.getElementById('waitingScreen').classList.contains('hidden')) showScreen('waitingScreen');
     const remain = Math.max(0, s.start - now);
-    document.getElementById('wrCountdown').textContent = fmtCountdown(remain);
+    updateWaitingRing(remain);
     return;
   }
 
@@ -318,8 +353,12 @@ function fmtCountdown(ms){
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
+function updateWaitingRing(remainMs){
+  document.getElementById('wrCountdown').textContent = fmtCountdown(remainMs);
+}
+
 function updateRing(remainMs, totalMs){
-  const circ = 2*Math.PI*27;
+  const circ = 2*Math.PI*25;
   const pct = Math.max(0, remainMs/totalMs);
   const fg = document.getElementById('ringFg');
   fg.style.strokeDasharray = circ;
@@ -343,6 +382,17 @@ function renderQuestion(idx){
       <div class="opt-letter">${letters[i]}</div>
       <div>${safeHTML(opt)}</div>
     </div>`).join('');
+  renderProgressDots(idx);
+}
+
+function renderProgressDots(idx){
+  const total = comp.questions.length;
+  const el = document.getElementById('progressDots');
+  if(total > 40){ el.innerHTML=''; return; } // skip for very long competitions
+  el.innerHTML = Array.from({length: total}, (_,i)=>{
+    const cls = i<idx ? 'done' : i===idx ? 'now' : '';
+    return `<div class="pdot ${cls}"></div>`;
+  }).join('');
 }
 
 function selectAnswer(qIdx, optIdx){
@@ -357,17 +407,36 @@ function selectAnswer(qIdx, optIdx){
 function renderGap(justFinishedIdx, qCount){
   showScreen('gapScreen');
   const nextIdx = justFinishedIdx+1;
+  document.getElementById('gapTitle').textContent = nextIdx < qCount ? 'Next Question Coming Up' : 'Wrapping Up';
   document.getElementById('gapProgress').textContent = nextIdx < qCount
-    ? `Sawal ${nextIdx+1} of ${qCount} tayyar ho raha hai...`
-    : `Result tayyar ho raha hai...`;
+    ? `Question ${nextIdx+1} of ${qCount} is loading...`
+    : `Preparing your result...`;
 }
 
 // ════════════════════════════════════════
 // FINISH & SUBMIT
 // ════════════════════════════════════════
 async function finishCompetition(){
+  showScreen('gapScreen');
+  document.getElementById('gapTitle').textContent = 'Preparing Your Result';
+  document.getElementById('gapCountdown').textContent = '';
+  document.getElementById('gapProgress').textContent = 'Checking your answers…';
+
+  // Each question's correct answer only becomes readable once its own timer
+  // has ended (enforced by Firebase rules) — fetched here, all in the past by now.
   let score = 0;
-  comp.questions.forEach((q,i)=>{ if(answers[i]===q.correct) score++; });
+  try{
+    const results = await Promise.all(
+      comp.questions.map((_,i)=> db.ref(`competitionAnswers/${compId}/${i}`).once('value'))
+    );
+    results.forEach((snap,i)=>{
+      const correct = snap.val();
+      if(correct!==null && answers[i]===correct) score++;
+    });
+  }catch(e){
+    console.error('Could not verify answers', e);
+  }
+
   const payload = {
     name: studentName || 'Anonymous',
     phone: studentPhone || '',
@@ -384,7 +453,7 @@ async function finishCompetition(){
 async function renderFinalResult(myResult){
   showScreen('resultScreen');
   document.getElementById('rsScore').textContent = `${myResult.score}/${myResult.total}`;
-  document.getElementById('rsRank').textContent = 'Leaderboard load ho raha hai…';
+  document.getElementById('rsRank').textContent = 'Loading leaderboard…';
 
   try{
     const snap = await db.ref('compResults/'+compId).once('value');
@@ -392,10 +461,10 @@ async function renderFinalResult(myResult){
     let rows = Object.keys(data).map(k=>({...data[k], key:k}));
     rows.sort((a,b)=> b.score-a.score || (a.submittedAt||0)-(b.submittedAt||0));
     const myRank = rows.findIndex(r=>r.key===studentKey)+1;
-    document.getElementById('rsRank').textContent = myRank>0 ? `Aapki Rank: #${myRank} of ${rows.length}` : '';
+    document.getElementById('rsRank').textContent = myRank>0 ? `Your Rank: #${myRank} of ${rows.length}` : '';
     document.getElementById('rsLeaderboard').innerHTML = rows.slice(0,10).map((r,i)=>`
       <div class="lb-row ${r.key===studentKey?'me':''}">
-        <div class="lb-rank">${i+1}</div>
+        <div class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
         <div class="lb-nm">${safeHTML(r.name)}</div>
         <div class="lb-sc">${r.score}/${r.total}</div>
       </div>`).join('');
