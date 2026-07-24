@@ -517,8 +517,7 @@ body.dark .modal{background:#0F1E35;}
 .paper-year-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
 .py-card{border:1px solid var(--border);border-radius:var(--r);padding:1rem;text-align:center;cursor:pointer;transition:all .2s;}
 .py-card:hover{border-color:var(--blue);background:var(--sky);}
-.py-card .yr{font-family:var(--font-d);font-size:1.1rem;font-weight:800;color:var(--navy);}
-body.dark .py-card .yr{color:var(--gold);}
+.py-card .yr{font-family:var(--font-d);font-size:1.1rem;font-weight:800;color:var(--text);}
 .py-card .type{font-size:.7rem;color:var(--muted);margin-top:.2rem;}
 .py-card .dl-btns{display:flex;gap:.4rem;margin-top:.65rem;flex-wrap:wrap;justify-content:center;}
 .dl-btn{font-size:.68rem;font-weight:700;padding:.25rem .6rem;border-radius:5px;border:none;cursor:pointer;font-family:var(--font-b);}
@@ -790,22 +789,32 @@ footer{background:#050C18;border-top:1px solid rgba(245,184,0,.08);padding:3.5re
 .sec-off{background:var(--off);padding:4.5rem 1.5rem;}
 
 /* ── ABOUT SECTION ── */
-.about-body{max-width:720px;margin:0 auto;text-align:center;color:var(--muted);font-size:1rem;line-height:1.85;white-space:pre-wrap;}
+.about-body{max-width:680px;margin:0 auto;text-align:left;color:var(--muted);font-size:1rem;line-height:1.85;white-space:pre-wrap;}
 
 /* ── TESTIMONIALS ── */
 .testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
 .testi-card{background:var(--off);border:1px solid var(--border);border-radius:16px;padding:1.75rem;}
 .testi-stars{color:var(--gold);font-size:.9rem;margin-bottom:.75rem;}
-.testi-text{font-size:.9rem;color:#334155;line-height:1.7;margin-bottom:1.25rem;font-style:italic;}
+.testi-text{font-size:.9rem;color:var(--text);opacity:.85;line-height:1.7;margin-bottom:1.25rem;font-style:italic;}
+
+/* ── MCQ PAGINATION ── */
+.mcq-pagination{display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap;margin-top:2rem;}
+.pg-btn{padding:.6rem 1.1rem;border-radius:10px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-weight:600;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .15s;}
+.pg-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold);}
+.pg-btn:disabled{opacity:.4;cursor:not-allowed;}
+.pg-nums{display:flex;gap:.4rem;}
+.pg-num{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--border);background:var(--white);color:var(--text);font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .15s;}
+.pg-num:hover{border-color:var(--gold);}
+.pg-num.active{background:var(--gold);border-color:var(--gold);color:var(--navy);}
 .testi-foot{display:flex;align-items:center;gap:.7rem;}
 .testi-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;color:var(--navy);flex-shrink:0;}
-.testi-name{font-weight:700;font-size:.85rem;color:var(--navy);}
+.testi-name{font-weight:700;font-size:.85rem;color:var(--text);}
 .testi-role{font-size:.75rem;color:var(--muted);}
 
 /* ── FAQ ── */
 .faq-list{max-width:760px;margin:0 auto;}
 .faq-item{background:var(--white);border:1px solid var(--border);border-radius:12px;margin-bottom:.75rem;overflow:hidden;}
-.faq-q{padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;font-size:.92rem;color:var(--navy);gap:1rem;}
+.faq-q{padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;font-size:.92rem;color:var(--text);gap:1rem;}
 .faq-q .faq-arrow{transition:transform .2s;color:var(--gold);flex-shrink:0;}
 .faq-item.open .faq-q .faq-arrow{transform:rotate(180deg);}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
@@ -828,6 +837,13 @@ footer{background:#050C18;border-top:1px solid rgba(245,184,0,.08);padding:3.5re
   .grid-4{grid-template-columns:repeat(2,1fr);}
   .footer-grid{grid-template-columns:1fr 1fr;}
   .service-grid{grid-template-columns:1fr;}
+}
+@media(max-width:1150px) and (min-width:769px){
+  .nav-links{gap:0;}
+  .nav-links a{padding:.45rem .5rem !important;font-size:.74rem !important;}
+  .hero-cards{transform:scale(.82);transform-origin:top right;}
+  .hc-4{bottom:75px;}
+  .hc-5{bottom:20px;left:2%;}
 }
 @media(max-width:768px){
   .nav-right .btn-gold{display:none;}
@@ -2937,21 +2953,21 @@ function performSearch(query) {
     if(matchedTests.length){
       html += `<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:.5rem 0 .5rem;">📝 Tests</div>`;
       html += matchedTests.map(t=>`<a href="test.html?id=${t.id}" style="display:block;padding:.7rem .8rem;border-radius:10px;border:1px solid var(--border);margin-bottom:.5rem;text-decoration:none;color:inherit;">
-        <div style="font-weight:600;font-size:.85rem;color:var(--navy,#0B1829);">${safeHTML(t.title)}</div>
+        <div style="font-weight:600;font-size:.85rem;color:var(--text);">${safeHTML(t.title)}</div>
         ${t.subject?`<div style="font-size:.75rem;color:var(--muted);">${safeHTML(t.subject)}</div>`:''}
       </a>`).join('');
     }
     if(matchedPapers.length){
       html += `<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:.5rem 0 .5rem;">📄 Papers</div>`;
       html += matchedPapers.map(p=>`<a href="${p.link||'#resources'}" target="${p.link?'_blank':'_self'}" rel="noopener" style="display:block;padding:.7rem .8rem;border-radius:10px;border:1px solid var(--border);margin-bottom:.5rem;text-decoration:none;color:inherit;">
-        <div style="font-weight:600;font-size:.85rem;color:var(--navy,#0B1829);">${safeHTML(p.name)}</div>
+        <div style="font-weight:600;font-size:.85rem;color:var(--text);">${safeHTML(p.name)}</div>
         <div style="font-size:.75rem;color:var(--muted);">${safeHTML(p.uni)}${p.year?' — '+safeHTML(p.year):''}</div>
       </a>`).join('');
     }
     if(matchedMcqs.length){
       html += `<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:.5rem 0 .5rem;">🧠 MCQs</div>`;
       html += matchedMcqs.map(m=>`<div onclick="closeModal('searchModal');document.getElementById('mcqbank').scrollIntoView({behavior:'smooth'});" style="cursor:pointer;padding:.7rem .8rem;border-radius:10px;border:1px solid var(--border);margin-bottom:.5rem;">
-        <div style="font-weight:600;font-size:.85rem;color:var(--navy,#0B1829);">${safeHTML(m.question)}</div>
+        <div style="font-weight:600;font-size:.85rem;color:var(--text);">${safeHTML(m.question)}</div>
         <div style="font-size:.75rem;color:var(--muted);">${safeHTML(m.subject)}</div>
       </div>`).join('');
     }
