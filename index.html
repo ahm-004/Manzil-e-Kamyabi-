@@ -953,6 +953,7 @@ body{padding-bottom:70px;}
     </ul>
   </div>
   <div class="nav-right">
+    <button class="btn-toggle" onclick="openSearchModal()" title="Search">🔍</button>
     <button class="btn-toggle" onclick="toggleThemePanel()" title="Change Theme">🎨</button>
     <a href="#quiz" class="btn btn-gold btn-sm">Join Now</a>
     <button class="hamburger" id="hbg" onclick="toggleMob()">
@@ -1141,6 +1142,19 @@ body{padding-bottom:70px;}
 
 <div class="modal-overlay" id="papersModal">
   <div class="modal"><div class="modal-head"><h2 id="modalTitle">Past Papers</h2><button class="modal-close" onclick="closeModal('papersModal')">✕</button></div><div id="modalBody"></div></div>
+</div>
+
+<div class="modal-overlay" id="searchModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-head">
+      <h2>🔍 Search</h2>
+      <button class="modal-close" onclick="closeModal('searchModal')">✕</button>
+    </div>
+    <input id="searchInput" type="text" placeholder="Search tests, papers, MCQs..." autocomplete="off"
+      style="width:100%;padding:.85rem 1rem;border-radius:10px;border:1.5px solid var(--border);font-size:.9rem;margin-bottom:1rem;outline:none;font-family:inherit;box-sizing:border-box;"
+      oninput="performSearch(this.value)">
+    <div id="searchResults" style="max-height:60vh;overflow-y:auto;"></div>
+  </div>
 </div>
 
 <!-- ══════════ SECTION 3: MCQ BANK ══════════ -->
@@ -1625,19 +1639,6 @@ const QUIZ_TYPES = [
   {id:'cs',title:'IQ Speed Test',icon:'🧩',desc:'Logical reasoning under time pressure',qs:8,time:8,neg:true,tags:['IQ','Speed']},
 ];
 
-const PAPERS_DATA = [
-  {title:'QUEST Past Papers',icon:'⚙️',cls:'c1',desc:'Engineering Entry Test',tags:['PDF','Year-wise','Solved'],years:[2024,2023,2022,2021,2020,2019]},
-  {title:'MUET Jamshoro',icon:'🏛️',cls:'c2',desc:'Engineering Papers',tags:['PDF','MCQ Bank','Solved'],years:[2024,2023,2022,2021,2020]},
-  {title:'MDCAT Papers',icon:'🏥',cls:'c3',desc:'Medical Entry Test',tags:['PDF','Year-wise','Bio'],years:[2024,2023,2022,2021,2020,2019,2018]},
-  {title:'IBA Sukkur',icon:'📊',cls:'c4',desc:'Business & CS Tests',tags:['PDF','Solved','MCQ'],years:[2024,2023,2022,2021]},
-  {title:'NED University',icon:'🔬',cls:'c5',desc:'Engineering Entry Test',tags:['PDF','Year-wise'],years:[2024,2023,2022,2021,2020]},
-  {title:'Mehran University',icon:'⚡',cls:'c6',desc:'MUET Entry Test',tags:['PDF','Solved'],years:[2024,2023,2022,2021]},
-  {title:'FAST University',icon:'💻',cls:'c7',desc:'CS & Engineering',tags:['PDF','MCQ Bank'],years:[2024,2023,2022,2021]},
-  {title:'PIEAS Islamabad',icon:'⚛️',cls:'c8',desc:'Nuclear Engineering',tags:['PDF','Solved'],years:[2023,2022,2021,2020]},
-  {title:'ECAT Papers',icon:'📐',cls:'c9',desc:'Engg Common AT',tags:['PDF','Year-wise','MCQ'],years:[2024,2023,2022,2021,2020]},
-  {title:'General Entry Tests',icon:'📋',cls:'c10',desc:'All Universities',tags:['PDF','MCQ','IQ'],years:[2024,2023,2022,2021,2020]},
-];
-
 const PREP_DATA = {
   eng:[
     {icon:'📐',title:'Mathematics',desc:'Algebra, Calculus, Trigonometry',mcq:'500+ MCQs'},
@@ -1666,17 +1667,47 @@ const PREP_DATA = {
 // ═══════════════════════════════════════
 // RENDER FUNCTIONS
 // ═══════════════════════════════════════
-function renderPapers(){
+const PAPER_ICONS = ['⚙️','🏛️','🏥','📊','🔬','⚡','💻','⚛️','📐','📋','🎓','📚'];
+let LIVE_PAPERS_GROUPED = {};
+
+async function renderPapers(){
   const el = document.getElementById('papersGrid');
-  if(!el) return;
-  el.innerHTML = PAPERS_DATA.map((p,i)=>`
-    <div class="paper-card fade">
-      <div class="pc-icon ${p.cls}">${p.icon}</div>
-      <h3>${p.title}</h3>
-      <p>${p.desc}</p>
-      <div class="paper-tags">${p.tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
-      <button class="paper-btn" onclick="openPapersModal(${i})">View Papers →</button>
+  if(!el || !db) return;
+  el.innerHTML = Array(4).fill(`
+    <div class="skel-card">
+      <div class="skel skel-icon"></div>
+      <div class="skel skel-line w85"></div>
+      <div class="skel skel-line w60"></div>
     </div>`).join('');
+  try{
+    const snap = await db.ref('papers').once('value');
+    const data = snap.val();
+    if(!data){
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📄</div><div class="es-title">Koi papers abhi available nahi hain</div><div class="es-sub">Jald hi past papers add honge!</div></div>`;
+      return;
+    }
+    LIVE_PAPERS_GROUPED = {};
+    Object.values(data).forEach(p=>{
+      const uni = p.uni || 'General Papers';
+      if(!LIVE_PAPERS_GROUPED[uni]) LIVE_PAPERS_GROUPED[uni] = [];
+      LIVE_PAPERS_GROUPED[uni].push(p);
+    });
+    const groups = Object.entries(LIVE_PAPERS_GROUPED);
+    el.innerHTML = groups.map(([uni, papers], i)=>{
+      const icon = PAPER_ICONS[i % PAPER_ICONS.length];
+      const types = [...new Set(papers.map(p=>p.type).filter(Boolean))];
+      return `<div class="paper-card fade">
+        <div class="pc-icon c${(i%10)+1}">${icon}</div>
+        <h3>${safeHTML(uni)}</h3>
+        <p>${papers.length} paper${papers.length>1?'s':''} available</p>
+        <div class="paper-tags">${types.map(t=>`<span class="ptag">${safeHTML(t)}</span>`).join('')}</div>
+        <button class="paper-btn" onclick="openPapersModal('${uni.replace(/'/g,"\\'")}')">View Papers →</button>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error('Papers load failed:', e);
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">⚠️</div><div class="es-title">Papers load nahi ho sakay</div><div class="es-sub">Internet check karein aur refresh karein.</div></div>`;
+  }
 }
 
 function renderPrep(){
@@ -1958,23 +1989,24 @@ function startSubjectPractice(key){
 // ═══════════════════════════════════════
 // PAPERS MODAL
 // ═══════════════════════════════════════
-function openPapersModal(idx){
-  const p=PAPERS_DATA[idx];
-  document.getElementById('modalTitle').textContent=p.title;
+function openPapersModal(uni){
+  const papers = (LIVE_PAPERS_GROUPED[uni]||[]).slice().sort((a,b)=>(b.year||'').localeCompare(a.year||''));
+  document.getElementById('modalTitle').textContent=uni;
+  if(!papers.length){
+    document.getElementById('modalBody').innerHTML = `<p style="font-size:.85rem;color:var(--muted);text-align:center;padding:1.5rem;">Koi paper nahi mila.</p>`;
+    openModal('papersModal');
+    return;
+  }
   document.getElementById('modalBody').innerHTML=`
-    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;">Select a year to download PDF or solved paper.</p>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;">Download available papers below.</p>
     <div class="paper-year-grid">
-      ${p.years.map(y=>`<div class="py-card">
-        <div class="yr">${y}</div>
-        <div class="type">${p.desc}</div>
+      ${papers.map(p=>`<div class="py-card">
+        <div class="yr">${safeHTML(p.year||'—')}</div>
+        <div class="type">${safeHTML(p.name||'')}${p.type?' — '+safeHTML(p.type):''}</div>
         <div class="dl-btns">
-          <button class="dl-btn dl-pdf" onclick="showToast('📄 ${y} PDF — Coming Soon!')">📄 PDF</button>
-          <button class="dl-btn dl-solved" onclick="showToast('✅ ${y} Solved — Coming Soon!')">✅ Solved</button>
+          ${p.link ? `<a class="dl-btn dl-pdf" href="${p.link}" target="_blank" rel="noopener" style="text-decoration:none;">📄 Download</a>` : `<span class="dl-btn dl-pdf" style="opacity:.5;">Link N/A</span>`}
         </div>
       </div>`).join('')}
-    </div>
-    <div style="margin-top:1.25rem;padding:1rem;background:rgba(245,184,0,.06);border:1px solid rgba(245,184,0,.15);border-radius:var(--r);">
-      <p style="font-size:.78rem;color:var(--muted);">📥 Papers are being uploaded. Contact on WhatsApp for immediate access: <a href="https://wa.me/923073179891" style="color:var(--blue);font-weight:600;">03073179891</a></p>
     </div>`;
   openModal('papersModal');
 }
@@ -2142,6 +2174,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadAboutSection();
   loadTestimonials();
   loadFAQs();
+  buildSearchIndex();
   setTimeout(observeFade,100);
 });
 
@@ -2844,6 +2877,86 @@ async function loadFAQs() {
 }
 function toggleFAQ(id) {
   document.getElementById('faqi-'+id).classList.toggle('open');
+}
+
+// ══ GLOBAL SEARCH ══
+let SEARCH_INDEX = null;
+let searchDebounce = null;
+
+function openSearchModal() {
+  openModal('searchModal');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '';
+  setTimeout(()=>document.getElementById('searchInput').focus(), 100);
+  if(!SEARCH_INDEX) buildSearchIndex();
+}
+
+async function buildSearchIndex() {
+  if(!db) return;
+  SEARCH_INDEX = { tests:[], papers:[], mcqs:[] };
+  try{
+    const [testsSnap, papersSnap, mcqSnap] = await Promise.all([
+      db.ref('tests').once('value'),
+      db.ref('papers').once('value'),
+      db.ref('mcqBank').once('value')
+    ]);
+    const testsData = testsSnap.val()||{};
+    SEARCH_INDEX.tests = Object.entries(testsData).map(([id,t])=>({id, title:t.title||'', subject:t.subject||''}));
+
+    const papersData = papersSnap.val()||{};
+    SEARCH_INDEX.papers = Object.values(papersData).map(p=>({name:p.name||'', uni:p.uni||'', year:p.year||'', link:p.link||''}));
+
+    const mcqData = mcqSnap.val()||{};
+    Object.entries(mcqData).forEach(([subject, items])=>{
+      Object.values(items||{}).forEach(m=>{
+        if(m && m.approved!==false) SEARCH_INDEX.mcqs.push({question:m.question||'', subject});
+      });
+    });
+  }catch(e){ console.error('Search index build failed:', e); }
+}
+
+function performSearch(query) {
+  clearTimeout(searchDebounce);
+  const el = document.getElementById('searchResults');
+  const q = query.trim().toLowerCase();
+  if(q.length < 2){ el.innerHTML=''; return; }
+  el.innerHTML = `<p style="text-align:center;color:var(--muted);font-size:.82rem;padding:1rem;">Searching…</p>`;
+  searchDebounce = setTimeout(()=>{
+    if(!SEARCH_INDEX){ el.innerHTML = `<p style="text-align:center;color:var(--muted);font-size:.82rem;padding:1rem;">Still loading — try again in a second.</p>`; return; }
+
+    const matchedTests = SEARCH_INDEX.tests.filter(t=> t.title.toLowerCase().includes(q) || t.subject.toLowerCase().includes(q)).slice(0,5);
+    const matchedPapers = SEARCH_INDEX.papers.filter(p=> p.name.toLowerCase().includes(q) || p.uni.toLowerCase().includes(q)).slice(0,5);
+    const matchedMcqs = SEARCH_INDEX.mcqs.filter(m=> m.question.toLowerCase().includes(q) || m.subject.toLowerCase().includes(q)).slice(0,5);
+
+    if(!matchedTests.length && !matchedPapers.length && !matchedMcqs.length){
+      el.innerHTML = `<div class="empty-state" style="grid-column:unset;"><div class="es-icon">🔍</div><div class="es-title">No results for "${safeHTML(query)}"</div><div class="es-sub">Try a different keyword.</div></div>`;
+      return;
+    }
+
+    let html = '';
+    if(matchedTests.length){
+      html += `<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:.5rem 0 .5rem;">📝 Tests</div>`;
+      html += matchedTests.map(t=>`<a href="test.html?id=${t.id}" style="display:block;padding:.7rem .8rem;border-radius:10px;border:1px solid var(--border);margin-bottom:.5rem;text-decoration:none;color:inherit;">
+        <div style="font-weight:600;font-size:.85rem;color:var(--navy,#0B1829);">${safeHTML(t.title)}</div>
+        ${t.subject?`<div style="font-size:.75rem;color:var(--muted);">${safeHTML(t.subject)}</div>`:''}
+      </a>`).join('');
+    }
+    if(matchedPapers.length){
+      html += `<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:.5rem 0 .5rem;">📄 Papers</div>`;
+      html += matchedPapers.map(p=>`<a href="${p.link||'#resources'}" target="${p.link?'_blank':'_self'}" rel="noopener" style="display:block;padding:.7rem .8rem;border-radius:10px;border:1px solid var(--border);margin-bottom:.5rem;text-decoration:none;color:inherit;">
+        <div style="font-weight:600;font-size:.85rem;color:var(--navy,#0B1829);">${safeHTML(p.name)}</div>
+        <div style="font-size:.75rem;color:var(--muted);">${safeHTML(p.uni)}${p.year?' — '+safeHTML(p.year):''}</div>
+      </a>`).join('');
+    }
+    if(matchedMcqs.length){
+      html += `<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:.5rem 0 .5rem;">🧠 MCQs</div>`;
+      html += matchedMcqs.map(m=>`<div onclick="closeModal('searchModal');document.getElementById('mcqbank').scrollIntoView({behavior:'smooth'});" style="cursor:pointer;padding:.7rem .8rem;border-radius:10px;border:1px solid var(--border);margin-bottom:.5rem;">
+        <div style="font-weight:600;font-size:.85rem;color:var(--navy,#0B1829);">${safeHTML(m.question)}</div>
+        <div style="font-size:.75rem;color:var(--muted);">${safeHTML(m.subject)}</div>
+      </div>`).join('');
+    }
+    el.innerHTML = html;
+  }, 250);
 }
 function safeHTML(text){
   if(text===undefined||text===null) return '';
