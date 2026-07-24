@@ -788,6 +788,29 @@ footer{background:#050C18;border-top:1px solid rgba(245,184,0,.08);padding:3.5re
 ══════════════════════════════════════ */
 .sec-white{background:var(--white);padding:4.5rem 1.5rem;}
 .sec-off{background:var(--off);padding:4.5rem 1.5rem;}
+
+/* ── ABOUT SECTION ── */
+.about-body{max-width:720px;margin:0 auto;text-align:center;color:var(--muted);font-size:1rem;line-height:1.85;white-space:pre-wrap;}
+
+/* ── TESTIMONIALS ── */
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
+.testi-card{background:var(--off);border:1px solid var(--border);border-radius:16px;padding:1.75rem;}
+.testi-stars{color:var(--gold);font-size:.9rem;margin-bottom:.75rem;}
+.testi-text{font-size:.9rem;color:#334155;line-height:1.7;margin-bottom:1.25rem;font-style:italic;}
+.testi-foot{display:flex;align-items:center;gap:.7rem;}
+.testi-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;color:var(--navy);flex-shrink:0;}
+.testi-name{font-weight:700;font-size:.85rem;color:var(--navy);}
+.testi-role{font-size:.75rem;color:var(--muted);}
+
+/* ── FAQ ── */
+.faq-list{max-width:760px;margin:0 auto;}
+.faq-item{background:var(--white);border:1px solid var(--border);border-radius:12px;margin-bottom:.75rem;overflow:hidden;}
+.faq-q{padding:1.1rem 1.4rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;font-size:.92rem;color:var(--navy);gap:1rem;}
+.faq-q .faq-arrow{transition:transform .2s;color:var(--gold);flex-shrink:0;}
+.faq-item.open .faq-q .faq-arrow{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+.faq-item.open .faq-a{max-height:300px;}
+.faq-a-inner{padding:0 1.4rem 1.1rem;font-size:.87rem;color:var(--muted);line-height:1.7;}
 .sec-navy{background:var(--navy);padding:4.5rem 1.5rem;}
 .sec-navy2{background:var(--navy2);padding:4.5rem 1.5rem;}
 
@@ -1438,6 +1461,42 @@ body{padding-bottom:70px;}
   </div>
 </section>
 
+<!-- ══════════ ABOUT SECTION ══════════ -->
+<section id="about" class="sec-off" style="display:none;">
+  <div class="container">
+    <div class="sec-head fade">
+      <div class="eyebrow eyebrow-blue">About Us</div>
+      <h2 id="aboutHeading">Our Story</h2>
+      <div class="gold-bar"></div>
+    </div>
+    <p class="about-body fade" id="aboutBodyText"></p>
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIALS SECTION ══════════ -->
+<section id="testimonials" class="sec-white" style="display:none;">
+  <div class="container">
+    <div class="sec-head fade">
+      <div class="eyebrow eyebrow-blue">Testimonials</div>
+      <h2>What Students Say</h2>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="testi-grid fade" id="testiGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════ FAQ SECTION ══════════ -->
+<section id="faq" class="sec-off" style="display:none;">
+  <div class="container">
+    <div class="sec-head fade">
+      <div class="eyebrow eyebrow-blue">FAQ</div>
+      <h2>Frequently Asked Questions</h2>
+      <div class="gold-bar"></div>
+    </div>
+    <div class="faq-list fade" id="faqListPublic"></div>
+  </div>
+</section>
+
 <!-- ══════════ SECTION 7: CONTACT ══════════ -->
 <section id="contact" class="sec-white">
   <div class="container">
@@ -2080,6 +2139,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   loadAnnouncements();
   checkLiveTests();
   initMCQBank();
+  loadAboutSection();
+  loadTestimonials();
+  loadFAQs();
   setTimeout(observeFade,100);
 });
 
@@ -2718,6 +2780,74 @@ async function loadCompetitionsList() {
 function closeLivePopup() {
   document.getElementById('liveTestPopup').style.display='none';
   sessionStorage.setItem('ltpClosed','1');
+}
+
+// ══ ABOUT SECTION ══
+async function loadAboutSection() {
+  if(!db) return;
+  try{
+    const snap = await db.ref('siteContent/about').once('value');
+    const about = snap.val();
+    if(!about || !about.body) return; // stays hidden if admin hasn't set it up
+    document.getElementById('aboutHeading').textContent = about.title || 'Our Story';
+    document.getElementById('aboutBodyText').textContent = about.body;
+    document.getElementById('about').style.display = 'block';
+  }catch(e){ console.error('About load failed:', e); }
+}
+
+// ══ TESTIMONIALS ══
+async function loadTestimonials() {
+  if(!db) return;
+  const el = document.getElementById('testiGrid');
+  try{
+    const snap = await db.ref('testimonials').once('value');
+    const data = snap.val();
+    if(!data) return; // stays hidden if none added yet
+    const rows = Object.values(data).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    el.innerHTML = rows.map(t=>{
+      const initial = (t.name||'?').trim().charAt(0).toUpperCase();
+      return `<div class="testi-card fade">
+        <div class="testi-stars">${'⭐'.repeat(t.rating||5)}</div>
+        <p class="testi-text">"${safeHTML(t.text)}"</p>
+        <div class="testi-foot">
+          <div class="testi-avatar">${initial}</div>
+          <div>
+            <div class="testi-name">${safeHTML(t.name)}</div>
+            <div class="testi-role">${safeHTML(t.role||'')}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('testimonials').style.display = 'block';
+  }catch(e){ console.error('Testimonials load failed:', e); }
+}
+
+// ══ FAQ ══
+async function loadFAQs() {
+  if(!db) return;
+  const el = document.getElementById('faqListPublic');
+  try{
+    const snap = await db.ref('faqs').once('value');
+    const data = snap.val();
+    if(!data) return; // stays hidden if none added yet
+    const rows = Object.entries(data).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));
+    el.innerHTML = rows.map(([id,f])=>`
+      <div class="faq-item" id="faqi-${id}">
+        <div class="faq-q" onclick="toggleFAQ('${id}')">
+          <span>${safeHTML(f.question)}</span>
+          <span class="faq-arrow">▾</span>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">${safeHTML(f.answer)}</div></div>
+      </div>`).join('');
+    document.getElementById('faq').style.display = 'block';
+  }catch(e){ console.error('FAQ load failed:', e); }
+}
+function toggleFAQ(id) {
+  document.getElementById('faqi-'+id).classList.toggle('open');
+}
+function safeHTML(text){
+  if(text===undefined||text===null) return '';
+  return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function checkLiveTests() {

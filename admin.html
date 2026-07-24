@@ -323,6 +323,7 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
     <button class="mn-btn" onclick="showTabMob('announce',this)"><span style="font-size:1.1rem;">📢</span><span>Notice</span></button>
     <button class="mn-btn" onclick="showTabMob('livetest',this)"><span style="font-size:1.1rem;">🔴</span><span>Live</span></button>
     <button class="mn-btn" onclick="showTabMob('competitions',this)"><span style="font-size:1.1rem;">🏆</span><span>Compete</span></button>
+    <button class="mn-btn" onclick="showTabMob('content',this)"><span style="font-size:1.1rem;">📝</span><span>Content</span></button>
     <button class="mn-btn" onclick="showTabMob('mcqadmin',this)"><span style="font-size:1.1rem;">🧠</span><span>MCQs</span></button>
   </div>
 
@@ -342,6 +343,7 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
         <button class="nav-btn" onclick="showTab('announce',this)"><span class="ni">📢</span> Announcements</button>
         <button class="nav-btn" onclick="showTab('livetest',this)"><span class="ni">🔴</span> Live Tests</button>
         <button class="nav-btn" onclick="showTab('competitions',this)"><span class="ni">🏆</span> Competitions</button>
+        <button class="nav-btn" onclick="showTab('content',this)"><span class="ni">📝</span> Site Content</button>
         <button class="nav-btn" onclick="showTab('mcqadmin',this)"><span class="ni">🧠</span> MCQ Bank</button>
         <button class="nav-btn" onclick="showTab('leaderboard',this)"><span class="ni">🥇</span> Leaderboard</button>
       </div>
@@ -676,7 +678,41 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
         </div>
       </div>
 
-<!-- SIDEBAR BUTTON (add after livetest button) -->
+      <div class="tab-pane" id="tab-content">
+        <div class="page-head">
+          <h1>Site Content 📝</h1>
+          <p>About section, testimonials, aur FAQs manage karein — index.html pe live dikhega</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">About Section</div>
+          <div class="fi"><label>Heading</label><input type="text" id="aboutTitle" placeholder="e.g. Hamari Kahani"></div>
+          <div class="fi"><label>Body Text</label><textarea id="aboutBody" rows="5" placeholder="Platform ka mission, kaun bana raha hai, waghera likhein..."></textarea></div>
+          <button class="btn btn-gold" onclick="saveAboutContent()">💾 Save About Section</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Testimonials</div>
+          <div class="form-row">
+            <div class="fi"><label>Student Name</label><input type="text" id="testiName" placeholder="e.g. Ayesha Khan"></div>
+            <div class="fi"><label>Role / Subtitle</label><input type="text" id="testiRole" placeholder="e.g. QUEST Aspirant, 2026"></div>
+          </div>
+          <div class="fi"><label>Testimonial Text</label><textarea id="testiText" rows="3" placeholder="Feedback form se copy karke yahan paste karein..."></textarea></div>
+          <div class="fi"><label>Rating</label>
+            <select id="testiRating"><option value="5">⭐⭐⭐⭐⭐ (5)</option><option value="4">⭐⭐⭐⭐ (4)</option><option value="3">⭐⭐⭐ (3)</option></select>
+          </div>
+          <button class="btn btn-gold" onclick="addTestimonial()" style="margin-bottom:1.25rem;">➕ Add Testimonial</button>
+          <div id="testiList"><p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">Loading...</p></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">FAQs</div>
+          <div class="fi"><label>Question</label><input type="text" id="faqQ" placeholder="e.g. Test kitni baar de sakte hain?"></div>
+          <div class="fi"><label>Answer</label><textarea id="faqA" rows="2" placeholder="Jawab likhein..."></textarea></div>
+          <button class="btn btn-gold" onclick="addFAQ()" style="margin-bottom:1.25rem;">➕ Add FAQ</button>
+          <div id="faqList"><p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">Loading...</p></div>
+        </div>
+      </div>
 <!-- <button class="nav-btn" onclick="showTab('mcqadmin',this)"><span class="ni">🧠</span> MCQ Bank</button> -->
 
 <!-- TAB PANE -->
@@ -1131,6 +1167,7 @@ function showTabMob(name, btn) {
   if(name==='announce') loadAnnouncements();
   if(name==='livetest') loadLiveTests();
   if(name==='competitions') loadCompetitions();
+  if(name==='content') loadSiteContent();
   if(name==='mcqadmin') {loadPendingMCQs();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1147,6 +1184,7 @@ function showTab(name, btn) {
   if(name==='announce') loadAnnouncements();
   if(name==='livetest') loadLiveTests();
   if(name==='competitions') loadCompetitions();
+  if(name==='content') loadSiteContent();
   if(name==='mcqadmin') {loadPendingMCQs();}
   if(name==='leaderboard') loadLeaderboard();
 }
@@ -1683,6 +1721,123 @@ async function deleteCompResult(compId, key, title) {
     await db.ref(`compResults/${compId}/${key}`).remove();
     showToast('Result delete ho gaya.','success');
     viewCompResults(compId, title);
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+// ════════════════════════════════════════
+// SITE CONTENT (About / Testimonials / FAQs)
+// ════════════════════════════════════════
+async function loadSiteContent() {
+  if(!db) return;
+  try {
+    const snap = await db.ref('siteContent/about').once('value');
+    const about = snap.val();
+    if(about){
+      document.getElementById('aboutTitle').value = about.title||'';
+      document.getElementById('aboutBody').value = about.body||'';
+    }
+  } catch(e){ console.error(e); }
+  loadTestimonialsAdmin();
+  loadFAQsAdmin();
+}
+
+async function saveAboutContent() {
+  const title = document.getElementById('aboutTitle').value.trim();
+  const body = document.getElementById('aboutBody').value.trim();
+  if(!title || !body){ showToast('Heading aur body dono likhein!','error'); return; }
+  try {
+    await db.ref('siteContent/about').set({title, body, updatedAt: Date.now()});
+    showToast('✅ About section save ho gaya!','success');
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function addTestimonial() {
+  const name = document.getElementById('testiName').value.trim();
+  const role = document.getElementById('testiRole').value.trim();
+  const text = document.getElementById('testiText').value.trim();
+  const rating = parseInt(document.getElementById('testiRating').value)||5;
+  if(!name || !text){ showToast('Naam aur testimonial text zaroori hai!','error'); return; }
+  try {
+    await db.ref('testimonials').push({name, role, text, rating, createdAt: Date.now()});
+    document.getElementById('testiName').value='';
+    document.getElementById('testiRole').value='';
+    document.getElementById('testiText').value='';
+    showToast('✅ Testimonial add ho gaya!','success');
+    loadTestimonialsAdmin();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function loadTestimonialsAdmin() {
+  const el = document.getElementById('testiList');
+  if(!el || !db) return;
+  try {
+    const snap = await db.ref('testimonials').once('value');
+    const data = snap.val()||{};
+    const rows = Object.entries(data).sort((a,b)=>b[1].createdAt-a[1].createdAt);
+    if(!rows.length){ el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">Koi testimonial nahi. Upar se add karein.</p>'; return; }
+    el.innerHTML = rows.map(([id,t])=>`
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;">
+          <div>
+            <div style="font-weight:700;font-size:.85rem;color:#fff;">${t.name} <span style="color:var(--gold);font-size:.75rem;">${'⭐'.repeat(t.rating||5)}</span></div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-bottom:.4rem;">${t.role||''}</div>
+            <div style="font-size:.8rem;color:rgba(255,255,255,.65);line-height:1.5;">"${t.text}"</div>
+          </div>
+          <button class="btn btn-red btn-sm" onclick="deleteTestimonial('${id}')">🗑️</button>
+        </div>
+      </div>`).join('');
+  } catch(e){ el.innerHTML='<p style="color:#EF4444;font-size:.8rem;text-align:center;padding:1.5rem;">Load error.</p>'; }
+}
+
+async function deleteTestimonial(id) {
+  if(!confirm('Ye testimonial delete karein?')) return;
+  try {
+    await db.ref('testimonials/'+id).remove();
+    showToast('Testimonial delete ho gaya.','success');
+    loadTestimonialsAdmin();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function addFAQ() {
+  const q = document.getElementById('faqQ').value.trim();
+  const a = document.getElementById('faqA').value.trim();
+  if(!q || !a){ showToast('Question aur answer dono likhein!','error'); return; }
+  try {
+    await db.ref('faqs').push({question:q, answer:a, createdAt: Date.now()});
+    document.getElementById('faqQ').value='';
+    document.getElementById('faqA').value='';
+    showToast('✅ FAQ add ho gaya!','success');
+    loadFAQsAdmin();
+  } catch(e){ showToast('Error: '+e.message,'error'); }
+}
+
+async function loadFAQsAdmin() {
+  const el = document.getElementById('faqList');
+  if(!el || !db) return;
+  try {
+    const snap = await db.ref('faqs').once('value');
+    const data = snap.val()||{};
+    const rows = Object.entries(data).sort((a,b)=>a[1].createdAt-b[1].createdAt);
+    if(!rows.length){ el.innerHTML='<p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem;">Koi FAQ nahi. Upar se add karein.</p>'; return; }
+    el.innerHTML = rows.map(([id,f])=>`
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.9rem 1rem;margin-bottom:.6rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;">
+          <div>
+            <div style="font-weight:700;font-size:.85rem;color:#fff;margin-bottom:.3rem;">❓ ${f.question}</div>
+            <div style="font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.5;">${f.answer}</div>
+          </div>
+          <button class="btn btn-red btn-sm" onclick="deleteFAQ('${id}')">🗑️</button>
+        </div>
+      </div>`).join('');
+  } catch(e){ el.innerHTML='<p style="color:#EF4444;font-size:.8rem;text-align:center;padding:1.5rem;">Load error.</p>'; }
+}
+
+async function deleteFAQ(id) {
+  if(!confirm('Ye FAQ delete karein?')) return;
+  try {
+    await db.ref('faqs/'+id).remove();
+    showToast('FAQ delete ho gaya.','success');
+    loadFAQsAdmin();
   } catch(e){ showToast('Error: '+e.message,'error'); }
 }
 
