@@ -76,7 +76,7 @@ input::placeholder{color:rgba(255,255,255,.32);}
 .timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;font-size:1.05rem;}
 .q-text{font-size:1.2rem;font-weight:700;line-height:1.55;margin-bottom:1.7rem;text-align:left;}
 .opts{display:grid;gap:.75rem;}
-.opt{background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.09);border-radius:13px;padding:1.05rem 1.15rem;text-align:left;font-size:.94rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.8rem;}
+.opt{background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.09);border-radius:13px;padding:1.05rem 1.15rem;text-align:left;font-size:.94rem;cursor:pointer;transition:all .15s;display:flex;flex-wrap:wrap;align-items:center;gap:.8rem;}
 .opt:active{transform:scale(.985);}
 .opt-letter{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;}
 .opt.selected{border-color:var(--gold);background:rgba(245,184,0,.1);}
@@ -99,6 +99,30 @@ input::placeholder{color:rgba(255,255,255,.32);}
 .lb-heading{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.7rem;text-align:left;}
 .lb-row{display:grid;grid-template-columns:32px 1fr 60px;gap:.6rem;align-items:center;padding:.75rem .85rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;margin-bottom:.45rem;text-align:left;}
 .lb-row.me{border-color:var(--gold);background:rgba(245,184,0,.09);}
+.lb-row.first{border-color:var(--gold);background:linear-gradient(90deg,rgba(245,184,0,.16),rgba(245,184,0,.05));box-shadow:0 4px 16px rgba(245,184,0,.15);}
+.lb-row.first .lb-nm{color:var(--gold);font-weight:800;font-size:.92rem;}
+
+/* ── ROUND 2 / SPECTATOR ── */
+.round-badge{display:inline-block;background:rgba(245,184,0,.15);color:var(--gold);font-size:.68rem;font-weight:800;padding:.3rem .7rem;border-radius:8px;margin-bottom:.8rem;letter-spacing:.04em;text-transform:uppercase;}
+.spectator-badge{display:inline-block;background:rgba(21,101,216,.15);color:#60A5FA;font-size:.68rem;font-weight:800;padding:.3rem .7rem;border-radius:8px;margin-bottom:.8rem;letter-spacing:.04em;text-transform:uppercase;}
+.q-card.spectator .opts{pointer-events:none;opacity:.7;}
+.q-card.spectator .opt-letter{background:rgba(96,165,250,.15);}
+
+/* ── TIE BANNER MINI RING ── */
+.tie-ring{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:.3rem 0;background:conic-gradient(var(--gold) 0deg,rgba(255,255,255,.08) 0deg);animation:tiePulse 2s ease-in-out infinite;flex-shrink:0;transition:background .3s linear;}
+@keyframes tiePulse{0%,100%{box-shadow:0 0 0 0 rgba(245,184,0,.3);}50%{box-shadow:0 0 0 8px rgba(245,184,0,0);}}
+.tie-ring-inner{width:60px;height:60px;border-radius:50%;background:var(--navy2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-weight:800;font-size:.78rem;color:var(--gold);}
+.tie-banner-row{display:flex;align-items:center;gap:1rem;}
+
+/* ── LIVE SCOREBOARD (spectators, Round 2) ── */
+.live-scoreboard{width:100%;max-width:520px;margin:1rem auto 0;background:rgba(255,255,255,.04);border:1px solid rgba(96,165,250,.2);border-radius:16px;padding:1.1rem 1.2rem;}
+.live-scoreboard-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#60A5FA;margin-bottom:.75rem;}
+.live-player-row{display:flex;align-items:center;justify-content:space-between;padding:.55rem .2rem;border-bottom:1px solid rgba(255,255,255,.06);}
+.live-player-row:last-child{border-bottom:none;}
+.live-player-name{font-size:.85rem;font-weight:600;}
+.live-player-score{font-size:.85rem;font-weight:800;color:var(--gold);}
+.pick-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.4rem;flex-basis:100%;margin-left:calc(28px + .8rem);}
+.pick-tag{font-size:.65rem;font-weight:700;background:rgba(96,165,250,.18);color:#60A5FA;padding:.15rem .5rem;border-radius:6px;}
 .lb-rank{font-weight:800;font-family:var(--font-d);font-size:.85rem;color:var(--gold);text-align:center;}
 .lb-nm{font-size:.85rem;font-weight:600;}
 .lb-sc{font-weight:700;font-size:.85rem;text-align:right;color:var(--gold);}
@@ -169,7 +193,8 @@ input::placeholder{color:rgba(255,255,255,.32);}
 
   <!-- QUESTION SCREEN -->
   <div id="questionScreen" class="q-wrap hidden">
-    <div class="q-card">
+    <div class="q-card" id="qCard">
+      <div id="qRoundBadge"></div>
       <div class="q-top">
         <div class="q-num" id="qNumLabel">Question 1 of 30</div>
         <div class="timer-ring">
@@ -182,6 +207,7 @@ input::placeholder{color:rgba(255,255,255,.32);}
       <div class="answered-tag hidden" id="answeredTag">✅ Answer locked in — waiting for the next question</div>
       <div class="progress-dots" id="progressDots"></div>
     </div>
+    <div class="live-scoreboard hidden" id="liveScoreboard"></div>
   </div>
 
   <!-- GAP SCREEN -->
@@ -201,6 +227,15 @@ input::placeholder{color:rgba(255,255,255,.32);}
     <div class="rs-sub" id="rsRank">Calculating your result…</div>
     <div class="lb-heading">🏆 Top Scorers</div>
     <div id="rsLeaderboard" style="text-align:left;"></div>
+    <div id="tieBanner" class="hidden" style="margin-top:1.3rem;padding:1.1rem;border-radius:14px;background:linear-gradient(135deg,rgba(245,184,0,.14),rgba(245,184,0,.04));border:1.5px solid rgba(245,184,0,.35);text-align:left;">
+      <div class="tie-banner-row">
+        <div class="tie-ring" id="tieRing"><div class="tie-ring-inner" id="tieBannerCountdown">--:--</div></div>
+        <div>
+          <div style="font-weight:800;color:var(--gold);font-size:.9rem;margin-bottom:.3rem;" id="tieBannerTitle">🏆 Tiebreaker Round</div>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.8);line-height:1.55;margin:0;" id="tieBannerMsg"></p>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -411,8 +446,8 @@ function renderQuestion(idx){
   renderProgressDots(idx);
 }
 
-function renderProgressDots(idx){
-  const total = comp.questions.length;
+function renderProgressDots(idx, totalOverride){
+  const total = totalOverride || comp.questions.length;
   const el = document.getElementById('progressDots');
   if(total > 40){ el.innerHTML=''; return; } // skip for very long competitions
   el.innerHTML = Array.from({length: total}, (_,i)=>{
@@ -489,14 +524,260 @@ async function renderFinalResult(myResult){
     const myRank = rows.findIndex(r=>r.key===studentKey)+1;
     document.getElementById('rsRank').textContent = myRank>0 ? `Your Rank: #${myRank} of ${rows.length}` : '';
     document.getElementById('rsLeaderboard').innerHTML = rows.slice(0,10).map((r,i)=>`
-      <div class="lb-row ${r.key===studentKey?'me':''}">
+      <div class="lb-row ${i===0?'first':''} ${r.key===studentKey?'me':''}">
         <div class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
         <div class="lb-nm">${safeHTML(r.name)}</div>
         <div class="lb-sc">${r.score}/${r.total}</div>
       </div>`).join('');
+    checkForTiebreaker(myResult, rows);
   }catch(e){
     document.getElementById('rsRank').textContent = '';
   }
+}
+
+// ════════════════════════════════════════
+// ROUND 2 — TIEBREAKER
+// ════════════════════════════════════════
+let round2Mode = null; // null | 'tied' | 'spectator'
+let round2Answers = [];
+let round2AnsweredThisQ = false;
+let round2CurrentQIndex = -1;
+let round2Phase = null;
+let round2TickHandle = null;
+let LIVE_CACHE = {};
+let liveListenerAttached = false;
+
+function checkForTiebreaker(myResult, rows){
+  if(!comp.round2?.enabled || !rows.length) return;
+  const maxScore = rows[0].score;
+  const tiedCount = rows.filter(r=>r.score===maxScore).length;
+  if(tiedCount < 2) return; // clear winner, no tiebreaker needed
+  round2Mode = (myResult.score === maxScore) ? 'tied' : 'spectator';
+  round2Answers = new Array((comp.round2.questions||[]).length).fill(null);
+
+  const banner = document.getElementById('tieBanner');
+  banner.classList.remove('hidden');
+  document.getElementById('tieBannerTitle').textContent = round2Mode==='tied' ? "🏆 You're in the Tiebreaker!" : '👀 Tiebreaker Round Ahead';
+  document.getElementById('tieBannerMsg').textContent = round2Mode==='tied' ? comp.round2.msgTied : comp.round2.msgSpectator;
+
+  if(round2Mode==='tied'){
+    // Register presence so spectators can see this player's name + live score
+    db.ref('competitionLive/'+compId+'/'+studentKey).set({name: studentName||'Anonymous', liveScore:0, liveAnswered:0}).catch(()=>{});
+  } else {
+    startLiveScoreboard();
+  }
+
+  if(round2TickHandle) clearInterval(round2TickHandle);
+  round2TickHandle = setInterval(tick2, 150);
+  tick2();
+}
+
+function startLiveScoreboard(){
+  if(liveListenerAttached) return;
+  liveListenerAttached = true;
+  db.ref('competitionLive/'+compId).on('value', snap=>{
+    LIVE_CACHE = snap.val() || {};
+    renderLiveScoreboard();
+  });
+}
+
+function renderLiveScoreboard(){
+  const el = document.getElementById('liveScoreboard');
+  if(!el) return;
+  const players = Object.values(LIVE_CACHE);
+  if(!players.length){ el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  players.sort((a,b)=>(b.liveScore||0)-(a.liveScore||0));
+  el.innerHTML = `<div class="live-scoreboard-title">🔴 Live Scores</div>` +
+    players.map(p=>`<div class="live-player-row"><span class="live-player-name">${safeHTML(p.name)}</span><span class="live-player-score">${p.liveScore||0}/${p.liveAnswered||0}</span></div>`).join('');
+  renderPickTags();
+}
+
+function renderPickTags(){
+  if(round2Phase !== 'question') return;
+  const idx = round2CurrentQIndex;
+  Object.entries(LIVE_CACHE).forEach(([key, p])=>{
+    const pick = p.picks && p.picks[idx];
+    if(pick===undefined || pick===null) return;
+    const optEl = document.getElementById('opt'+pick);
+    if(!optEl) return;
+    let tagWrap = optEl.querySelector('.pick-tags');
+    if(!tagWrap){
+      tagWrap = document.createElement('div');
+      tagWrap.className = 'pick-tags';
+      optEl.appendChild(tagWrap);
+    }
+    if(!tagWrap.querySelector(`[data-key="${key}"]`)){
+      const tag = document.createElement('span');
+      tag.className = 'pick-tag';
+      tag.dataset.key = key;
+      tag.textContent = p.name || 'Player';
+      tagWrap.appendChild(tag);
+    }
+  });
+}
+
+let tieWaitTotal = null;
+
+function tick2(){
+  const r2 = comp.round2;
+  if(!r2) return;
+  const perQ = (r2.perQuestionTime||10)*1000;
+  const gap = (r2.gapTime||5)*1000;
+  const qCount = (r2.questions||[]).length;
+  const cycle = perQ+gap;
+  const now = serverNow();
+
+  if(now < r2.startTime){
+    if(tieWaitTotal===null) tieWaitTotal = r2.startTime - now;
+    const remain = Math.max(0, r2.startTime - now);
+    const el = document.getElementById('tieBannerCountdown');
+    if(el) el.textContent = fmtCountdown(remain);
+    const ring = document.getElementById('tieRing');
+    if(ring && tieWaitTotal>0){
+      const pct = Math.max(0, Math.min(1, 1 - remain/tieWaitTotal));
+      ring.style.background = `conic-gradient(var(--gold) ${pct*360}deg, rgba(255,255,255,.08) 0deg)`;
+    }
+    return;
+  }
+
+  const elapsed = now - r2.startTime;
+  const idx = Math.floor(elapsed / cycle);
+
+  if(idx >= qCount){
+    if(round2Phase !== 'ended'){
+      round2Phase = 'ended';
+      clearInterval(round2TickHandle);
+      finishRound2();
+    }
+    return;
+  }
+
+  const posInCycle = elapsed - idx*cycle;
+  if(posInCycle < perQ){
+    if(round2Phase !== 'question' || round2CurrentQIndex !== idx){
+      round2Phase = 'question';
+      round2CurrentQIndex = idx;
+      round2AnsweredThisQ = false;
+      renderRound2Question(idx);
+    }
+    updateRing(perQ - posInCycle, perQ);
+  } else {
+    if(round2Phase !== 'gap' || round2CurrentQIndex !== idx){
+      const justFinishedIdx = round2CurrentQIndex;
+      round2Phase = 'gap';
+      round2CurrentQIndex = idx;
+      renderGap(idx, qCount);
+      if(round2Mode==='tied' && justFinishedIdx>=0) scoreRound2Question(justFinishedIdx);
+    }
+    const gapRemain = cycle - posInCycle;
+    document.getElementById('gapCountdown').textContent = Math.ceil(gapRemain/1000);
+  }
+}
+
+function renderRound2Question(idx){
+  const q = comp.round2.questions[idx];
+  showScreen('questionScreen');
+  const isSpectator = round2Mode === 'spectator';
+  document.getElementById('qCard').classList.toggle('spectator', isSpectator);
+  document.getElementById('qRoundBadge').innerHTML = isSpectator
+    ? `<span class="spectator-badge">👀 Spectating — Tiebreaker</span>`
+    : `<span class="round-badge">🏆 Tiebreaker Round</span>`;
+  document.getElementById('qNumLabel').textContent = `Tiebreaker Q${idx+1} of ${comp.round2.questions.length}`;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('answeredTag').classList.add('hidden');
+  const letters = ['A','B','C','D'];
+  document.getElementById('qOpts').innerHTML = q.options.map((opt,i)=>`
+    <div class="opt" id="opt${i}" ${isSpectator?'':`onclick="selectRound2Answer(${idx},${i})"`}>
+      <div class="opt-letter">${letters[i]}</div>
+      <div>${safeHTML(opt)}</div>
+    </div>`).join('');
+  renderProgressDots(idx, comp.round2.questions.length);
+  renderPickTags();
+}
+
+function selectRound2Answer(qIdx, optIdx){
+  if(round2Mode!=='tied' || round2AnsweredThisQ || qIdx !== round2CurrentQIndex) return;
+  round2AnsweredThisQ = true;
+  round2Answers[qIdx] = optIdx;
+  document.querySelectorAll('.opt').forEach(o=>o.classList.add('locked'));
+  document.getElementById('opt'+optIdx).classList.add('selected');
+  document.getElementById('answeredTag').classList.remove('hidden');
+  // Pick is intentionally NOT sent to Firebase yet — it's revealed only once this
+  // question's answer window has closed for everyone (see scoreRound2Question),
+  // so a rival tied player can never see it before their own time runs out.
+}
+
+async function scoreRound2Question(idx){
+  const myPick = round2Answers[idx];
+  try{
+    const snap = await db.ref(`competitionAnswers/${compId}/round2/${idx}`).once('value');
+    const correct = snap.val();
+    const isCorrect = correct!==null && myPick===correct;
+    await db.ref('competitionLive/'+compId+'/'+studentKey).transaction(cur=>{
+      if(!cur) cur = {name: studentName||'Anonymous', liveScore:0, liveAnswered:0};
+      cur.liveAnswered = (cur.liveAnswered||0) + 1;
+      if(isCorrect) cur.liveScore = (cur.liveScore||0) + 1;
+      if(myPick!==null && myPick!==undefined){
+        if(!cur.picks) cur.picks = {};
+        cur.picks[idx] = myPick;
+      }
+      return cur;
+    });
+  }catch(e){ console.error('Live scoring failed for Q'+idx, e); }
+}
+
+async function finishRound2(){
+  showScreen('gapScreen');
+  document.getElementById('qCard')?.classList.remove('spectator');
+  document.getElementById('gapTitle').textContent = 'Finalizing Tiebreaker';
+  document.getElementById('gapCountdown').textContent = '';
+  document.getElementById('gapProgress').textContent = 'Calculating final results…';
+  if(liveListenerAttached){ db.ref('competitionLive/'+compId).off(); liveListenerAttached=false; }
+
+  if(round2Mode === 'tied'){
+    let score = 0;
+    try{
+      const results = await Promise.all(
+        comp.round2.questions.map((_,i)=> db.ref(`competitionAnswers/${compId}/round2/${i}`).once('value'))
+      );
+      results.forEach((snap,i)=>{
+        const correct = snap.val();
+        if(correct!==null && round2Answers[i]===correct) score++;
+      });
+    }catch(e){ console.error('Round 2 scoring failed', e); }
+    const payload = {
+      name: studentName||'Anonymous', phone: studentPhone||'',
+      score, total: comp.round2.questions.length,
+      answers: round2Answers, submittedAt: firebase.database.ServerValue.TIMESTAMP
+    };
+    try{ await db.ref(`compResults2/${compId}/${studentKey}`).set(payload); }
+    catch(e){ console.error('Round 2 submit failed', e); }
+  }
+
+  renderRound2Final();
+}
+
+async function renderRound2Final(){
+  showScreen('resultScreen');
+  document.getElementById('tieBanner').classList.add('hidden');
+  try{
+    const snap = await db.ref('compResults2/'+compId).once('value');
+    const data = snap.val()||{};
+    let rows = Object.keys(data).map(k=>({...data[k],key:k}));
+    rows.sort((a,b)=> b.score-a.score || (a.submittedAt||0)-(b.submittedAt||0));
+    const winner = rows[0];
+    if(round2Mode==='tied' && data[studentKey]){
+      document.getElementById('rsScore').textContent = `${data[studentKey].score}/${comp.round2.questions.length}`;
+    }
+    document.getElementById('rsRank').textContent = winner ? `🏆 Tiebreaker Winner: ${winner.name}` : 'Tiebreaker complete';
+    document.getElementById('rsLeaderboard').innerHTML = rows.slice(0,10).map((r,i)=>`
+      <div class="lb-row ${i===0?'first':''} ${r.key===studentKey?'me':''}">
+        <div class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+        <div class="lb-nm">${safeHTML(r.name)}</div>
+        <div class="lb-sc">${r.score}/${r.total}</div>
+      </div>`).join('');
+  }catch(e){ console.error('Round 2 leaderboard load failed', e); }
 }
 </script>
 </body>
