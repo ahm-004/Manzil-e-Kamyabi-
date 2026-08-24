@@ -1699,7 +1699,7 @@ async function renderPapers(){
     const snap = await db.ref('papers').once('value');
     const data = snap.val();
     if(!data){
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📄</div><div class="es-title">Koi papers abhi available nahi hain</div><div class="es-sub">Jald hi past papers add honge!</div></div>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📄</div><div class="es-title">No papers available yet</div><div class="es-sub">New past papers coming soon!</div></div>`;
       return;
     }
     LIVE_PAPERS_GROUPED = {};
@@ -1722,7 +1722,7 @@ async function renderPapers(){
     }).join('');
   }catch(e){
     console.error('Papers load failed:', e);
-    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">⚠️</div><div class="es-title">Papers load nahi ho sakay</div><div class="es-sub">Internet check karein aur refresh karein.</div></div>`;
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">⚠️</div><div class="es-title">Couldn't load papers</div><div class="es-sub">Check your internet and refresh.</div></div>`;
   }
 }
 
@@ -1761,7 +1761,7 @@ async function loadLiveTests(){
     const snap = await db.ref('tests').once('value');
     const data = snap.val();
     if(!data){
-      el.innerHTML = `<div class="empty-state"><div class="es-icon">📝</div><div class="es-title">Koi test abhi available nahi hai</div><div class="es-sub">Jald hi naye tests add honge — check karte rahein!</div></div>`;
+      el.innerHTML = `<div class="empty-state"><div class="es-icon">📝</div><div class="es-title">No tests available yet</div><div class="es-sub">New tests coming soon — check back!</div></div>`;
       return;
     }
     const cards = Object.keys(data).map(id=>{
@@ -1781,10 +1781,10 @@ async function loadLiveTests(){
         </div>
       </div>`;
     }).join('');
-    el.innerHTML = cards || `<div class="empty-state"><div class="es-icon">📝</div><div class="es-title">Koi test abhi available nahi hai</div><div class="es-sub">Jald hi naye tests add honge — check karte rahein!</div></div>`;
+    el.innerHTML = cards || `<div class="empty-state"><div class="es-icon">📝</div><div class="es-title">No tests available yet</div><div class="es-sub">New tests coming soon — check back!</div></div>`;
   }catch(e){
     console.error('Live tests load failed:', e);
-    el.innerHTML = `<div class="empty-state"><div class="es-icon">⚠️</div><div class="es-title">Tests load nahi ho sakay</div><div class="es-sub">Internet check karein aur page refresh karein.</div></div>`;
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">⚠️</div><div class="es-title">Couldn't load tests</div><div class="es-sub">Check your internet and refresh the page.</div></div>`;
   }
 }
 
@@ -1825,7 +1825,7 @@ async function renderLB(key){
     rows = rows.slice(0, 20);
 
     if(rows.length===0){
-      el.innerHTML = `<div class="empty-state" style="grid-column:unset;"><div class="es-icon">🏆</div><div class="es-title">Abhi is period me koi result nahi hai</div><div class="es-sub">Test dein aur sabse pehle leaderboard pe aayein!</div></div>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:unset;"><div class="es-icon">🏆</div><div class="es-title">No results for this period yet</div><div class="es-sub">Take a test and be first on the leaderboard!</div></div>`;
       return;
     }
 
@@ -1844,7 +1844,7 @@ async function renderLB(key){
     }).join('');
   }catch(e){
     console.error('Leaderboard load failed:', e);
-    el.innerHTML = `<div class="empty-state" style="grid-column:unset;"><div class="es-icon">⚠️</div><div class="es-title">Results load nahi ho sakay</div><div class="es-sub">Internet check karein aur page refresh karein.</div></div>`;
+    el.innerHTML = `<div class="empty-state" style="grid-column:unset;"><div class="es-icon">⚠️</div><div class="es-title">Couldn't load results</div><div class="es-sub">Check your internet and refresh the page.</div></div>`;
   }
 }
 
@@ -2009,7 +2009,7 @@ function openPapersModal(uni){
   const papers = (LIVE_PAPERS_GROUPED[uni]||[]).slice().sort((a,b)=>(b.year||'').localeCompare(a.year||''));
   document.getElementById('modalTitle').textContent=uni;
   if(!papers.length){
-    document.getElementById('modalBody').innerHTML = `<p style="font-size:.85rem;color:var(--muted);text-align:center;padding:1.5rem;">Koi paper nahi mila.</p>`;
+    document.getElementById('modalBody').innerHTML = `<p style="font-size:.85rem;color:var(--muted);text-align:center;padding:1.5rem;">Paper not found.</p>`;
     openModal('papersModal');
     return;
   }
@@ -2651,7 +2651,7 @@ function submitUserMCQ() {
   }
   const data = {name,subject,question,optA,optB,optC,optD,correct,description,approved:false,submittedAt:Date.now()};
   db.ref('mcqPending').push(data).then(()=>{
-    msg.innerHTML='<span style="color:#10B981;">✅ MCQ submit ho gaya! Admin se approve hone ka wait karein.</span>';
+    msg.innerHTML='<span style="color:#10B981;">✅ MCQ submitted! Waiting for admin approval.</span>';
     ['subName','subQuestion','subA','subB','subC','subD','subDesc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('subSubject').value='';
     document.getElementById('subCorrect').value='A';
@@ -2684,7 +2684,7 @@ function setMathTarget(fieldId, label) {
 
 function openCalcModal() {
   const labelEl = document.getElementById('calcTargetLabel');
-  if(labelEl) labelEl.textContent = calcTargetField ? ('→ ' + calcTargetLabel) : 'Pehle kisi field mein click karein';
+  if(labelEl) labelEl.textContent = calcTargetField ? ('→ ' + calcTargetLabel) : 'Click a field first';
   const overlay = document.getElementById('calcModal');
   if(overlay) { overlay.style.display = 'flex'; overlay.classList.add('open'); }
   // Snapshot cursor pos
@@ -2703,7 +2703,7 @@ function closeCalcModalBtn() {
   document.getElementById('calcModal').classList.remove('open');
 }
 function calcInsert(symbol) {
-  if(!calcTargetField) { showToast('⚠️ Pehle kisi field mein click/tap karein'); return; }
+  if(!calcTargetField) { showToast('⚠️ Tap a field first'); return; }
   const el = document.getElementById(calcTargetField);
   if(!el) return;
   const pos = (calcCursorPos !== null) ? calcCursorPos : el.value.length;
@@ -2789,7 +2789,7 @@ async function loadCompetitionsList() {
     const snap = await db.ref('competitions').once('value');
     const data = snap.val();
     if(!data){
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">🏆</div><div class="es-title">Koi competition abhi available nahi hai</div><div class="es-sub">Jald hi naye competitions add honge!</div></div>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">🏆</div><div class="es-title">No competitions available yet</div><div class="es-sub">New competitions coming soon!</div></div>`;
       return;
     }
     const now = Date.now();
@@ -2801,7 +2801,7 @@ async function loadCompetitionsList() {
     }).sort((a,b)=>a[1].startTime-b[1].startTime);
 
     if(!upcoming.length){
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">🏆</div><div class="es-title">Koi competition abhi available nahi hai</div><div class="es-sub">Jald hi naye competitions add honge!</div></div>`;
+      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">🏆</div><div class="es-title">No competitions available yet</div><div class="es-sub">New competitions coming soon!</div></div>`;
       return;
     }
 
@@ -2815,13 +2815,13 @@ async function loadCompetitionsList() {
           <span style="font-size:.65rem;font-weight:800;color:${isLive?'#EF4444':'#F5B800'};text-transform:uppercase;letter-spacing:.08em;">${isLive?'Live Now':'Starts '+startStr}</span>
         </div>
         <h3 style="font-family:var(--font-d);font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.4rem;">${c.title}</h3>
-        <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:.9rem;">${c.description||`${qCount} questions — sab ke liye ek hi waqt pe`}</p>
+        <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:.9rem;">${c.description||`${qCount} questions — everyone at the same time`}</p>
         <a href="competition.html?id=${id}" class="btn btn-gold" style="display:block;text-align:center;text-decoration:none;">${isLive?'Join Now →':'Join Waiting Room →'}</a>
       </div>`;
     }).join('');
   }catch(e){
     console.error('Competitions load failed:', e);
-    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">⚠️</div><div class="es-title">Load nahi ho saka</div><div class="es-sub">Internet check karein aur refresh karein.</div></div>`;
+    el.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">⚠️</div><div class="es-title">Couldn't load</div><div class="es-sub">Check your internet and refresh.</div></div>`;
   }
 }
 

@@ -41,7 +41,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 .name-screen{display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;min-height:calc(100vh - 58px);}
 .name-box{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2.25rem 2rem;width:100%;max-width:460px;box-shadow:0 8px 48px rgba(11,24,41,.1);}
 .nb-icon{font-size:2.75rem;text-align:center;margin-bottom:.85rem;}
-.cover-img{width:100%;height:150px;object-fit:cover;border-radius:14px;margin-bottom:1.1rem;box-shadow:0 8px 24px rgba(11,24,41,.12);}
+.cover-img{width:100%;height:150px;object-fit:contain;border-radius:14px;margin-bottom:1.1rem;box-shadow:0 8px 24px rgba(11,24,41,.12);background:rgba(11,24,41,.03);}
 .name-box h1{font-family:var(--font-d);font-size:1.35rem;font-weight:800;text-align:center;margin-bottom:.35rem;}
 .test-name{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:.5rem;}
 .test-meta{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;}
@@ -1055,7 +1055,7 @@ async function submitTest() {
   }
 
   if (!saved) {
-    showToast('⚠️ Result save nahi ho saka. Internet check karein aur dobara try karein.');
+    showToast('⚠️ Couldn't save your result. Check your internet and try again.');
     document.querySelectorAll('.submit-btn-panel, #nextBtn').forEach(b=>{ if(b) b.disabled = false; });
     isSubmitting = false;
     return;

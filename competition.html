@@ -148,6 +148,8 @@ input::placeholder{color:rgba(255,255,255,.32);}
 .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(245,184,0,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(245,184,0,.035) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
 .bg-glow-1{position:fixed;width:420px;height:420px;background:radial-gradient(circle,rgba(21,101,216,.22) 0%,transparent 70%);top:-120px;right:-80px;pointer-events:none;z-index:0;}
 .bg-glow-2{position:fixed;width:380px;height:380px;background:radial-gradient(circle,rgba(245,184,0,.12) 0%,transparent 70%);bottom:-100px;left:-100px;pointer-events:none;z-index:0;}
+.bg-glow-3{position:fixed;width:360px;height:360px;background:radial-gradient(circle,rgba(245,184,0,.10) 0%,transparent 70%);top:-100px;left:-100px;pointer-events:none;z-index:0;}
+.bg-glow-4{position:fixed;width:400px;height:400px;background:radial-gradient(circle,rgba(21,101,216,.16) 0%,transparent 70%);bottom:-110px;right:-90px;pointer-events:none;z-index:0;}
 .wrap{position:relative;z-index:1;padding-top:4.5rem;}
 
 /* ── Feel like an app, not a webpage: no accidental text-select/copy popup ── */
@@ -155,7 +157,7 @@ body{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-tou
 input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;-webkit-touch-callout:default;}
 
 /* ── OPTIONAL COVER IMAGE (per-competition) ── */
-.cover-img{width:100%;height:150px;object-fit:cover;border-radius:16px;margin-bottom:1.1rem;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+.cover-img{width:100%;height:150px;object-fit:contain;border-radius:16px;margin-bottom:1.1rem;box-shadow:0 8px 24px rgba(0,0,0,.25);background:rgba(255,255,255,.03);}
 
 /* ══════════════════════════════════════════════
    SPECIAL "EID" THEME — White & Green
@@ -204,6 +206,17 @@ body.theme-eid .th-logo{box-shadow:0 3px 10px rgba(16,185,129,.25);}
 body.theme-eid .bg-grid{background-image:linear-gradient(rgba(16,185,129,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.04) 1px,transparent 1px);}
 body.theme-eid .bg-glow-1{background:radial-gradient(circle,rgba(16,185,129,.05) 0%,transparent 70%);}
 body.theme-eid .bg-glow-2{background:radial-gradient(circle,rgba(52,211,153,.05) 0%,transparent 70%);}
+body.theme-eid .bg-glow-1,
+body.theme-eid .bg-glow-2,
+body.theme-eid .bg-glow-3,
+body.theme-eid .bg-glow-4{animation:cornerPulse 7s ease-in-out infinite;}
+body.theme-eid .bg-glow-2{animation-delay:1.75s;}
+body.theme-eid .bg-glow-3{animation-delay:3.5s;}
+body.theme-eid .bg-glow-4{animation-delay:5.25s;}
+@keyframes cornerPulse{
+  0%,100%{background:radial-gradient(circle,rgba(16,185,129,.14) 0%,transparent 70%);}
+  50%{background:radial-gradient(circle,rgba(255,255,255,.6) 0%,transparent 70%);}
+}
 body.theme-eid .spinner{border-color:rgba(16,129,90,.15);}
 body.theme-eid .live-scoreboard{background:rgba(16,185,129,.05);}
 body.theme-eid .live-player-row{border-bottom-color:rgba(16,129,90,.08);}
@@ -215,6 +228,8 @@ body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
 <div class="bg-grid"></div>
 <div class="bg-glow-1"></div>
 <div class="bg-glow-2"></div>
+<div class="bg-glow-3"></div>
+<div class="bg-glow-4"></div>
 
 <div class="top-header">
   <div class="th-brand">
