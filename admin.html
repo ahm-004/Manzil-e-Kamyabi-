@@ -404,6 +404,16 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
             </div>
           </div>
           <div class="fi"><label>Instructions (optional)</label><textarea id="testInstr" rows="2" placeholder="Students ke liye koi special instructions..."></textarea></div>
+          <div class="fi"><label>Cover Image URL (optional)</label>
+            <input type="text" id="testCoverUrl" placeholder="https://... (image link)">
+            <div style="display:flex;align-items:center;gap:.6rem;margin-top:.5rem;flex-wrap:wrap;">
+              <label class="btn btn-outline btn-sm" style="cursor:pointer;margin:0;">📷 Phone se Upload Karein
+                <input type="file" accept="image/*" style="display:none;" onchange="uploadCoverImage(this,'testCoverUrl','testCoverPreview','testCoverStatus')">
+              </label>
+              <span id="testCoverStatus" style="font-size:.72rem;color:rgba(255,255,255,.4);"></span>
+            </div>
+            <img id="testCoverPreview" style="display:none;width:100%;height:110px;object-fit:cover;border-radius:8px;margin-top:.5rem;">
+          </div>
 
           <div style="border-top:1px solid rgba(255,255,255,.08);margin:1.25rem 0;padding-top:1.1rem;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;">
@@ -629,7 +639,16 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
           </div>
           <div class="fi"><label>Description (optional)</label><textarea id="compDesc" rows="2" placeholder="Students ke liye short description..."></textarea></div>
           <div class="form-row">
-            <div class="fi"><label>Cover Image URL (optional)</label><input type="text" id="compCoverUrl" placeholder="https://... (image link)"></div>
+            <div class="fi"><label>Cover Image URL (optional)</label>
+              <input type="text" id="compCoverUrl" placeholder="https://... (image link)">
+              <div style="display:flex;align-items:center;gap:.6rem;margin-top:.5rem;flex-wrap:wrap;">
+                <label class="btn btn-outline btn-sm" style="cursor:pointer;margin:0;">📷 Phone se Upload Karein
+                  <input type="file" accept="image/*" style="display:none;" onchange="uploadCoverImage(this,'compCoverUrl','compCoverPreview','compCoverStatus')">
+                </label>
+                <span id="compCoverStatus" style="font-size:.72rem;color:rgba(255,255,255,.4);"></span>
+              </div>
+              <img id="compCoverPreview" style="display:none;width:100%;height:110px;object-fit:cover;border-radius:8px;margin-top:.5rem;">
+            </div>
             <div class="fi"><label>Theme</label>
               <select id="compTheme" style="width:100%;padding:.65rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);">
                 <option value="default">Default (Navy &amp; Gold)</option>
@@ -1142,6 +1161,10 @@ const firebaseConfig = {
 // 🌐 Netlify deploy ke baad apna URL yahan
 const SITE_URL = window.location.origin;
 // ════════════════════════════════════════
+// 📷 Cover photo upload ke liye — api.imgbb.com se FREE API key banayein
+// (koi card/billing nahi chahiye) aur neeche paste karein:
+const IMGBB_API_KEY = "14e7ef79f1c68a03b2c93d5ac6f0217f";
+// ════════════════════════════════════════
 
 let db=null, auth=null, currentUser=null;
 let allResults=[], currentTestId=null;
@@ -1436,6 +1459,7 @@ async function saveTest() {
     showAnswer:document.getElementById('testShowAns').value==='yes',
     showOnLeaderboard:document.getElementById('testShowLB').value==='yes',
     instructions:document.getElementById('testInstr').value.trim(),
+    coverImage:document.getElementById('testCoverUrl').value.trim() || null,
     oneTimeOnly:document.getElementById('testOneTime').checked,
     deadline:document.getElementById('testDeadline').value ? new Date(document.getElementById('testDeadline').value).getTime() : null,
     msgSubmit:document.getElementById('testMsgSubmit').value.trim(),
@@ -1455,7 +1479,9 @@ async function saveTest() {
 }
 
 function resetCreateForm(){
-  ['testTitle','testSubject','testTime','testPass','testInstr','testDeadline','testMsgSubmit','testMsgDeadline','testMsgPaused'].forEach(id=>document.getElementById(id).value='');
+  ['testTitle','testSubject','testTime','testPass','testInstr','testCoverUrl','testDeadline','testMsgSubmit','testMsgDeadline','testMsgPaused'].forEach(id=>document.getElementById(id).value='');
+  const tcp=document.getElementById('testCoverPreview'); if(tcp){tcp.style.display='none';tcp.src='';}
+  const tcs=document.getElementById('testCoverStatus'); if(tcs) tcs.textContent='';
   document.getElementById('testOneTime').checked=true;
   document.getElementById('qList').innerHTML='<p id="qEmpty" style="font-size:.8rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Koi question nahi. Upar se add karein.</p>';
   qCount=0;
@@ -1830,7 +1856,14 @@ async function editCompPrompt(id) {
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Description</div>
       <textarea id="_ecDesc" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(c.description)}</textarea>
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Cover Image URL (optional)</div>
-      <input id="_ecCover" value="${esc(c.coverImage)}" placeholder="https://... (image link)" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+      <input id="_ecCover" value="${esc(c.coverImage)}" placeholder="https://... (image link)" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:.6rem;margin:.5rem 0 .75rem;flex-wrap:wrap;">
+        <label class="btn btn-outline btn-sm" style="cursor:pointer;margin:0;">📷 Phone se Upload Karein
+          <input type="file" accept="image/*" style="display:none;" onchange="uploadCoverImage(this,'_ecCover','_ecCoverPreview','_ecCoverStatus')">
+        </label>
+        <span id="_ecCoverStatus" style="font-size:.72rem;color:rgba(255,255,255,.4);"></span>
+      </div>
+      <img id="_ecCoverPreview" src="${esc(c.coverImage)}" style="display:${c.coverImage?'block':'none'};width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:.75rem;">
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Theme</div>
       <select id="_ecTheme" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
         <option value="default" ${c.theme!=='eid'?'selected':''}>Default (Navy &amp; Gold)</option>
@@ -2198,6 +2231,16 @@ async function editTestPrompt(id) {
         <option value="1" ${t.negMarking==1?'selected':''}>-1 per wrong</option>
       </select>
 
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Cover Image URL (optional)</div>
+      <input id="_etCover" value="${esc(t.coverImage)}" placeholder="https://... (image link)" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:.6rem;margin:.5rem 0 .75rem;flex-wrap:wrap;">
+        <label class="btn btn-outline btn-sm" style="cursor:pointer;margin:0;">📷 Phone se Upload Karein
+          <input type="file" accept="image/*" style="display:none;" onchange="uploadCoverImage(this,'_etCover','_etCoverPreview','_etCoverStatus')">
+        </label>
+        <span id="_etCoverStatus" style="font-size:.72rem;color:rgba(255,255,255,.4);"></span>
+      </div>
+      <img id="_etCoverPreview" src="${esc(t.coverImage)}" style="display:${t.coverImage?'block':'none'};width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:.75rem;">
+
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Show on Leaderboard</div>
       <select id="_etShowLB" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
         <option value="yes" ${t.showOnLeaderboard!==false?'selected':''}>Yes — Include results</option>
@@ -2247,6 +2290,7 @@ async function saveEditTest(id) {
     showOnLeaderboard: document.getElementById('_etShowLB').value==='yes',
     oneTimeOnly: document.getElementById('_etOneTime').checked,
     instructions: document.getElementById('_etInstr').value.trim(),
+    coverImage: document.getElementById('_etCover').value.trim() || null,
     msgSubmit: document.getElementById('_etMsgSubmit').value.trim(),
     msgDeadline: document.getElementById('_etMsgDeadline').value.trim(),
     msgPaused: document.getElementById('_etMsgPaused').value.trim()
@@ -3329,6 +3373,31 @@ document.addEventListener('contextmenu', (e) => {
 document.addEventListener('copy', (e) => {
   if(e.target.closest && e.target.closest('.mcq-preview-card, .mcq-bank-item')) e.preventDefault();
 });
+
+async function uploadCoverImage(fileInput, urlInputId, previewId, statusId){
+  const file = fileInput.files[0];
+  if(!file) return;
+  if(IMGBB_API_KEY.includes('PASTE')){ document.getElementById(statusId).textContent='❌ Pehle ImgBB API key set karein (code mein).'; return; }
+  if(!file.type.startsWith('image/')){ showToast('Sirf image file select karein','error'); return; }
+  if(file.size > 5*1024*1024){ showToast('Image 5MB se choti honi chahiye','error'); return; }
+  const statusEl = document.getElementById(statusId);
+  statusEl.textContent = '⏳ Upload ho raha hai...'; statusEl.style.color = 'rgba(255,255,255,.5)';
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:'POST', body: formData });
+    const data = await res.json();
+    if(!data.success) throw new Error(data.error?.message || 'Upload failed');
+    const url = data.data.url;
+    document.getElementById(urlInputId).value = url;
+    const prev = document.getElementById(previewId);
+    if(prev){ prev.src = url; prev.style.display = 'block'; }
+    statusEl.textContent = '✅ Photo upload ho gayi!'; statusEl.style.color = '#10B981';
+  } catch(e) {
+    statusEl.textContent = '❌ Upload fail: ' + e.message; statusEl.style.color = '#EF4444';
+  }
+  fileInput.value = '';
+}
 
 function showToast(msg,type=''){
   const t=document.getElementById('toast');
