@@ -57,9 +57,14 @@ input::placeholder{color:rgba(255,255,255,.32);}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
 
 /* ── WAITING ROOM ── */
-.wr-ring{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:1.2rem auto;background:conic-gradient(var(--gold) 0deg,rgba(255,255,255,.06) 0deg);position:relative;}
+.wr-ring{width:130px;height:130px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:1.2rem auto;background:conic-gradient(var(--gold) 0deg,rgba(255,255,255,.06) 0deg);position:relative;transition:background .3s linear;animation:wrBreathe 2.4s ease-in-out infinite;}
+.wr-ring.urgent{animation:wrBreatheUrgent .8s ease-in-out infinite;}
+@keyframes wrBreathe{0%,100%{box-shadow:0 0 0 0 rgba(245,184,0,.28);}50%{box-shadow:0 0 0 14px rgba(245,184,0,0);}}
+@keyframes wrBreatheGreen{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.28);}50%{box-shadow:0 0 0 14px rgba(16,185,129,0);}}
+@keyframes wrBreatheUrgent{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35);}50%{box-shadow:0 0 0 16px rgba(239,68,68,0);}}
 .wr-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--navy2);}
-.wr-count{position:relative;z-index:1;font-family:var(--font-d);font-size:1.5rem;font-weight:800;color:var(--gold);}
+.wr-count{position:relative;z-index:1;font-family:var(--font-d);font-size:1.5rem;font-weight:800;color:var(--gold);transition:color .3s;}
+.wr-ring.urgent .wr-count{color:var(--red);}
 .wr-players{color:var(--muted);font-size:.82rem;display:flex;align-items:center;justify-content:center;gap:.4rem;}
 
 /* ── QUESTION SCREEN ── */
@@ -144,6 +149,64 @@ input::placeholder{color:rgba(255,255,255,.32);}
 .bg-glow-1{position:fixed;width:420px;height:420px;background:radial-gradient(circle,rgba(21,101,216,.22) 0%,transparent 70%);top:-120px;right:-80px;pointer-events:none;z-index:0;}
 .bg-glow-2{position:fixed;width:380px;height:380px;background:radial-gradient(circle,rgba(245,184,0,.12) 0%,transparent 70%);bottom:-100px;left:-100px;pointer-events:none;z-index:0;}
 .wrap{position:relative;z-index:1;padding-top:4.5rem;}
+
+/* ── OPTIONAL COVER IMAGE (per-competition) ── */
+.cover-img{width:100%;height:150px;object-fit:cover;border-radius:16px;margin-bottom:1.1rem;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+
+/* ══════════════════════════════════════════════
+   SPECIAL "EID" THEME — White & Green
+   Applied only when a competition sets theme:"eid".
+   Reuses the same var names, so every element that
+   already reads var(--gold)/var(--navy)/var(--muted)
+   flips automatically; the rest are explicit overrides
+   for spots that use hardcoded rgba(255,255,255,..)
+   or rgba(245,184,0,..) values.
+   ══════════════════════════════════════════════ */
+body.theme-eid{
+  --navy:#FFFFFF;--navy2:#EFFBF5;--navy3:#FFFFFF;
+  --gold:#10B981;--gold2:#34D399;
+  --muted:#5B7A6E;
+  color:#0B3B2E;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(16,185,129,.09), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(16,185,129,.12), transparent 45%),
+    linear-gradient(160deg,#FFFFFF,#F1FBF6 60%,#FFFFFF);
+}
+body.theme-eid .cover-img{box-shadow:0 8px 24px rgba(16,129,90,.18);}
+body.theme-eid .card,
+body.theme-eid .q-card{
+  background:linear-gradient(160deg,rgba(16,185,129,.07),rgba(16,185,129,.02));
+  border-color:rgba(16,129,90,.15);
+  box-shadow:0 20px 60px rgba(16,129,90,.10);
+}
+body.theme-eid input{border-color:rgba(16,129,90,.18);background:rgba(16,185,129,.05);color:#0B3B2E;}
+body.theme-eid input::placeholder{color:rgba(11,59,46,.4);}
+body.theme-eid .logo-mark{box-shadow:0 4px 14px rgba(16,185,129,.35);}
+body.theme-eid .badge-pill{background:rgba(16,185,129,.13);border-color:rgba(16,185,129,.3);}
+body.theme-eid .btn-gold{box-shadow:0 8px 22px rgba(16,185,129,.28);}
+body.theme-eid .opt{background:rgba(16,185,129,.04);border-color:rgba(16,129,90,.16);}
+body.theme-eid .opt-letter{background:rgba(16,129,90,.09);}
+body.theme-eid .opt.selected{background:rgba(16,185,129,.13);}
+body.theme-eid .q-num,body.theme-eid .th-qcount{background:rgba(16,129,90,.08);}
+body.theme-eid .timer-ring .bg{stroke:rgba(16,129,90,.14);}
+body.theme-eid .pdot{background:rgba(16,129,90,.18);}
+body.theme-eid .pdot.now{box-shadow:0 0 0 3px rgba(16,185,129,.25);}
+body.theme-eid .lb-row{background:rgba(16,185,129,.04);border-color:rgba(16,129,90,.13);}
+body.theme-eid .lb-row.me{background:rgba(16,185,129,.09);}
+body.theme-eid .lb-row.first{background:linear-gradient(90deg,rgba(16,185,129,.16),rgba(16,185,129,.05));box-shadow:0 4px 16px rgba(16,185,129,.15);}
+body.theme-eid .round-badge{background:rgba(16,185,129,.15);}
+body.theme-eid .tie-ring{background:conic-gradient(var(--gold) 0deg,rgba(16,129,90,.10) 0deg);}
+body.theme-eid #tieBanner{background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(16,185,129,.04)) !important;border-color:rgba(16,185,129,.35) !important;}
+body.theme-eid #tieBannerMsg{color:rgba(11,59,46,.75) !important;}
+body.theme-eid .top-header{background:rgba(255,255,255,.85);border-bottom-color:rgba(16,129,90,.10);}
+body.theme-eid .th-logo{box-shadow:0 3px 10px rgba(16,185,129,.25);}
+body.theme-eid .bg-grid{background-image:linear-gradient(rgba(16,185,129,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.05) 1px,transparent 1px);}
+body.theme-eid .bg-glow-1{background:radial-gradient(circle,rgba(16,185,129,.16) 0%,transparent 70%);}
+body.theme-eid .bg-glow-2{background:radial-gradient(circle,rgba(52,211,153,.16) 0%,transparent 70%);}
+body.theme-eid .spinner{border-color:rgba(16,129,90,.15);}
+body.theme-eid .live-scoreboard{background:rgba(16,185,129,.05);}
+body.theme-eid .live-player-row{border-bottom-color:rgba(16,129,90,.08);}
+body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
 </style>
 </head>
 <body>
@@ -174,6 +237,7 @@ input::placeholder{color:rgba(255,255,255,.32);}
 
   <!-- NAME ENTRY -->
   <div id="nameScreen" class="card hidden">
+    <img class="cover-img hidden" alt="">
     <div class="badge-pill">🏆 Live Competition</div>
     <h1 id="compTitleName"></h1>
     <p class="sub" id="compDescName"></p>
@@ -184,10 +248,11 @@ input::placeholder{color:rgba(255,255,255,.32);}
 
   <!-- WAITING ROOM -->
   <div id="waitingScreen" class="card hidden">
+    <img class="cover-img hidden" alt="">
     <div class="badge-pill">🏆 Live Competition</div>
     <h1 id="compTitleWait"></h1>
     <p class="sub">Sit tight — the first question will appear automatically for everyone at the same moment.</p>
-    <div class="wr-ring"><div class="wr-count" id="wrCountdown">--:--</div></div>
+    <div class="wr-ring" id="wrRing"><div class="wr-count" id="wrCountdown">--:--</div></div>
     <div class="wr-players">✅ You're in — get ready!</div>
   </div>
 
@@ -267,6 +332,7 @@ let answeredThisQ = false;
 let currentQIndex = -1;
 let currentPhase = null; // 'waiting' | 'question' | 'gap' | 'ended'
 let tickHandle = null;
+let waitRefStart = null;
 
 function safeHTML(text){
   if(text===undefined||text===null) return '';
@@ -308,6 +374,11 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     if(!comp || !comp.title){ showError('Competition Not Found','This link is invalid or the competition has been removed.'); return; }
   }catch(e){ showError('Load Error','Could not load the competition. Please check your internet connection.'); return; }
 
+  if(comp.theme === 'eid') document.body.classList.add('theme-eid');
+  if(comp.coverImage){
+    document.querySelectorAll('.cover-img').forEach(img=>{ img.src = comp.coverImage; img.classList.remove('hidden'); });
+  }
+
   answers = new Array((comp.questions||[]).length).fill(null);
   document.getElementById('compTitleName').textContent = comp.title;
   document.getElementById('compDescName').textContent = comp.description || 'Everyone gets the same question at the same time — stay ready!';
@@ -333,6 +404,7 @@ function joinCompetition(){
   if(!name){ document.getElementById('inName').style.borderColor='var(--red)'; return; }
   studentName = name;
   studentPhone = document.getElementById('inPhone').value.trim();
+  waitRefStart = serverNow();
   studentKey = hashKey(name.toLowerCase()+'|'+studentPhone);
   localStorage.setItem('comp_'+compId+'_key', studentKey);
   showScreen('waitingScreen');
@@ -364,8 +436,9 @@ function tick(){
   if(now < s.start){
     currentPhase = 'waiting';
     if(document.getElementById('waitingScreen').classList.contains('hidden')) showScreen('waitingScreen');
+    if(waitRefStart===null || waitRefStart>=s.start) waitRefStart = now;
     const remain = Math.max(0, s.start - now);
-    updateWaitingRing(remain);
+    updateWaitingRing(remain, s.start - waitRefStart);
     return;
   }
 
@@ -413,8 +486,15 @@ function fmtCountdown(ms){
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
-function updateWaitingRing(remainMs){
+function updateWaitingRing(remainMs, totalMs){
   document.getElementById('wrCountdown').textContent = fmtCountdown(remainMs);
+  const ring = document.getElementById('wrRing');
+  if(!ring) return;
+  const pct = totalMs>0 ? Math.min(1, Math.max(0, 1 - remainMs/totalMs)) : 0;
+  const deg = pct*360;
+  const urgent = remainMs <= 10000;
+  ring.style.background = `conic-gradient(${urgent?'var(--red)':'var(--gold)'} ${deg}deg, rgba(255,255,255,.06) ${deg}deg)`;
+  ring.classList.toggle('urgent', urgent);
 }
 
 function updateRing(remainMs, totalMs){

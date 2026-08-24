@@ -629,6 +629,15 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
           </div>
           <div class="fi"><label>Description (optional)</label><textarea id="compDesc" rows="2" placeholder="Students ke liye short description..."></textarea></div>
           <div class="form-row">
+            <div class="fi"><label>Cover Image URL (optional)</label><input type="text" id="compCoverUrl" placeholder="https://... (image link)"></div>
+            <div class="fi"><label>Theme</label>
+              <select id="compTheme" style="width:100%;padding:.65rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0F1E35;color:#fff;font-size:.85rem;font-family:var(--font-b);">
+                <option value="default">Default (Navy &amp; Gold)</option>
+                <option value="eid">Special — White &amp; Green (Eid etc.)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
             <div class="fi"><label>Time Per Question (seconds)</label><input type="number" id="compPerQ" min="3" max="120" value="10"></div>
             <div class="fi"><label>Gap Between Questions (seconds)</label><input type="number" id="compGap" min="1" max="60" value="5"></div>
           </div>
@@ -683,7 +692,40 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
               </div>
               <div class="fi"><label>Message — Tied students ke liye (jo Round 2 khelenge)</label><textarea id="compR2MsgTied" rows="2" placeholder="e.g. Aap #1 ke liye tie hain! Tiebreaker round me hissa lein."></textarea></div>
               <div class="fi"><label>Message — Baaki students ke liye (jo sirf dekhenge)</label><textarea id="compR2MsgSpectator" rows="2" placeholder="e.g. Top scorers ke beech tiebreaker chal raha hai — live dekhein!"></textarea></div>
-              <div class="card-title" style="margin-top:1rem;">Round 2 Questions (MCQ only)</div>
+              <div class="card-title" style="margin-top:1rem;display:flex;align-items:center;justify-content:space-between;">
+                Round 2 Questions (MCQ only)
+                <button class="btn btn-sm" style="background:rgba(245,184,0,.15);border:1px solid rgba(245,184,0,.3);color:var(--gold);" onclick="toggleComp2Bulk()">📋 Bulk Paste</button>
+              </div>
+              <div id="comp2BulkSection" style="display:none;background:rgba(245,184,0,.05);border:1px solid rgba(245,184,0,.15);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+                  <h4 style="font-size:.85rem;font-weight:700;color:var(--gold);">📋 Bulk MCQ Paste — jitni marzi ek saath!</h4>
+                  <button onclick="toggleComp2Bulk()" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:1rem;">✕</button>
+                </div>
+                <div style="background:#060E1A;border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:1rem;margin-bottom:1rem;font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.9;">
+                  <b style="color:var(--gold);display:block;margin-bottom:.4rem;">📌 Yeh format use karo — * correct answer par lagao (har question ki 4 options honi chahiye):</b>
+                  Q: What is powerhouse of cell?<br>
+                  A. Nucleus<br>
+                  B. Mitochondria*<br>
+                  C. Ribosome<br>
+                  D. Golgi Apparatus<br><br>
+                  Q: DNA stands for?<br>
+                  A. Deoxyribonucleic Acid*<br>
+                  B. Double Nucleic Acid<br>
+                  C. Diribonucleic Acid<br>
+                  D. None<br><br>
+                  <span style="color:rgba(16,185,129,.8);">✅ Har question ke baad ek blank line zaroor honi chahiye</span>
+                </div>
+                <div class="fi">
+                  <label>Apne MCQs yahan paste karein</label>
+                  <textarea id="comp2BulkText" rows="10" placeholder="Q: Question text?&#10;A. Option A*&#10;B. Option B&#10;C. Option C&#10;D. Option D&#10;&#10;Q: Next question?&#10;A. Option A&#10;B. Option B*&#10;..."></textarea>
+                </div>
+                <div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;margin-top:.75rem;">
+                  <button class="btn btn-gold" onclick="parseComp2Bulk()">⚡ Add All Questions</button>
+                  <button class="btn btn-outline btn-sm" onclick="document.getElementById('comp2BulkText').value='';document.getElementById('comp2BulkCount').textContent=''">Clear</button>
+                  <span id="comp2BulkCount" style="font-size:.75rem;color:rgba(255,255,255,.4);"></span>
+                </div>
+                <div id="comp2BulkError" style="font-size:.75rem;color:var(--red);margin-top:.5rem;display:none;"></div>
+              </div>
               <div id="comp2QContainer"></div>
               <button class="btn btn-outline btn-sm" onclick="addComp2Q()">➕ Add Round 2 Question</button>
             </div>
@@ -1566,9 +1608,63 @@ function addComp2Q() {
 function renumberComp2Q() {
   document.querySelectorAll('#comp2QContainer .q-item .q-badge').forEach((b,i)=>b.textContent='R2-Q'+(i+1));
 }
+function toggleComp2Bulk() {
+  const s = document.getElementById('comp2BulkSection');
+  s.style.display = s.style.display === 'none' ? 'block' : 'none';
+}
+function parseComp2Bulk() {
+  const raw = document.getElementById('comp2BulkText').value.trim();
+  const errEl = document.getElementById('comp2BulkError');
+  const countEl = document.getElementById('comp2BulkCount');
+  errEl.style.display = 'none';
+  if (!raw) { errEl.textContent = 'Kuch nahi likha!'; errEl.style.display='block'; return; }
+  const blocks = raw.split(/\n\s*\n/).filter(b=>b.trim());
+  if (!blocks.length) { errEl.textContent='Format galat hai.'; errEl.style.display='block'; return; }
+  const container = document.getElementById('comp2QContainer');
+  let added=0, errors=0;
+  blocks.forEach((block,idx)=>{
+    const lines=block.trim().split('\n').map(l=>l.trim()).filter(l=>l);
+    if(lines.length<3){errors++;return;}
+    const qText=lines[0].replace(/^Q\s*[:\.]\s*/i,'').trim();
+    if(!qText){errors++;return;}
+    let options=[]; let correctIdx=-1;
+    lines.slice(1).forEach((line,i)=>{
+      if(i>=4) return;
+      const cleaned=line.replace(/^[A-Za-z]\s*[\.)\s]\s*/,'').trim();
+      if(cleaned.endsWith('*')){options.push(cleaned.slice(0,-1).trim());correctIdx=i;}
+      else options.push(cleaned);
+    });
+    if(options.length<2){errors++;return;}
+    while(options.length<4) options.push('');
+    if(correctIdx===-1)correctIdx=0;
+    const id='c2q_'+Date.now()+'_'+idx;
+    const div=document.createElement('div');
+    div.className='q-item'; div.id=id;
+    div.innerHTML=`
+      <div class="q-item-head"><span class="q-badge">R2-Q${container.children.length+1}</span><button class="q-del" onclick="this.closest('.q-item').remove();renumberComp2Q()">🗑</button></div>
+      <div class="fi"><label>Question</label><textarea rows="2" data-cqtext>${qText}</textarea></div>
+      <div class="opts-wrap">
+        <label style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.3);display:block;margin-bottom:.4rem;">Options — Correct ◉</label>
+        ${[0,1,2,3].map(i=>`<div class="opt-row"><input type="radio" name="cor_${id}" value="${i}" class="opt-radio" ${i===correctIdx?'checked':''}><span class="opt-lbl">${String.fromCharCode(65+i)}.</span><input type="text" value="${(options[i]||'').replace(/"/g,'&quot;')}" placeholder="Option ${String.fromCharCode(65+i)}" data-copt="${i}"></div>`).join('')}
+      </div>`;
+    container.appendChild(div);
+    added++;
+  });
+  countEl.textContent=`✅ ${added} add hue${errors?` | ⚠️ ${errors} skip`:''}`;
+  if(added>0){
+    document.getElementById('comp2BulkSection').style.display='none';
+    document.getElementById('comp2BulkText').value='';
+    showToast('✅ '+added+' Round 2 MCQs add ho gaye!','success');
+  } else {
+    errEl.textContent='Koi question add nahi hua. Format check karein.';
+    errEl.style.display='block';
+  }
+}
 function resetCompForm() {
   document.getElementById('compTitle').value='';
   document.getElementById('compDesc').value='';
+  document.getElementById('compCoverUrl').value='';
+  document.getElementById('compTheme').value='default';
   document.getElementById('compStart').value='';
   document.getElementById('compPerQ').value='10';
   document.getElementById('compGap').value='5';
@@ -1641,6 +1737,8 @@ async function saveCompetition() {
 
   const compData = {
     title, description: document.getElementById('compDesc').value.trim(),
+    coverImage: document.getElementById('compCoverUrl').value.trim() || null,
+    theme: document.getElementById('compTheme').value || 'default',
     startTime, perQuestionTime: perQ, gapTime: gap,
     questions, revealAt, createdAt: Date.now(), createdBy: currentUser.email
   };
@@ -1731,6 +1829,13 @@ async function editCompPrompt(id) {
       <input id="_ecTitle" value="${esc(c.title)}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Description</div>
       <textarea id="_ecDesc" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(c.description)}</textarea>
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Cover Image URL (optional)</div>
+      <input id="_ecCover" value="${esc(c.coverImage)}" placeholder="https://... (image link)" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Theme</div>
+      <select id="_ecTheme" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
+        <option value="default" ${c.theme!=='eid'?'selected':''}>Default (Navy &amp; Gold)</option>
+        <option value="eid" ${c.theme==='eid'?'selected':''}>Special — White &amp; Green (Eid etc.)</option>
+      </select>
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Start Date &amp; Time</div>
       <input id="_ecStart" type="datetime-local" value="${startLocal}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
       <div style="display:flex;gap:.6rem;margin-bottom:1rem;">
@@ -1759,6 +1864,8 @@ async function saveEditComp(id) {
   const updates = {
     title,
     description: document.getElementById('_ecDesc').value.trim(),
+    coverImage: document.getElementById('_ecCover').value.trim() || null,
+    theme: document.getElementById('_ecTheme').value || 'default',
     startTime: new Date(startVal).getTime(),
     perQuestionTime: parseInt(document.getElementById('_ecPerQ').value)||10,
     gapTime: parseInt(document.getElementById('_ecGap').value)||5
