@@ -157,7 +157,7 @@ body{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-tou
 input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text;-webkit-touch-callout:default;}
 
 /* ── OPTIONAL COVER IMAGE (per-competition) ── */
-.cover-img{width:100%;height:150px;object-fit:contain;border-radius:16px;margin-bottom:1.1rem;background:rgba(255,255,255,.03);animation:coverPulseRed 2.4s ease-in-out infinite;}
+.cover-img{width:100%;aspect-ratio:2.4/1;max-height:220px;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:16px;margin-bottom:1.1rem;pointer-events:none;-webkit-touch-callout:none;background-color:rgba(255,255,255,.03);animation:coverPulseRed 2.4s ease-in-out infinite;}
 @keyframes coverPulseRed{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4);}50%{box-shadow:0 0 0 9px rgba(239,68,68,0);}}
 
 /* ══════════════════════════════════════════════
@@ -242,7 +242,7 @@ body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
 
   <!-- NAME ENTRY -->
   <div id="nameScreen" class="card hidden">
-    <img class="cover-img hidden" alt="">
+    <div class="cover-img hidden"></div>
     <div class="badge-pill">🏆 Live Competition</div>
     <h1 id="compTitleName"></h1>
     <p class="sub" id="compDescName"></p>
@@ -253,7 +253,7 @@ body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
 
   <!-- WAITING ROOM -->
   <div id="waitingScreen" class="card hidden">
-    <img class="cover-img hidden" alt="">
+    <div class="cover-img hidden"></div>
     <div class="badge-pill">🏆 Live Competition</div>
     <h1 id="compTitleWait"></h1>
     <p class="sub">Sit tight — the first question will appear automatically for everyone at the same moment.</p>
@@ -290,7 +290,7 @@ body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
 
   <!-- RESULT SCREEN -->
   <div id="resultScreen" class="card hidden">
-    <img class="cover-img hidden" alt="">
+    <div class="cover-img hidden"></div>
     <div class="rs-trophy">🏁</div>
     <div class="badge-pill">Competition Finished</div>
     <h1 id="compTitleResult"></h1>
@@ -382,7 +382,16 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 
   if(comp.theme === 'eid') document.body.classList.add('theme-eid');
   if(comp.coverImage){
-    document.querySelectorAll('.cover-img').forEach(img=>{ img.src = comp.coverImage; img.classList.remove('hidden'); });
+    (function(){
+      const els = document.querySelectorAll('.cover-img');
+      els.forEach(el=>{ el.style.backgroundImage = `url("${comp.coverImage}")`; el.classList.remove('hidden'); });
+      const probe = new Image();
+      probe.onload = () => {
+        const ratio = probe.naturalWidth + '/' + probe.naturalHeight;
+        els.forEach(el=>{ el.style.aspectRatio = ratio; });
+      };
+      probe.src = comp.coverImage;
+    })();
   }
 
   answers = new Array((comp.questions||[]).length).fill(null);
