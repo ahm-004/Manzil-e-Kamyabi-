@@ -62,6 +62,8 @@ input::placeholder{color:rgba(255,255,255,.32);}
 @keyframes wrBreathe{0%,100%{box-shadow:0 0 0 0 rgba(245,184,0,.28);}50%{box-shadow:0 0 0 14px rgba(245,184,0,0);}}
 @keyframes wrBreatheGreen{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.28);}50%{box-shadow:0 0 0 14px rgba(16,185,129,0);}}
 @keyframes wrBreatheUrgent{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35);}50%{box-shadow:0 0 0 16px rgba(239,68,68,0);}}
+#lateRound2Btn{background:linear-gradient(135deg,#EF4444,#DC2626);color:#fff;animation:latePulse 1.6s ease-in-out infinite;}
+@keyframes latePulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5);}50%{box-shadow:0 0 0 12px rgba(239,68,68,0);}}
 .wr-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:var(--navy2);}
 .wr-count{position:relative;z-index:1;font-family:var(--font-d);font-size:1.5rem;font-weight:800;color:var(--gold);transition:color .3s;}
 .wr-ring.urgent .wr-count{color:var(--red);}
@@ -288,6 +290,16 @@ body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
     <p class="sub" id="gapProgress"></p>
   </div>
 
+  <!-- LATE JOIN SCREEN (competition already over, joined too late) -->
+  <div id="lateScreen" class="card hidden">
+    <div class="cover-img hidden"></div>
+    <div class="rs-trophy">⏰</div>
+    <div class="badge-pill">Competition Ended</div>
+    <h1 id="compTitleLate"></h1>
+    <p class="sub" id="lateMsg" style="margin-top:.5rem;"></p>
+    <button id="lateRound2Btn" class="btn btn-gold hidden" style="margin-top:1.3rem;">🔴 Join Round 2</button>
+  </div>
+
   <!-- RESULT SCREEN -->
   <div id="resultScreen" class="card hidden">
     <div class="cover-img hidden"></div>
@@ -299,14 +311,19 @@ body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
     <div class="lb-heading">🏆 Top Scorers</div>
     <div id="rsLeaderboard" style="text-align:left;"></div>
     <div id="tieBanner" class="hidden" style="margin-top:1.3rem;padding:1.1rem;border-radius:14px;background:linear-gradient(135deg,rgba(245,184,0,.14),rgba(245,184,0,.04));border:1.5px solid rgba(245,184,0,.35);text-align:left;">
-      <div class="tie-banner-row">
-        <div class="tie-ring" id="tieRing"><div class="tie-ring-inner" id="tieBannerCountdown">--:--</div></div>
-        <div>
-          <div style="font-weight:800;color:var(--gold);font-size:.9rem;margin-bottom:.3rem;" id="tieBannerTitle">🏆 Tiebreaker Round</div>
-          <p style="font-size:.82rem;color:rgba(255,255,255,.8);line-height:1.55;margin:0;" id="tieBannerMsg"></p>
-        </div>
-      </div>
+      <div style="font-weight:800;color:var(--gold);font-size:.9rem;margin-bottom:.4rem;" id="tieBannerTitle">🏆 Tiebreaker Round</div>
+      <p style="font-size:.82rem;color:rgba(255,255,255,.8);line-height:1.55;margin:0 0 .9rem;" id="tieBannerMsg"></p>
+      <button id="joinRound2Btn" class="btn btn-gold" style="width:100%;">🔴 Join Round 2</button>
     </div>
+  </div>
+
+  <!-- ROUND 2 WAITING ROOM -->
+  <div id="round2WaitScreen" class="card hidden">
+    <div class="cover-img hidden"></div>
+    <div class="badge-pill" id="r2WaitBadge">🏆 Round 2 — Tiebreaker</div>
+    <h1 id="compTitleR2Wait"></h1>
+    <p class="sub" id="r2WaitMsg">Sit tight — Round 2 will begin shortly.</p>
+    <div class="wr-ring" id="r2WaitRing"><div class="wr-count" id="r2WaitCountdown">--:--</div></div>
   </div>
 
 </div>
@@ -350,7 +367,7 @@ function hashKey(str){
   return 'u'+Math.abs(h).toString(36);
 }
 function showScreen(id){
-  ['loadingScreen','errorScreen','nameScreen','waitingScreen','questionScreen','gapScreen','resultScreen'].forEach(s=>{
+  ['loadingScreen','errorScreen','nameScreen','waitingScreen','questionScreen','gapScreen','resultScreen','lateScreen','round2WaitScreen'].forEach(s=>{
     document.getElementById(s).classList.toggle('hidden', s!==id);
   });
 }
@@ -414,13 +431,25 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   showScreen('nameScreen');
 });
 
-function joinCompetition(){
+async function joinCompetition(){
   const name = document.getElementById('inName').value.trim();
   if(!name){ document.getElementById('inName').style.borderColor='var(--red)'; return; }
   studentName = name;
   studentPhone = document.getElementById('inPhone').value.trim();
+  const key = hashKey(name.toLowerCase()+'|'+studentPhone);
+
+  // Same name+phone already has a Round 1 result (different device / cleared browser) —
+  // show their existing result instead of risking an overwrite.
+  const existing = await db.ref('compResults/'+compId+'/'+key).once('value');
+  if(existing.exists()){
+    studentKey = key;
+    localStorage.setItem('comp_'+compId+'_key', key);
+    renderFinalResult(existing.val());
+    return;
+  }
+
   waitRefStart = serverNow();
-  studentKey = hashKey(name.toLowerCase()+'|'+studentPhone);
+  studentKey = key;
   localStorage.setItem('comp_'+compId+'_key', studentKey);
   showScreen('waitingScreen');
   startClock();
@@ -465,7 +494,8 @@ function tick(){
     if(currentPhase !== 'ended'){
       currentPhase = 'ended';
       clearInterval(tickHandle);
-      finishCompetition();
+      if(currentQIndex === -1) showLateJoinScreen();
+      else finishCompetition();
     }
     return;
   }
@@ -501,9 +531,10 @@ function fmtCountdown(ms){
   return `${m}:${String(sec).padStart(2,'0')}`;
 }
 
-function updateWaitingRing(remainMs, totalMs){
-  document.getElementById('wrCountdown').textContent = fmtCountdown(remainMs);
-  const ring = document.getElementById('wrRing');
+function updateWaitingRing(remainMs, totalMs, ringId, countId){
+  ringId = ringId || 'wrRing'; countId = countId || 'wrCountdown';
+  document.getElementById(countId).textContent = fmtCountdown(remainMs);
+  const ring = document.getElementById(ringId);
   if(!ring) return;
   const pct = totalMs>0 ? Math.min(1, Math.max(0, 1 - remainMs/totalMs)) : 0;
   const deg = pct*360;
@@ -572,6 +603,50 @@ function renderGap(justFinishedIdx, qCount){
 // ════════════════════════════════════════
 // FINISH & SUBMIT
 // ════════════════════════════════════════
+function showLateJoinScreen(){
+  showScreen('lateScreen');
+  document.getElementById('compTitleLate').textContent = comp.title;
+  document.getElementById('lateMsg').textContent = comp.endedMessage || 'This competition has already ended. Thanks for your interest!';
+
+  const btn = document.getElementById('lateRound2Btn');
+  const r2 = comp.round2;
+  let showBtn = false;
+  if(r2?.enabled){
+    const perQ=(r2.perQuestionTime||10)*1000, gap=(r2.gapTime||5)*1000, qCount=(r2.questions||[]).length;
+    const r2End = (r2.startTime||0) + qCount*(perQ+gap);
+    showBtn = qCount>0 && serverNow() < r2End;
+  }
+  if(showBtn){
+    round2Mode = 'spectator'; // a late joiner never has a real Round 1 score, so can never be tied
+    round2Answers = new Array((comp.round2.questions||[]).length).fill(null);
+    btn.classList.remove('hidden');
+    btn.onclick = joinRound2;
+  } else {
+    btn.classList.add('hidden');
+  }
+}
+
+// Shared by BOTH paths — a real Round 1 finisher (tied/spectator) and a late joiner
+// (always spectator) — round2Mode is already set by whichever screen led here.
+function joinRound2(){
+  if(round2Mode==='tied'){
+    db.ref('competitionLive/'+compId+'/'+studentKey).set({name: studentName||'Anonymous', liveScore:0, liveAnswered:0}).catch(()=>{});
+  } else {
+    startLiveScoreboard();
+  }
+
+  showScreen('round2WaitScreen');
+  document.getElementById('compTitleR2Wait').textContent = comp.title;
+  document.getElementById('r2WaitBadge').textContent = round2Mode==='tied' ? "🏆 You're in the Tiebreaker!" : '👀 Watching as a Spectator';
+  document.getElementById('r2WaitMsg').textContent = round2Mode==='tied'
+    ? (comp.round2.msgTied || 'Get ready — Round 2 starts soon!')
+    : (comp.round2.msgSpectator || "You're watching Round 2 live — you cannot answer.");
+
+  if(round2TickHandle) clearInterval(round2TickHandle);
+  round2TickHandle = setInterval(tick2, 150);
+  tick2();
+}
+
 async function finishCompetition(){
   showScreen('gapScreen');
   document.getElementById('gapTitle').textContent = 'Preparing Your Result';
@@ -652,19 +727,9 @@ function checkForTiebreaker(myResult, rows){
 
   const banner = document.getElementById('tieBanner');
   banner.classList.remove('hidden');
-  document.getElementById('tieBannerTitle').textContent = round2Mode==='tied' ? "🏆 You're in the Tiebreaker!" : '👀 Tiebreaker Round Ahead';
+  document.getElementById('tieBannerTitle').textContent = round2Mode==='tied' ? "🏆 You're in the Tiebreaker!" : '👀 Round 2 is a Tiebreaker';
   document.getElementById('tieBannerMsg').textContent = round2Mode==='tied' ? comp.round2.msgTied : comp.round2.msgSpectator;
-
-  if(round2Mode==='tied'){
-    // Register presence so spectators can see this player's name + live score
-    db.ref('competitionLive/'+compId+'/'+studentKey).set({name: studentName||'Anonymous', liveScore:0, liveAnswered:0}).catch(()=>{});
-  } else {
-    startLiveScoreboard();
-  }
-
-  if(round2TickHandle) clearInterval(round2TickHandle);
-  round2TickHandle = setInterval(tick2, 150);
-  tick2();
+  document.getElementById('joinRound2Btn').onclick = joinRound2;
 }
 
 function startLiveScoreboard(){
@@ -726,13 +791,7 @@ function tick2(){
   if(now < r2.startTime){
     if(tieWaitTotal===null) tieWaitTotal = r2.startTime - now;
     const remain = Math.max(0, r2.startTime - now);
-    const el = document.getElementById('tieBannerCountdown');
-    if(el) el.textContent = fmtCountdown(remain);
-    const ring = document.getElementById('tieRing');
-    if(ring && tieWaitTotal>0){
-      const pct = Math.max(0, Math.min(1, 1 - remain/tieWaitTotal));
-      ring.style.background = `conic-gradient(var(--gold) ${pct*360}deg, rgba(255,255,255,.08) 0deg)`;
-    }
+    updateWaitingRing(remain, tieWaitTotal, 'r2WaitRing', 'r2WaitCountdown');
     return;
   }
 

@@ -638,6 +638,7 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
             <div class="fi"><label>Start Date &amp; Time *</label><input type="datetime-local" id="compStart"></div>
           </div>
           <div class="fi"><label>Description (optional)</label><textarea id="compDesc" rows="2" placeholder="Students ke liye short description..."></textarea></div>
+          <div class="fi"><label>Message for Late Joiners (optional)</label><textarea id="compEndedMsg" rows="2" placeholder="e.g. This competition has already ended. Thanks for your interest!"></textarea></div>
           <div class="form-row">
             <div class="fi"><label>Cover Image URL (optional)</label>
               <input type="text" id="compCoverUrl" placeholder="https://... (image link)">
@@ -1689,6 +1690,7 @@ function parseComp2Bulk() {
 function resetCompForm() {
   document.getElementById('compTitle').value='';
   document.getElementById('compDesc').value='';
+  document.getElementById('compEndedMsg').value='';
   document.getElementById('compCoverUrl').value='';
   document.getElementById('compTheme').value='default';
   document.getElementById('compStart').value='';
@@ -1763,6 +1765,7 @@ async function saveCompetition() {
 
   const compData = {
     title, description: document.getElementById('compDesc').value.trim(),
+    endedMessage: document.getElementById('compEndedMsg').value.trim() || null,
     coverImage: document.getElementById('compCoverUrl').value.trim() || null,
     theme: document.getElementById('compTheme').value || 'default',
     startTime, perQuestionTime: perQ, gapTime: gap,
@@ -1855,6 +1858,8 @@ async function editCompPrompt(id) {
       <input id="_ecTitle" value="${esc(c.title)}" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;">
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Description</div>
       <textarea id="_ecDesc" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(c.description)}</textarea>
+      <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Message for Late Joiners (optional)</div>
+      <textarea id="_ecEndedMsg" rows="2" placeholder="e.g. This competition has already ended. Thanks for your interest!" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(c.endedMessage)}</textarea>
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Cover Image URL (optional)</div>
       <input id="_ecCover" value="${esc(c.coverImage)}" placeholder="https://... (image link)" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;">
       <div style="display:flex;align-items:center;gap:.6rem;margin:.5rem 0 .75rem;flex-wrap:wrap;">
@@ -1897,6 +1902,7 @@ async function saveEditComp(id) {
   const updates = {
     title,
     description: document.getElementById('_ecDesc').value.trim(),
+    endedMessage: document.getElementById('_ecEndedMsg').value.trim() || null,
     coverImage: document.getElementById('_ecCover').value.trim() || null,
     theme: document.getElementById('_ecTheme').value || 'default',
     startTime: new Date(startVal).getTime(),
