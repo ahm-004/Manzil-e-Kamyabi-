@@ -603,27 +603,36 @@ function renderGap(justFinishedIdx, qCount){
 // ════════════════════════════════════════
 // FINISH & SUBMIT
 // ════════════════════════════════════════
-function showLateJoinScreen(){
+async function showLateJoinScreen(){
   showScreen('lateScreen');
   document.getElementById('compTitleLate').textContent = comp.title;
   document.getElementById('lateMsg').textContent = comp.endedMessage || 'This competition has already ended. Thanks for your interest!';
 
   const btn = document.getElementById('lateRound2Btn');
+  btn.classList.add('hidden');
   const r2 = comp.round2;
-  let showBtn = false;
-  if(r2?.enabled){
-    const perQ=(r2.perQuestionTime||10)*1000, gap=(r2.gapTime||5)*1000, qCount=(r2.questions||[]).length;
-    const r2End = (r2.startTime||0) + qCount*(perQ+gap);
-    showBtn = qCount>0 && serverNow() < r2End;
-  }
-  if(showBtn){
-    round2Mode = 'spectator'; // a late joiner never has a real Round 1 score, so can never be tied
-    round2Answers = new Array((comp.round2.questions||[]).length).fill(null);
-    btn.classList.remove('hidden');
-    btn.onclick = joinRound2;
-  } else {
-    btn.classList.add('hidden');
-  }
+  if(!r2?.enabled) return;
+
+  const perQ=(r2.perQuestionTime||10)*1000, gap=(r2.gapTime||5)*1000, qCount=(r2.questions||[]).length;
+  const r2End = (r2.startTime||0) + qCount*(perQ+gap);
+  if(qCount===0 || serverNow() >= r2End) return;
+
+  // Only show the button if Round 1 finishers actually have a real tie for 1st —
+  // otherwise there's nothing live to watch.
+  try{
+    const snap = await db.ref('compResults/'+compId).once('value');
+    const data = snap.val() || {};
+    const scores = Object.values(data).map(r=>r.score);
+    if(!scores.length) return;
+    const maxScore = Math.max(...scores);
+    const tiedCount = scores.filter(s=>s===maxScore).length;
+    if(tiedCount < 2) return;
+  }catch(e){ return; }
+
+  round2Mode = 'spectator'; // a late joiner never has a real Round 1 score, so can never be tied
+  round2Answers = new Array((r2.questions||[]).length).fill(null);
+  btn.classList.remove('hidden');
+  btn.onclick = joinRound2;
 }
 
 // Shared by BOTH paths — a real Round 1 finisher (tied/spectator) and a late joiner
