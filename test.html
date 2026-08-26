@@ -1058,7 +1058,7 @@ async function submitTest() {
   }
 
   if (!saved) {
-    showToast('⚠️ Couldn't save your result. Check your internet and try again.');
+    showToast('⚠️ Could not save your result. Check your internet and try again.');
     document.querySelectorAll('.submit-btn-panel, #nextBtn').forEach(b=>{ if(b) b.disabled = false; });
     isSubmitting = false;
     return;

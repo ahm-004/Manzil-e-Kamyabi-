@@ -102,10 +102,16 @@ input::placeholder{color:rgba(255,255,255,.32);}
 /* ── RESULT ── */
 .rs-trophy{font-size:2.6rem;margin-bottom:.3rem;}
 .rs-score{font-family:var(--font-d);font-size:2.9rem;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;margin:.5rem 0 .2rem;}
+
+/* ── ROUND 2 WINNER CIRCLE ── */
+.r2-winner-name{font-family:var(--font-d);font-weight:800;font-size:1.05rem;color:var(--gold);margin:.6rem 0 .3rem;}
+.r2-winner-circle{width:112px;height:112px;border-radius:50%;margin:0 auto 1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid var(--gold);background:rgba(245,184,0,.08);box-shadow:0 8px 24px rgba(245,184,0,.18);}
+.r2wc-num{font-family:var(--font-d);font-size:1.75rem;font-weight:900;background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;}
+.r2wc-den{font-size:.7rem;color:var(--muted);margin-top:.15rem;}
 .rs-sub{color:var(--muted);font-size:.87rem;margin-bottom:1.7rem;font-weight:600;}
 .lb-heading{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.7rem;text-align:left;}
 .lb-row{display:grid;grid-template-columns:32px 1fr 60px;gap:.6rem;align-items:center;padding:.75rem .85rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;margin-bottom:.45rem;text-align:left;}
-.lb-row.me{border-color:var(--gold);background:rgba(245,184,0,.09);}
+.lb-row.me{border-color:#60A5FA;background:rgba(96,165,250,.10);}
 .lb-row.first{border-color:var(--gold);background:linear-gradient(90deg,rgba(245,184,0,.16),rgba(245,184,0,.05));box-shadow:0 4px 16px rgba(245,184,0,.15);}
 .lb-row.first .lb-nm{color:var(--gold);font-weight:800;font-size:.92rem;}
 
@@ -197,7 +203,7 @@ body.theme-eid .timer-ring .bg{stroke:rgba(16,129,90,.14);}
 body.theme-eid .pdot{background:rgba(16,129,90,.18);}
 body.theme-eid .pdot.now{box-shadow:0 0 0 3px rgba(16,185,129,.25);}
 body.theme-eid .lb-row{background:rgba(16,185,129,.04);border-color:rgba(16,129,90,.13);}
-body.theme-eid .lb-row.me{background:rgba(16,185,129,.09);}
+body.theme-eid .lb-row.me{border-color:#2563EB;background:rgba(37,99,235,.09);}
 body.theme-eid .lb-row.first{background:linear-gradient(90deg,rgba(16,185,129,.16),rgba(16,185,129,.05));box-shadow:0 4px 16px rgba(16,185,129,.15);}
 body.theme-eid .round-badge{background:rgba(16,185,129,.15);}
 body.theme-eid .tie-ring{background:conic-gradient(var(--gold) 0deg,rgba(16,129,90,.10) 0deg);}
@@ -308,6 +314,10 @@ body.theme-eid .wr-ring{animation-name:wrBreatheGreen;}
     <h1 id="compTitleResult"></h1>
     <div class="rs-score" id="rsScore">0/30</div>
     <div class="rs-sub" id="rsRank">Calculating your result…</div>
+    <div id="r2WinnerBlock" class="hidden">
+      <div class="r2-winner-name" id="r2WinnerName"></div>
+      <div class="r2-winner-circle"><div class="r2wc-num" id="r2WinnerNum">0</div><div class="r2wc-den" id="r2WinnerDen">/0</div></div>
+    </div>
     <div class="lb-heading">🏆 Top Scorers</div>
     <div id="rsLeaderboard" style="text-align:left;"></div>
     <div id="tieBanner" class="hidden" style="margin-top:1.3rem;padding:1.1rem;border-radius:14px;background:linear-gradient(135deg,rgba(245,184,0,.14),rgba(245,184,0,.04));border:1.5px solid rgba(245,184,0,.35);text-align:left;">
@@ -924,16 +934,33 @@ async function finishRound2(){
 async function renderRound2Final(){
   showScreen('resultScreen');
   document.getElementById('tieBanner').classList.add('hidden');
+  // Round 2 screen shows the winner's score in a circle instead of "your score" text —
+  // everyone (tied + spectators) sees the same winner circle; own rank is picked out by color below.
+  document.getElementById('rsScore').classList.add('hidden');
+  const rsRankEl = document.getElementById('rsRank');
+  rsRankEl.classList.add('hidden');
+  const winnerBlock = document.getElementById('r2WinnerBlock');
   try{
     const snap = await db.ref('compResults2/'+compId).once('value');
     const data = snap.val()||{};
     let rows = Object.keys(data).map(k=>({...data[k],key:k}));
     rows.sort((a,b)=> b.score-a.score || (a.submittedAt||0)-(b.submittedAt||0));
     const winner = rows[0];
-    if(round2Mode==='tied' && data[studentKey]){
-      document.getElementById('rsScore').textContent = `${data[studentKey].score}/${comp.round2.questions.length}`;
+    if(winner){
+      document.getElementById('r2WinnerName').textContent = `🏆 ${winner.name}`;
+      document.getElementById('r2WinnerNum').textContent = winner.score;
+      document.getElementById('r2WinnerDen').textContent = `/ ${winner.total}`;
+      winnerBlock.classList.remove('hidden');
+    } else {
+      winnerBlock.classList.add('hidden');
     }
-    document.getElementById('rsRank').textContent = winner ? `🏆 Tiebreaker Winner: ${winner.name}` : 'Tiebreaker complete';
+    // Only non-top-10 tied/spectator players need this — top 10 already see
+    // themselves highlighted (blue row) in the leaderboard below.
+    const myRank2 = rows.findIndex(r=>r.key===studentKey)+1;
+    if(myRank2 > 10){
+      rsRankEl.textContent = `Your Rank: #${myRank2} of ${rows.length}`;
+      rsRankEl.classList.remove('hidden');
+    }
     document.getElementById('rsLeaderboard').innerHTML = rows.slice(0,10).map((r,i)=>`
       <div class="lb-row ${i===0?'first':''} ${r.key===studentKey?'me':''}">
         <div class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
