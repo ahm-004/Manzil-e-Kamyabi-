@@ -255,6 +255,19 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
   .result-btns{flex-direction:column;}
   .name-box{padding:1.75rem 1.25rem;}
 }
+/* ── REVIEW + SUBMIT FLOATING BAR ── */
+#reviewBar{position:fixed;bottom:0;left:0;right:0;z-index:1100;background:#0B1829;border-top:2px solid rgba(245,184,0,.35);padding:.75rem 1.25rem;display:none;align-items:center;justify-content:space-between;gap:.75rem;box-shadow:0 -4px 24px rgba(0,0,0,.45);flex-wrap:wrap;}
+#reviewBar.visible{display:flex;}
+.rb-left{display:flex;align-items:center;gap:.6rem;flex:1;min-width:0;}
+.rb-icon{font-size:1.2rem;flex-shrink:0;}
+.rb-text{font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.4;}
+.rb-text b{color:#fff;}
+.rb-all-done{color:#10B981!important;font-weight:700;}
+.rb-actions{display:flex;gap:.5rem;flex-shrink:0;align-items:center;}
+.rb-next-btn{background:rgba(245,184,0,.12);border:1px solid rgba(245,184,0,.3);color:#F5B800;padding:.48rem .9rem;border-radius:8px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.rb-submit-btn{background:#F5B800;border:none;color:#0B1829;padding:.48rem 1rem;border-radius:8px;font-size:.76rem;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.rb-close-btn{background:none;border:none;color:rgba(255,255,255,.3);font-size:1rem;cursor:pointer;padding:.2rem .4rem;border-radius:6px;flex-shrink:0;}
+.rb-close-btn:hover{color:rgba(255,255,255,.7);}
 </style>
 </head>
 <body>
@@ -774,9 +787,26 @@ function jumpToFirstFlagged() {
 }
 
 function jumpToFirstUnanswered() {
-  const idx = answers.findIndex(a => a===null||a===undefined||a==='');
-  if(idx === -1) { showToast('All questions answered! 🎉'); return; }
-  jumpTo(idx);
+  const all = [];
+  answers.forEach((a,i) => { if(a===null||a===undefined||a==='') all.push(i); });
+
+  // Show review bar always when this is clicked
+  showReviewBar();
+
+  if(all.length === 0) {
+    // All answered — update bar to show submit ready
+    updateReviewBar(0, 0);
+    showToast('✅ All questions answered! Ready to submit.');
+    return;
+  }
+
+  // Cyclic: find next unanswered AFTER current position
+  const next = all.find(i => i > currentQ);
+  const target = (next !== undefined) ? next : all[0];
+  jumpTo(target);
+
+  updateReviewBar(all.length, all.indexOf(target) + 1);
+
   const mg = document.getElementById('mobNavGrid');
   if(mg) mg.classList.remove('open');
 }
@@ -1404,6 +1434,56 @@ function launchConfetti(){
     </div>
   </div>
 </div>
+
+<!-- ════ REVIEW + SUBMIT FLOATING BAR ════ -->
+<div id="reviewBar">
+  <div class="rb-left">
+    <span class="rb-icon" id="rbIcon">⬜</span>
+    <div class="rb-text" id="rbText">Reviewing unanswered questions</div>
+  </div>
+  <div class="rb-actions">
+    <button class="rb-next-btn" id="rbNextBtn" onclick="jumpToFirstUnanswered()">Next Unanswered →</button>
+    <button class="rb-submit-btn" onclick="confirmSubmit()">Submit ✓</button>
+    <button class="rb-close-btn" onclick="hideReviewBar()" title="Close">✕</button>
+  </div>
+</div>
+
+<script>
+let _reviewBarVisible = false;
+
+function showReviewBar() {
+  document.getElementById('reviewBar').classList.add('visible');
+  _reviewBarVisible = true;
+  // Add bottom padding to main content so bar doesn't cover last question
+  const main = document.getElementById('testMain') || document.querySelector('.test-main') || document.querySelector('main');
+  if(main) main.style.paddingBottom = '70px';
+}
+
+function hideReviewBar() {
+  document.getElementById('reviewBar').classList.remove('visible');
+  _reviewBarVisible = false;
+  const main = document.getElementById('testMain') || document.querySelector('.test-main') || document.querySelector('main');
+  if(main) main.style.paddingBottom = '';
+}
+
+function updateReviewBar(remaining, currentPos) {
+  const icon = document.getElementById('rbIcon');
+  const text = document.getElementById('rbText');
+  const nextBtn = document.getElementById('rbNextBtn');
+
+  if(remaining === 0) {
+    icon.textContent = '✅';
+    text.innerHTML = '<span class="rb-all-done">All questions answered!</span> Ready to submit.';
+    nextBtn.style.display = 'none';
+  } else {
+    // currentQ is the question we just jumped to
+    icon.textContent = '⬜';
+    text.innerHTML = `Unanswered: <b>Q${currentQ + 1}</b> &nbsp;·&nbsp; <b>${remaining}</b> remaining`;
+    nextBtn.style.display = '';
+    nextBtn.textContent = remaining > 1 ? `Next Unanswered →` : `Last One →`;
+  }
+}
+</script>
 
 </body>
 </html>
