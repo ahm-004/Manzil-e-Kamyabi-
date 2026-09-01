@@ -41,7 +41,6 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 .name-screen{display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;min-height:calc(100vh - 58px);}
 .name-box{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2.25rem 2rem;width:100%;max-width:460px;box-shadow:0 8px 48px rgba(11,24,41,.1);}
 .nb-icon{font-size:2.75rem;text-align:center;margin-bottom:.85rem;}
-.cover-img{width:100%;aspect-ratio:2.4/1;max-height:220px;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:14px;margin-bottom:1.1rem;box-shadow:0 8px 24px rgba(11,24,41,.12);background-color:rgba(11,24,41,.03);pointer-events:none;-webkit-touch-callout:none;}
 .name-box h1{font-family:var(--font-d);font-size:1.35rem;font-weight:800;text-align:center;margin-bottom:.35rem;}
 .test-name{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:.5rem;}
 .test-meta{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem;}
@@ -263,24 +262,14 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 }
 .cover-card {
   position: relative; max-width: 400px; width: 100%;
-  background: #0B1829; border-radius: 24px; padding: 2.5rem 2rem;
+  background: #0B1829; border-radius: 24px; padding: 2.25rem 1.75rem;
   text-align: center; z-index: 1;
 }
-/* Animated gradient border — JS-driven for all browsers */
-.cover-border-ring {
-  position: absolute; inset: -3px; border-radius: 27px;
-  background: conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);
-  z-index: -1;
-}
-.cover-border-glow {
-  position: absolute; inset: -3px; border-radius: 27px;
-  background: conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);
-  z-index: -2; filter: blur(14px); opacity: .55;
-}
-.cover-inner {
-  position: relative; background: #0B1829; border-radius: 22px;
-  padding: 2.5rem 2rem; z-index: 1;
-}
+/* Animated gradient border — now wraps only the cover IMAGE, not the whole card */
+.cover-image-wrap{position:relative;width:100%;margin-bottom:1.1rem;border-radius:14px;display:none;}
+.img-ring{position:absolute;inset:-4px;border-radius:18px;background:conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);z-index:-1;}
+.img-glow{position:absolute;inset:-4px;border-radius:18px;background:conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);z-index:-2;filter:blur(14px);opacity:.65;}
+.cover-image-box{position:relative;width:100%;aspect-ratio:2.4/1;max-height:200px;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.35);background-color:rgba(255,255,255,.04);z-index:1;}
 .cover-icon { font-size: 3rem; margin-bottom: .75rem; animation: bounceIn .6s ease; }
 .cover-title { font-family: var(--font-d); font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: .35rem; }
 .cover-subtitle { font-size: .82rem; color: rgba(255,255,255,.55); margin-bottom: 1.25rem; line-height: 1.5; }
@@ -329,17 +318,18 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 <div class="screen" id="alreadyScreen">
   <div class="cover-screen-wrap">
     <div class="cover-card" id="ccAlready">
-      <div class="cover-border-ring" id="ringAlready"></div>
-      <div class="cover-border-glow" id="glowAlready"></div>
-      <div class="cover-inner">
-        <div class="cover-icon">✅</div>
-        <div class="cover-title">Already Submitted!</div>
-        <div class="cover-subtitle">✅ SUBMITTED SUCCESSFULLY!<br>Your response has been recorded.</div>
-        <div class="cover-msg" id="alreadyMsg">Keep preparing and improving.
+      <div class="cover-image-wrap" id="wrapAlready">
+        <div class="img-ring"></div>
+        <div class="img-glow"></div>
+        <div class="cover-image-box" id="coverImgAlready"></div>
+      </div>
+      <div class="cover-icon">✅</div>
+      <div class="cover-title">Already Submitted!</div>
+      <div class="cover-subtitle">✅ SUBMITTED SUCCESSFULLY!<br>Your response has been recorded.</div>
+      <div class="cover-msg" id="alreadyMsg">Keep preparing and improving.
 
 🏆 Best of luck!</div>
-        <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
-      </div>
+      <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
     </div>
   </div>
 </div>
@@ -348,17 +338,18 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 <div class="screen" id="deadlineScreen">
   <div class="cover-screen-wrap">
     <div class="cover-card" id="ccDeadline">
-      <div class="cover-border-ring" id="ringDeadline"></div>
-      <div class="cover-border-glow" id="glowDeadline"></div>
-      <div class="cover-inner">
-        <div class="cover-icon">⏰</div>
-        <div class="cover-title">Deadline Has Passed</div>
-        <div class="cover-subtitle">This test is no longer accepting submissions.</div>
-        <div class="cover-msg" id="deadlineMsg">The deadline for this test has passed.
+      <div class="cover-image-wrap" id="wrapDeadline">
+        <div class="img-ring"></div>
+        <div class="img-glow"></div>
+        <div class="cover-image-box" id="coverImgDeadline"></div>
+      </div>
+      <div class="cover-icon">⏰</div>
+      <div class="cover-title">Deadline Has Passed</div>
+      <div class="cover-subtitle">This test is no longer accepting submissions.</div>
+      <div class="cover-msg" id="deadlineMsg">The deadline for this test has passed.
 
 Check the WhatsApp group for the next test announcement.</div>
-        <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
-      </div>
+      <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
     </div>
   </div>
 </div>
@@ -367,17 +358,18 @@ Check the WhatsApp group for the next test announcement.</div>
 <div class="screen" id="pausedScreen">
   <div class="cover-screen-wrap">
     <div class="cover-card" id="ccPaused">
-      <div class="cover-border-ring" id="ringPaused"></div>
-      <div class="cover-border-glow" id="glowPaused"></div>
-      <div class="cover-inner">
-        <div class="cover-icon">⏸️</div>
-        <div class="cover-title">Test is Paused</div>
-        <div class="cover-subtitle">The admin has paused this test temporarily.</div>
-        <div class="cover-msg" id="pausedMsg">Please wait — the test will resume automatically.
+      <div class="cover-image-wrap" id="wrapPaused">
+        <div class="img-ring"></div>
+        <div class="img-glow"></div>
+        <div class="cover-image-box" id="coverImgPaused"></div>
+      </div>
+      <div class="cover-icon">⏸️</div>
+      <div class="cover-title">Test is Paused</div>
+      <div class="cover-subtitle">The admin has paused this test temporarily.</div>
+      <div class="cover-msg" id="pausedMsg">Please wait — the test will resume automatically.
 
 Do not close this page.</div>
-        <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
-      </div>
+      <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
     </div>
   </div>
 </div>
@@ -386,7 +378,11 @@ Do not close this page.</div>
 <div class="screen" id="nameScreen">
   <div class="name-screen">
     <div class="name-box">
-      <div id="testCoverImg" class="cover-img" style="display:none;"></div>
+      <div class="cover-image-wrap" id="wrapName" style="margin-bottom:1.1rem;">
+        <div class="img-ring"></div>
+        <div class="img-glow"></div>
+        <div id="testCoverImg" class="cover-image-box"></div>
+      </div>
       <div class="nb-icon">📝</div>
       <h1 id="testTitle">Test</h1>
       <div class="test-name" id="testSubject"></div>
@@ -493,6 +489,11 @@ Do not close this page.</div>
 <div class="screen" id="resultScreen">
   <div class="result-wrap">
     <div class="result-card">
+      <div class="cover-image-wrap" id="wrapResult" style="margin-bottom:1.1rem;">
+        <div class="img-ring"></div>
+        <div class="img-glow"></div>
+        <div id="resultCoverImg" class="cover-image-box"></div>
+      </div>
       <div class="rc-emoji" id="rcEmoji">🎓</div>
       <div class="rc-name" id="rcName"></div>
       <div class="score-circle" id="scoreCircle">
@@ -646,6 +647,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const snap = await db.ref('tests/' + testId).once('value');
     testData = snap.val();
     if (!testData) { showError('This test does not exist. Contact admin.'); return; }
+    applyCoverImages();
 
     // ── PAUSED CHECK ──
     if (testData.paused === true) {
@@ -695,16 +697,33 @@ window.addEventListener('DOMContentLoaded', async () => {
   } catch(e) { console.error(e); showError('Connection error. Please check your internet and reload.'); }
 });
 
+// Sets the test's cover image on every screen that has an image slot
+// (Name screen, Already Submitted, Deadline, Paused, Result) so it
+// shows consistently no matter which screen the student lands on.
+function applyCoverImages() {
+  if (!testData || !testData.coverImage) return;
+  const map = {
+    testCoverImg: 'wrapName',
+    coverImgAlready: 'wrapAlready',
+    coverImgDeadline: 'wrapDeadline',
+    coverImgPaused: 'wrapPaused',
+    resultCoverImg: 'wrapResult'
+  };
+  Object.keys(map).forEach(imgId => {
+    const el = document.getElementById(imgId);
+    const wrap = document.getElementById(map[imgId]);
+    if (!el || !wrap) return;
+    el.style.backgroundImage = `url("${testData.coverImage}")`;
+    wrap.style.display = 'block';
+    const probe = new Image();
+    probe.onload = () => { el.style.aspectRatio = probe.naturalWidth + '/' + probe.naturalHeight; };
+    probe.src = testData.coverImage;
+  });
+}
+
 function showNameScreen() {
   document.getElementById('testTitle').textContent = testData.title;
   document.getElementById('testSubject').textContent = testData.subject || '';
-  if(testData.coverImage){
-    const ci = document.getElementById('testCoverImg');
-    ci.style.backgroundImage = `url("${testData.coverImage}")`; ci.style.display = 'block';
-    const probe = new Image();
-    probe.onload = () => { ci.style.aspectRatio = probe.naturalWidth + '/' + probe.naturalHeight; };
-    probe.src = testData.coverImage;
-  }
   const meta = [
     `❓ ${testData.questions.length} Questions`,
     `⏱ ${testData.timeLimit || 30} min`,
@@ -1611,13 +1630,10 @@ function launchConfetti(){
 // ── ANIMATED BORDER — JS-driven, works on all browsers ──
 (function() {
   let angle = 0;
-  const rings = ['ringAlready','ringDeadline','ringPaused'];
-  const glows = ['glowAlready','glowDeadline','glowPaused'];
   function animateBorder() {
     angle = (angle + 1.5) % 360;
     const grad = `conic-gradient(from ${angle}deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8)`;
-    rings.forEach(id => { const el = document.getElementById(id); if(el) el.style.background = grad; });
-    glows.forEach(id => { const el = document.getElementById(id); if(el) el.style.background = grad; });
+    document.querySelectorAll('.img-ring, .img-glow').forEach(el => { el.style.background = grad; });
     requestAnimationFrame(animateBorder);
   }
   animateBorder();
