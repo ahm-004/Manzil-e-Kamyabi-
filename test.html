@@ -255,6 +255,40 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
   .result-btns{flex-direction:column;}
   .name-box{padding:1.75rem 1.25rem;}
 }
+
+/* ══ COVER PAGE — ANIMATED BORDER ══ */
+.cover-screen-wrap {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 2rem; background: #060E1A;
+}
+.cover-card {
+  position: relative; max-width: 400px; width: 100%;
+  background: #0B1829; border-radius: 24px; padding: 2.5rem 2rem;
+  text-align: center; z-index: 1;
+}
+/* Animated gradient border — JS-driven for all browsers */
+.cover-border-ring {
+  position: absolute; inset: -3px; border-radius: 27px;
+  background: conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);
+  z-index: -1;
+}
+.cover-border-glow {
+  position: absolute; inset: -3px; border-radius: 27px;
+  background: conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);
+  z-index: -2; filter: blur(14px); opacity: .55;
+}
+.cover-inner {
+  position: relative; background: #0B1829; border-radius: 22px;
+  padding: 2.5rem 2rem; z-index: 1;
+}
+.cover-icon { font-size: 3rem; margin-bottom: .75rem; animation: bounceIn .6s ease; }
+.cover-title { font-family: var(--font-d); font-size: 1.4rem; font-weight: 900; color: #fff; margin-bottom: .35rem; }
+.cover-subtitle { font-size: .82rem; color: rgba(255,255,255,.55); margin-bottom: 1.25rem; line-height: 1.5; }
+.cover-msg { background: rgba(245,184,0,.08); border: 1px solid rgba(245,184,0,.2); border-radius: 12px; padding: .9rem 1rem; font-size: .85rem; color: rgba(255,255,255,.8); line-height: 1.6; margin-bottom: 1.25rem; white-space: pre-wrap; text-align: left; }
+.cover-contact { font-size: .78rem; color: rgba(255,255,255,.4); line-height: 1.8; }
+.cover-contact b { color: rgba(255,255,255,.65); }
+@keyframes bounceIn { 0%{transform:scale(.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+
 </style>
 </head>
 <body>
@@ -293,34 +327,57 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
 
 <!-- ALREADY SUBMITTED -->
 <div class="screen" id="alreadyScreen">
-  <div class="already-screen">
-    <div class="already-box">
-      <div style="font-size:2.5rem;margin-bottom:1rem;">✅</div>
-      <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Already Submitted!</h2>
-      <p id="alreadyMsg" style="font-size:.92rem;color:var(--muted);line-height:1.7;white-space:pre-wrap;">You have already taken this test. Each test can only be submitted once.</p>
+  <div class="cover-screen-wrap">
+    <div class="cover-card" id="ccAlready">
+      <div class="cover-border-ring" id="ringAlready"></div>
+      <div class="cover-border-glow" id="glowAlready"></div>
+      <div class="cover-inner">
+        <div class="cover-icon">✅</div>
+        <div class="cover-title">Already Submitted!</div>
+        <div class="cover-subtitle">✅ SUBMITTED SUCCESSFULLY!<br>Your response has been recorded.</div>
+        <div class="cover-msg" id="alreadyMsg">Keep preparing and improving.
+
+🏆 Best of luck!</div>
+        <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- DEADLINE PASSED -->
 <div class="screen" id="deadlineScreen">
-  <div class="already-screen">
-    <div class="already-box">
-      <div style="font-size:2.5rem;margin-bottom:1rem;">⏰</div>
-      <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test Deadline Has Passed</h2>
-      <p id="deadlineMsg" style="font-size:.92rem;color:var(--muted);line-height:1.7;white-space:pre-wrap;">This test is no longer accepting submissions.</p>
+  <div class="cover-screen-wrap">
+    <div class="cover-card" id="ccDeadline">
+      <div class="cover-border-ring" id="ringDeadline"></div>
+      <div class="cover-border-glow" id="glowDeadline"></div>
+      <div class="cover-inner">
+        <div class="cover-icon">⏰</div>
+        <div class="cover-title">Deadline Has Passed</div>
+        <div class="cover-subtitle">This test is no longer accepting submissions.</div>
+        <div class="cover-msg" id="deadlineMsg">The deadline for this test has passed.
+
+Check the WhatsApp group for the next test announcement.</div>
+        <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- TEST PAUSED -->
 <div class="screen" id="pausedScreen">
-  <div class="already-screen">
-    <div class="already-box">
-      <div style="font-size:2.5rem;margin-bottom:1rem;">⏸️</div>
-      <h2 style="font-family:var(--font-d);font-size:1.2rem;font-weight:800;margin-bottom:.5rem;">Test is Temporarily Paused</h2>
-      <p id="pausedMsg" style="font-size:.92rem;color:var(--muted);line-height:1.7;white-space:pre-wrap;">The admin has paused this test. Please wait — it will resume automatically.</p>
-      <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem;">Do not close this page.</p>
+  <div class="cover-screen-wrap">
+    <div class="cover-card" id="ccPaused">
+      <div class="cover-border-ring" id="ringPaused"></div>
+      <div class="cover-border-glow" id="glowPaused"></div>
+      <div class="cover-inner">
+        <div class="cover-icon">⏸️</div>
+        <div class="cover-title">Test is Paused</div>
+        <div class="cover-subtitle">The admin has paused this test temporarily.</div>
+        <div class="cover-msg" id="pausedMsg">Please wait — the test will resume automatically.
+
+Do not close this page.</div>
+        <div class="cover-contact">— <b>Ahmed Khan</b><br>📱 03043207186</div>
+      </div>
     </div>
   </div>
 </div>
@@ -665,6 +722,41 @@ function showNameScreen() {
   offerResume();
 }
 
+
+// ════════════════════════════════════════
+// SHUFFLE UTILITIES
+// ════════════════════════════════════════
+function fisherYates(arr) {
+  // Each student gets a different random seed on every page load
+  for(let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function applyShuffles(questions) {
+  let qs = [...questions.map(q => ({...q, options: q.options ? [...q.options] : undefined}))];
+
+  // Question order shuffle
+  if(testData.shuffleQ) {
+    qs = fisherYates(qs);
+  }
+
+  // Option shuffle (MCQ only) — remap correct answer index
+  if(testData.shuffleOpt) {
+    qs = qs.map(q => {
+      if(q.type !== 'mcq' || !q.options) return q;
+      const origCorrectText = q.options[q.correct]; // save correct answer text
+      const newOpts = fisherYates([...q.options]);
+      const newCorrect = newOpts.indexOf(origCorrectText);
+      return {...q, options: newOpts, correct: newCorrect};
+    });
+  }
+
+  return qs;
+}
+
 async function startTest() {
   studentName = document.getElementById('studentName').value.trim();
   studentPhone = document.getElementById('studentPhone').value.trim();
@@ -697,6 +789,10 @@ async function startTest() {
 
   if(startBtn){ startBtn.disabled = false; startBtn.textContent = 'Start Test →'; }
 
+  // Apply shuffle (independent random every session)
+  if(testData.shuffleQ || testData.shuffleOpt) {
+    testData.questions = applyShuffles(testData.questions);
+  }
   const total = testData.questions.length;
   answers = new Array(total).fill(null);
   flagged = new Array(total).fill(false);
@@ -1510,5 +1606,22 @@ function launchConfetti(){
   </div>
 </div>
 
+
+<script>
+// ── ANIMATED BORDER — JS-driven, works on all browsers ──
+(function() {
+  let angle = 0;
+  const rings = ['ringAlready','ringDeadline','ringPaused'];
+  const glows = ['glowAlready','glowDeadline','glowPaused'];
+  function animateBorder() {
+    angle = (angle + 1.5) % 360;
+    const grad = `conic-gradient(from ${angle}deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8)`;
+    rings.forEach(id => { const el = document.getElementById(id); if(el) el.style.background = grad; });
+    glows.forEach(id => { const el = document.getElementById(id); if(el) el.style.background = grad; });
+    requestAnimationFrame(animateBorder);
+  }
+  animateBorder();
+})();
+</script>
 </body>
 </html>

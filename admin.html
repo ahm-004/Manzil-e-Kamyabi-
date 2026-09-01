@@ -427,6 +427,28 @@ code{background:rgba(245,184,0,.1);color:var(--gold);padding:.05rem .35rem;borde
               </label>
             </div>
 
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.65rem .8rem;">
+              <div>
+                <div style="font-size:.82rem;font-weight:700;color:#fff;">🔀 Shuffle Questions</div>
+                <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.15rem;">Har student ko questions ka alag random order milega</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="testShuffleQ">
+                <span class="switch-track"></span>
+              </label>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.65rem .8rem;">
+              <div>
+                <div style="font-size:.82rem;font-weight:700;color:#fff;">🔀 Shuffle Options</div>
+                <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:.15rem;">Har student ko A/B/C/D options ka alag order milega (correct answer same rahega)</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="testShuffleOpt">
+                <span class="switch-track"></span>
+              </label>
+            </div>
             <div class="fi"><label>Deadline (optional — khali chhoro to koi deadline nahi)</label>
               <input type="datetime-local" id="testDeadline">
             </div>
@@ -1462,6 +1484,8 @@ async function saveTest() {
     instructions:document.getElementById('testInstr').value.trim(),
     coverImage:document.getElementById('testCoverUrl').value.trim() || null,
     oneTimeOnly:document.getElementById('testOneTime').checked,
+    shuffleQ:document.getElementById('testShuffleQ').checked,
+    shuffleOpt:document.getElementById('testShuffleOpt').checked,
     deadline:document.getElementById('testDeadline').value ? new Date(document.getElementById('testDeadline').value).getTime() : null,
     msgSubmit:document.getElementById('testMsgSubmit').value.trim(),
     msgDeadline:document.getElementById('testMsgDeadline').value.trim(),
@@ -1484,6 +1508,8 @@ function resetCreateForm(){
   const tcp=document.getElementById('testCoverPreview'); if(tcp){tcp.style.display='none';tcp.src='';}
   const tcs=document.getElementById('testCoverStatus'); if(tcs) tcs.textContent='';
   document.getElementById('testOneTime').checked=true;
+  document.getElementById('testShuffleQ').checked=false;
+  document.getElementById('testShuffleOpt').checked=false;
   document.getElementById('qList').innerHTML='<p id="qEmpty" style="font-size:.8rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Koi question nahi. Upar se add karein.</p>';
   qCount=0;
 }
@@ -2264,6 +2290,28 @@ async function editTestPrompt(id) {
         </label>
       </div>
 
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.75rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.65rem .8rem;">
+        <div>
+          <div style="font-size:.8rem;font-weight:700;color:#fff;">🔀 Shuffle Questions</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;">Har student ko alag random order</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="_etShuffleQ" ${t.shuffleQ?'checked':''}>
+          <span class="switch-track"></span>
+        </label>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.9rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.65rem .8rem;">
+        <div>
+          <div style="font-size:.8rem;font-weight:700;color:#fff;">🔀 Shuffle Options A/B/C/D</div>
+          <div style="font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.1rem;">Options ka order random (correct answer same)</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="_etShuffleOpt" ${t.shuffleOpt?'checked':''}>
+          <span class="switch-track"></span>
+        </label>
+      </div>
       <div style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.4);margin-bottom:.3rem;">Instructions</div>
       <textarea id="_etInstr" rows="2" style="width:100%;padding:.55rem .75rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:.85rem;box-sizing:border-box;margin-bottom:.75rem;resize:vertical;">${esc(t.instructions)}</textarea>
 
@@ -2295,6 +2343,8 @@ async function saveEditTest(id) {
     negMarking: parseFloat(document.getElementById('_etNeg').value)||0,
     showOnLeaderboard: document.getElementById('_etShowLB').value==='yes',
     oneTimeOnly: document.getElementById('_etOneTime').checked,
+    shuffleQ: document.getElementById('_etShuffleQ').checked,
+    shuffleOpt: document.getElementById('_etShuffleOpt').checked,
     instructions: document.getElementById('_etInstr').value.trim(),
     coverImage: document.getElementById('_etCover').value.trim() || null,
     msgSubmit: document.getElementById('_etMsgSubmit').value.trim(),
