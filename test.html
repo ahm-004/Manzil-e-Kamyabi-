@@ -266,7 +266,7 @@ body{font-family:var(--font-b);background:var(--off);color:var(--navy);min-heigh
   text-align: center; z-index: 1;
 }
 /* Animated gradient border — now wraps only the cover IMAGE, not the whole card */
-.cover-image-wrap{position:relative;width:100%;margin-bottom:1.1rem;border-radius:14px;display:none;}
+.cover-image-wrap{position:relative;z-index:0;width:100%;margin-bottom:1.1rem;border-radius:14px;display:none;}
 .img-ring{position:absolute;inset:-4px;border-radius:18px;background:conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);z-index:-1;}
 .img-glow{position:absolute;inset:-4px;border-radius:18px;background:conic-gradient(from 0deg, #F5B800, #FFD040, #1565D8, #10B981, #F5B800, #FFD040, #1565D8);z-index:-2;filter:blur(14px);opacity:.65;}
 .cover-image-box{position:relative;width:100%;aspect-ratio:2.4/1;max-height:200px;background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.35);background-color:rgba(255,255,255,.04);z-index:1;}
